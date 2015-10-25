@@ -1,0 +1,109 @@
+Date: January 4, 2015;Total steps: 14028;Floors climbed: ; Calories burned: 2947; Elevation gained: ,meters; Traveled: 8.42, kilometers; Sedentary minutes: 1015; Lightly active minutes: 237; Fairly active minutes: 150; Very active minutes: 38; 
+ 
+Date: January 4, 2015;Total steps: 14167;Floors climbed: ; Calories burned: 2961; Elevation gained: ,meters; Traveled: 8.5, kilometers; Sedentary minutes: 1010; Lightly active minutes: 239; Fairly active minutes: 153; Very active minutes: 38; 
+ 
+Date: January 5, 2015;Total steps: 14997;Floors climbed: ; Calories burned: 3001; Elevation gained: ,meters; Traveled: 9, kilometers; Sedentary minutes: 1028; Lightly active minutes: 227; Fairly active minutes: 124; Very active minutes: 61; 
+ 
+Date: January 6, 2015;Total steps: 11719;Floors climbed: ; Calories burned: 2738; Elevation gained: ,meters; Traveled: 7.03, kilometers; Sedentary minutes: 1104; Lightly active minutes: 192; Fairly active minutes: 97; Very active minutes: 47; 
+ 
+Date: January 6, 2015;Total steps: 11729;Floors climbed: ; Calories burned: 2740; Elevation gained: ,meters; Traveled: 7.04, kilometers; Sedentary minutes: 1103; Lightly active minutes: 193; Fairly active minutes: 97; Very active minutes: 47; 
+ 
+Date: January 7, 2015;Total steps: 10792;Floors climbed: ; Calories burned: 2687; Elevation gained: ,meters; Traveled: 6.48, kilometers; Sedentary minutes: 1114; Lightly active minutes: 199; Fairly active minutes: 85; Very active minutes: 42; 
+ 
+Date: January 7, 2015;Total steps: 10935;Floors climbed: ; Calories burned: 2701; Elevation gained: ,meters; Traveled: 6.57, kilometers; Sedentary minutes: 1108; Lightly active minutes: 203; Fairly active minutes: 87; Very active minutes: 42; 
+ 
+Date: January 8, 2015;Total steps: 10983;Floors climbed: ; Calories burned: 2687; Elevation gained: ,meters; Traveled: 6.6, kilometers; Sedentary minutes: 1103; Lightly active minutes: 186; Fairly active minutes: 115; Very active minutes: 36; 
+ 
+Date: January 9, 2015;Total steps: 10282;Floors climbed: ; Calories burned: 2694; Elevation gained: ,meters; Traveled: 6.17, kilometers; Sedentary minutes: 1093; Lightly active minutes: 213; Fairly active minutes: 97; Very active minutes: 37; 
+ 
+Date: January 10, 2015;Total steps: 9764;Floors climbed: ; Calories burned: 2700; Elevation gained: ,meters; Traveled: 5.86, kilometers; Sedentary minutes: 1044; Lightly active minutes: 271; Fairly active minutes: 106; Very active minutes: 19; 
+ 
+Date: January 10, 2015;Total steps: 9884;Floors climbed: ; Calories burned: 2719; Elevation gained: ,meters; Traveled: 5.93, kilometers; Sedentary minutes: 1035; Lightly active minutes: 279; Fairly active minutes: 107; Very active minutes: 19; 
+ 
+Date: January 11, 2015;Total steps: 6764;Floors climbed: ; Calories burned: 2389; Elevation gained: ,meters; Traveled: 4.06, kilometers; Sedentary minutes: 1176; Lightly active minutes: 177; Fairly active minutes: 72; Very active minutes: 15; 
+ 
+Date: January 11, 2015;Total steps: 7551;Floors climbed: ; Calories burned: 2524; Elevation gained: ,meters; Traveled: 4.53, kilometers; Sedentary minutes: 1124; Lightly active minutes: 221; Fairly active minutes: 80; Very active minutes: 15; 
+ 
+Date: January 12, 2015;Total steps: 7044;Floors climbed: ; Calories burned: 2390; Elevation gained: ,meters; Traveled: 4.23, kilometers; Sedentary minutes: 1161; Lightly active minutes: 182; Fairly active minutes: 81; Very active minutes: 16; 
+ 
+Date: January 12, 2015;Total steps: 12483;Floors climbed: ; Calories burned: 2854; Elevation gained: ,meters; Traveled: 7.49, kilometers; Sedentary minutes: 1033; Lightly active minutes: 244; Fairly active minutes: 126; Very active minutes: 37; 
+ 
+Date: January 13, 2015;Total steps: 10004;Floors climbed: ; Calories burned: 2620; Elevation gained: ,meters; Traveled: 6, kilometers; Sedentary minutes: 1145; Lightly active minutes: 168; Fairly active minutes: 87; Very active minutes: 40; 
+ 
+Date: January 13, 2015;Total steps: 10090;Floors climbed: ; Calories burned: 2633; Elevation gained: ,meters; Traveled: 6.05, kilometers; Sedentary minutes: 1139; Lightly active minutes: 173; Fairly active minutes: 88; Very active minutes: 40; 
+ 
+Date: January 14, 2015;Total steps: 8038;Floors climbed: ; Calories burned: 2458; Elevation gained: ,meters; Traveled: 4.82, kilometers; Sedentary minutes: 1210; Lightly active minutes: 132; Fairly active minutes: 63; Very active minutes: 35; 
+ 
+Date: January 15, 2015;Total steps: 7123;Floors climbed: ; Calories burned: 2400; Elevation gained: ,meters; Traveled: 4.27, kilometers; Sedentary minutes: 1212; Lightly active minutes: 142; Fairly active minutes: 61; Very active minutes: 25; 
+ 
+Date: January 16, 2015;Total steps: 5158;Floors climbed: ; Calories burned: 2278; Elevation gained: ,meters; Traveled: 3.09, kilometers; Sedentary minutes: 1235; Lightly active minutes: 142; Fairly active minutes: 55; Very active minutes: 8; 
+ 
+Date: January 16, 2015;Total steps: 5197;Floors climbed: ; Calories burned: 2280; Elevation gained: ,meters; Traveled: 3.12, kilometers; Sedentary minutes: 1234; Lightly active minutes: 143; Fairly active minutes: 55; Very active minutes: 8; 
+ 
+Date: January 17, 2015;Total steps: 14477;Floors climbed: ; Calories burned: 2873; Elevation gained: ,meters; Traveled: 8.69, kilometers; Sedentary minutes: 1085; Lightly active minutes: 171; Fairly active minutes: 128; Very active minutes: 56; 
+ 
+Date: January 18, 2015;Total steps: 10492;Floors climbed: ; Calories burned: 2559; Elevation gained: ,meters; Traveled: 6.3, kilometers; Sedentary minutes: 1179; Lightly active minutes: 130; Fairly active minutes: 86; Very active minutes: 45; 
+ 
+Date: January 18, 2015;Total steps: 10518;Floors climbed: ; Calories burned: 2563; Elevation gained: ,meters; Traveled: 6.31, kilometers; Sedentary minutes: 1178; Lightly active minutes: 131; Fairly active minutes: 86; Very active minutes: 45; 
+ 
+Date: January 19, 2015;Total steps: 4475;Floors climbed: ; Calories burned: 2118; Elevation gained: ,meters; Traveled: 2.69, kilometers; Sedentary minutes: 1308; Lightly active minutes: 63; Fairly active minutes: 55; Very active minutes: 14; 
+ 
+Date: January 19, 2015;Total steps: 5534;Floors climbed: ; Calories burned: 2272; Elevation gained: ,meters; Traveled: 3.32, kilometers; Sedentary minutes: 1250; Lightly active minutes: 109; Fairly active minutes: 67; Very active minutes: 14; 
+ 
+Date: January 20, 2015;Total steps: 7581;Floors climbed: ; Calories burned: 2412; Elevation gained: ,meters; Traveled: 4.55, kilometers; Sedentary minutes: 1214; Lightly active minutes: 123; Fairly active minutes: 79; Very active minutes: 24; 
+ 
+Date: January 21, 2015;Total steps: 8895;Floors climbed: ; Calories burned: 2537; Elevation gained: ,meters; Traveled: 5.34, kilometers; Sedentary minutes: 1177; Lightly active minutes: 150; Fairly active minutes: 82; Very active minutes: 31; 
+ 
+Date: January 21, 2015;Total steps: 8931;Floors climbed: ; Calories burned: 2543; Elevation gained: ,meters; Traveled: 5.36, kilometers; Sedentary minutes: 1174; Lightly active minutes: 153; Fairly active minutes: 82; Very active minutes: 31; 
+ 
+Date: January 22, 2015;Total steps: 9264;Floors climbed: ; Calories burned: 2551; Elevation gained: ,meters; Traveled: 5.56, kilometers; Sedentary minutes: 1175; Lightly active minutes: 147; Fairly active minutes: 84; Very active minutes: 34; 
+ 
+Date: January 22, 2015;Total steps: 9307;Floors climbed: ; Calories burned: 2557; Elevation gained: ,meters; Traveled: 5.58, kilometers; Sedentary minutes: 1173; Lightly active minutes: 148; Fairly active minutes: 85; Very active minutes: 34; 
+ 
+Date: January 23, 2015;Total steps: 10068;Floors climbed: ; Calories burned: 2614; Elevation gained: ,meters; Traveled: 6.04, kilometers; Sedentary minutes: 1179; Lightly active minutes: 148; Fairly active minutes: 63; Very active minutes: 50; 
+ 
+Date: January 24, 2015;Total steps: 8917;Floors climbed: ; Calories burned: 2534; Elevation gained: ,meters; Traveled: 5.35, kilometers; Sedentary minutes: 1161; Lightly active minutes: 170; Fairly active minutes: 82; Very active minutes: 27; 
+ 
+Date: January 24, 2015;Total steps: 9178;Floors climbed: ; Calories burned: 2561; Elevation gained: ,meters; Traveled: 5.51, kilometers; Sedentary minutes: 1151; Lightly active minutes: 175; Fairly active minutes: 87; Very active minutes: 27; 
+ 
+Date: January 25, 2015;Total steps: 12948;Floors climbed: ; Calories burned: 2837; Elevation gained: ,meters; Traveled: 7.77, kilometers; Sedentary minutes: 1087; Lightly active minutes: 200; Fairly active minutes: 102; Very active minutes: 51; 
+ 
+Date: January 26, 2015;Total steps: 10706;Floors climbed: ; Calories burned: 2639; Elevation gained: ,meters; Traveled: 6.42, kilometers; Sedentary minutes: 1160; Lightly active minutes: 139; Fairly active minutes: 102; Very active minutes: 39; 
+ 
+Date: January 27, 2015;Total steps: 6054;Floors climbed: ; Calories burned: 2374; Elevation gained: ,meters; Traveled: 3.63, kilometers; Sedentary minutes: 1213; Lightly active minutes: 144; Fairly active minutes: 69; Very active minutes: 14; 
+ 
+Date: January 27, 2015;Total steps: 6136;Floors climbed: ; Calories burned: 2383; Elevation gained: ,meters; Traveled: 3.68, kilometers; Sedentary minutes: 1209; Lightly active minutes: 147; Fairly active minutes: 70; Very active minutes: 14; 
+ 
+Date: January 28, 2015;Total steps: 10010;Floors climbed: ; Calories burned: 2574; Elevation gained: ,meters; Traveled: 6.01, kilometers; Sedentary minutes: 1189; Lightly active minutes: 138; Fairly active minutes: 66; Very active minutes: 47; 
+ 
+Date: January 29, 2015;Total steps: 10713;Floors climbed: ; Calories burned: 2602; Elevation gained: ,meters; Traveled: 6.43, kilometers; Sedentary minutes: 1194; Lightly active minutes: 114; Fairly active minutes: 81; Very active minutes: 51; 
+ 
+Date: January 30, 2015;Total steps: 9735;Floors climbed: ; Calories burned: 2593; Elevation gained: ,meters; Traveled: 5.84, kilometers; Sedentary minutes: 1190; Lightly active minutes: 135; Fairly active minutes: 69; Very active minutes: 46; 
+ 
+Date: January 31, 2015;Total steps: 2194;Floors climbed: 0; Calories burned: 2621; Elevation gained: 0,meters; Traveled: 1.32, kilometers; Sedentary minutes: 1179; Lightly active minutes: 131; Fairly active minutes: 130; Very active minutes: 0; 
+ 
+Date: January 31, 2015;Total steps: 2207;Floors climbed: 0; Calories burned: 2632; Elevation gained: 0,meters; Traveled: 1.32, kilometers; Sedentary minutes: 1178; Lightly active minutes: 132; Fairly active minutes: 130; Very active minutes: 0; 
+ 
+Date: February 1, 2015;Total steps: 11188;Floors climbed: 18; Calories burned: 2845; Elevation gained: 54.86,meters; Traveled: 6.71, kilometers; Sedentary minutes: 648; Lightly active minutes: 222; Fairly active minutes: 20; Very active minutes: 55; 
+ 
+Date: February 2, 2015;Total steps: 7125;Floors climbed: 13; Calories burned: 2486; Elevation gained: 39.62,meters; Traveled: 4.27, kilometers; Sedentary minutes: 779; Lightly active minutes: 230; Fairly active minutes: 11; Very active minutes: 13; 
+ 
+Date: February 3, 2015;Total steps: 5565;Floors climbed: 7; Calories burned: 2366; Elevation gained: 21.34,meters; Traveled: 3.34, kilometers; Sedentary minutes: 782; Lightly active minutes: 236; Fairly active minutes: 0; Very active minutes: 0; 
+ 
+Date: February 4, 2015;Total steps: 11091;Floors climbed: 14; Calories burned: 2711; Elevation gained: 42.67,meters; Traveled: 6.65, kilometers; Sedentary minutes: 757; Lightly active minutes: 251; Fairly active minutes: 22; Very active minutes: 17; 
+ 
+Date: February 4, 2015;Total steps: 11109;Floors climbed: 14; Calories burned: 2714; Elevation gained: 42.67,meters; Traveled: 6.67, kilometers; Sedentary minutes: 756; Lightly active minutes: 252; Fairly active minutes: 22; Very active minutes: 17; 
+ 
+Date: February 5, 2015;Total steps: 12785;Floors climbed: 17; Calories burned: 2787; Elevation gained: 51.82,meters; Traveled: 7.67, kilometers; Sedentary minutes: 736; Lightly active minutes: 256; Fairly active minutes: 44; Very active minutes: 13; 
+ 
+Date: February 6, 2015;Total steps: 8794;Floors climbed: 12; Calories burned: 2896; Elevation gained: 36.58,meters; Traveled: 5.28, kilometers; Sedentary minutes: 811; Lightly active minutes: 191; Fairly active minutes: 11; Very active minutes: 14; 
+ 
+Date: February 7, 2015;Total steps: 11360;Floors climbed: 4; Calories burned: 2865; Elevation gained: 12.19,meters; Traveled: 6.82, kilometers; Sedentary minutes: 624; Lightly active minutes: 379; Fairly active minutes: 6; Very active minutes: 11; 
+ 
+Date: February 8, 2015;Total steps: 17201;Floors climbed: 4; Calories burned: 3228; Elevation gained: 12.19,meters; Traveled: 10.32, kilometers; Sedentary minutes: 597; Lightly active minutes: 401; Fairly active minutes: 19; Very active minutes: 58; 
+ 
+Date: February 8, 2015;Total steps: 17251;Floors climbed: 4; Calories burned: 3234; Elevation gained: 12.19,meters; Traveled: 10.35, kilometers; Sedentary minutes: 595; Lightly active minutes: 403; Fairly active minutes: 19; Very active minutes: 58; 
+ 
+Date: February 9, 2015;Total steps: 13106;Floors climbed: 31; Calories burned: 2882; Elevation gained: 94.49,meters; Traveled: 7.86, kilometers; Sedentary minutes: 549; Lightly active minutes: 288; Fairly active minutes: 18; Very active minutes: 42; 
+ 
+Date: February 10, 2015;Total steps: 12607;Floors climbed: 30; Calories burned: 2923; Elevation gained: 91.44,meters; Traveled: 7.56, kilometers; Sedentary minutes: 594; Lightly active minutes: 321; Fairly active minutes: 9; Very active minutes: 34; 
