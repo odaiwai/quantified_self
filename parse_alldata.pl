@@ -4,12 +4,12 @@ use warnings;
 use DBI;
 use Data::Dumper;
 
-# script to parse the myfitnesspal pdf output (converted to txt)
+# script to parse all the fitness pdf output (converted to txt)
 # 20151229 - dave o'brien
 my $verbose = 1;
 my $firstrun = 1;
 # script to parse the fitbit_export file and make a database
-my $db = DBI->connect("dbi:SQLite:dbname=myfitnesspal.sqlite","","") or die DBI::errstr;
+my $db = DBI->connect("dbi:SQLite:dbname=fitnessdata.sqlite","","") or die DBI::errstr;
 
 if ($firstrun) {
     my $result = make_db();
@@ -19,7 +19,7 @@ if ($firstrun) {
 
 $db->disconnect;
 ## subs
-sub build_tables_from_files {
+sub build_mfp_tables_from_files {
     my $db = shift;
     my (@files) = `ls mfp_report*.txt`;
     foreach my $file (@files) {
@@ -136,7 +136,7 @@ sub make_db {
             my $result = dbdo($db, $command, $verbose);
         }
     }
-    build_tables_from_files($db);
+    build_mfp_tables_from_files($db);
 }
 sub drop_all_tables {
     # get a list of table names from $db and drop them all
