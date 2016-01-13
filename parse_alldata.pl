@@ -74,12 +74,12 @@ sub build_mfp_tables_from_files {
                 $food = sanitise($food);
                 my ($tablename, $keys, $values);
                 if ($food =~ /TOTAL/) {
-                    print "DATE: $date: TOTAL: @data\n" if $verbose;
-                    $keys = "Date, Calories_in, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber";
+                    #print "DATE: $date: TOTAL: @data\n" if $verbose;
+                    $keys = "Date, Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber";
                     $tablename = "daily_summary";
                     $values = "\"$date\"; ";
                 } else {
-                    print "DATE: $date MEAL: $meal FOOD: $food: @data\n" if $verbose;
+                    #print "DATE: $date MEAL: $meal FOOD: $food: @data\n" if $verbose;
                     $keys = "Date, Meal, Food, Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber";
                     $values = "\"$date\"; \"$meal\"; \"$food\"; ";
                     $tablename = "all_foods";
@@ -95,7 +95,7 @@ sub build_mfp_tables_from_files {
                 my $calories = $1;
                 my $minutes = $2;
                 $calories =~ s/,//g;
-                print "DATE: $date Calories Burned: $calories\n" if $verbose;
+                #print "DATE: $date Calories Burned: $calories\n" if $verbose;
                 my $command = "Insert or replace into [calories_burned] (Date, Calories) Values (\"$date\", $calories)";
                 dbdo($db, $command, 1)
             }
@@ -108,7 +108,79 @@ sub build_mfp_tables_from_files {
     }
 }
 
-## Subs
+sub build_fb_tables_from_files {
+    my $db = shift;
+    my $filename = shift;
+    my $outfilename = shift;
+    print "Processing $filename...\n";
+    open (my $fh, "<", "$filename") or die "Can't open $filename\n";
+    open (my $outfh, ">", "$outfilename") or die "Can't open $outfilename\n";
+    # The data is of the form:
+    # Date: January 4, 2015;Total steps: 14028;Floors climbed: ; Calories burned: 2947; Elevation gained: ,meters; Traveled: 8.42, kilometers; Sedentary minutes: 1015; Lightly active minutes: 237; Fairly active minutes: 150; Very active minutes: 38;
+    dbdo($db, "BEGIN", $verbose); # wrap the inserts in a Begin//Commit
+    my $numrecords = 0;
+    # parse the file
+    while (my $line = <$fh>) {
+        chomp $line;
+        #print "\tLINE:\"$line\"\n" if $verbose;
+        $line =~ s/; $//;
+        my @data = split ";", $line;
+        my $keys;
+        my $tableheader = "";
+        my $valueline = "";
+        my $values;
+        if ($#data>0) {
+            foreach my $kvpair (@data) {
+                my ($key, $value) = split ":", $kvpair;
+                my $clean_key = normalise_key($key);
+                my $clean_value = normalise_value($value);
+                $keys .= "$clean_key, ";
+                $tableheader .= "$clean_key;";
+                if ($clean_key eq "Date") {
+                    $values .= "\"$clean_value\", ";
+                } else {
+                    $values .= "$clean_value, ";
+                }
+                $valueline .="$clean_value;";
+            }
+            #print "\tKEYS:$keys\n" if $verbose;
+            #print "\tVALUES:$values\n" if $verbose;
+            $keys =~ s/, $//;
+            $values =~ s/, $//;
+            $tableheader =~ s/;$//;
+            $valueline =~ s/;$//;
+            my $command = "Insert or Replace into [fitbit_data] ($keys) Values ($values)";
+            print "\t$command\n" if $verbose;
+            print $outfh "$tableheader\n" if ($numrecords == 0);
+            print $outfh "$valueline\n";
+            my $result = dbdo($db, $command, 1);
+            if ($result) { $numrecords++;}
+        }
+    }
+    dbdo($db, "COMMIT", $verbose); # wrap the inserts in a Begin//Commit
+    close $fh;
+    close $outfh;
+}
+sub normalise_value {
+    my $input = shift;
+    $input =~ s/, kilometers//;
+    $input =~ s/ kilometers//;
+    $input =~ s/,meters//;
+    $input =~ s/ meters//;
+    if ($input eq " ") {$input = 0;}
+    return $input;
+}
+
+sub normalise_key {
+    my $input = shift;
+    $input =~ s/minutes//g;
+    $input =~ s/ /_/g;
+    $input =~ s/^_+//g;
+    $input =~ s/_+$//g;
+    $input =~ s/,//g;
+    return $input;
+}
+
 sub trim {
     # trim leading and trailing spaces
     my $string = shift;
@@ -117,19 +189,14 @@ sub trim {
     return $string;
 }
 
-sub display_as_hex {
-    # display a string as a hexdump'
-    my $string = shift;
-}
-
-## subroutines
 sub make_db {
     print "making the database: $db\n" if $verbose;
     drop_all_tables($db);
     my %tables = (
         "all_foods"=>"date TEXT PRIMARY KEY, meal TEXT, food TEXT, Calories INTEGER, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer",
         "calories_burned"=>"date TEXT, calories INTEGER",
-        "daily_summary"=>"date TEXT PRIMARY KEY, Calories Integer, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer");
+        "daily_summary"=>"date TEXT PRIMARY KEY, Calories Integer, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer",
+        "fitbit_data"=>"Date TEXT PRIMARY KEY, Total_steps INTEGER, Floors_climbed INTEGER, Calories_burned INTEGER, Elevation_gained INTEGER, Traveled REAL, Sedentary INTEGER, Lightly_active INTEGER, Fairly_active INTEGER, Very_active INTEGER");
     foreach my $tablename (%tables) {
         if (exists $tables{$tablename} ) {
             my $command = "Create Table if not exists [$tablename] ($tables{$tablename})";
@@ -137,6 +204,9 @@ sub make_db {
         }
     }
     build_mfp_tables_from_files($db);
+    my $filename = "/home/odaiwai/Dropbox/ifttt/Fitbit/fitbit_data.txt";
+    my $outfilename = "./fitbit_data.csv";
+    build_fb_tables_from_files($db, $filename, $outfilename);
 }
 sub drop_all_tables {
     # get a list of table names from $db and drop them all
