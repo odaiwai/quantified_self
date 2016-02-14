@@ -15,7 +15,10 @@ if ($firstrun) {
     my $result = make_db();
 }
 
-
+## TODO
+# Need to calculate calories from Alcohol as well
+# Need to calculate quantities of Caffeine/Alcohol
+# Need to build data panels for statistical analysis
 
 $db->disconnect;
 ## subs
@@ -29,7 +32,12 @@ sub build_tables_from_files {
         my $category = "";
         my $meal = "";
         my $exercise = "";
+        my $daily_item = 0;
+        my $timestamp = "";
         dbdo($db, "BEGIN", 1);
+        my %months = ("January"=>1, "February"=>2, "March"=>3, "April"=>4, "May"=>5, "June"=>6, "July"=>7, "August"=>8, "September"=>9, "October"=>10, "November"=>11, "December"=>12);
+        #print Dumper(%months);
+        #exit;
         while (my $line = <$infh>) {
             chomp $line;
             #print "LINE: |$line|\n" if $verbose;
@@ -41,8 +49,11 @@ sub build_tables_from_files {
                 my $day = $2;
                 my $year = $3;
                 # get a properly formatted Date object?
+                my $mnum = $months{$month};
                 $date = "$day $month $year";
-                print "DAY: $date\n" if $verbose;
+                $timestamp = sprintf("%04d", $year).sprintf("%02d", $mnum).sprintf("%02d", $date);
+                $daily_item = 0;
+                print "DAY: $date ($timestamp)\n" if $verbose;
             }
             # Get the Category
             if ( $line =~ /^([A-Z]+)\s+(.*)/) {
@@ -75,14 +86,16 @@ sub build_tables_from_files {
                 my ($tablename, $keys, $values);
                 if ($food =~ /TOTAL/) {
                     print "DATE: $date: TOTAL: @data\n" if $verbose;
-                    $keys = "Date, Calories_in, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber";
+                    $keys = "Date, Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber";
                     $tablename = "daily_summary";
                     $values = "\"$date\"; ";
                 } else {
-                    print "DATE: $date MEAL: $meal FOOD: $food: @data\n" if $verbose;
-                    $keys = "Date, Meal, Food, Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber";
-                    $values = "\"$date\"; \"$meal\"; \"$food\"; ";
+                    my $uuid = "$timestamp.".sprintf("%03d", $daily_item);
+                    print "UUID: $uuid: DATE: $date MEAL: $meal FOOD: $food: @data\n" if $verbose;
+                    $keys = "UUID, Date, Meal, Food, Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber";
+                    $values = "\"$uuid\"; \"$date\"; \"$meal\"; \"$food\"; ";
                     $tablename = "all_foods";
+                    $daily_item++;
                 }
                 $values .= join("; ", @data);
                 $values =~ s/,//g;
@@ -127,7 +140,7 @@ sub make_db {
     print "making the database: $db\n" if $verbose;
     drop_all_tables($db);
     my %tables = (
-        "all_foods"=>"date TEXT PRIMARY KEY, meal TEXT, food TEXT, Calories INTEGER, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer",
+        "all_foods"=>"UUID Text PRIMARY Key, date TEXT, meal TEXT, food TEXT, Calories INTEGER, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer",
         "calories_burned"=>"date TEXT, calories INTEGER",
         "daily_summary"=>"date TEXT PRIMARY KEY, Calories Integer, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer");
     foreach my $tablename (%tables) {
