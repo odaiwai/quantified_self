@@ -6,7 +6,7 @@ use Data::Dumper;
 
 # script to parse all the fitness pdf output (converted to txt)
 # 20151229 - dave o'brien
-my $verbose = 1;
+my $verbose = 0;
 my $firstrun = 1;
 # script to parse the fitbit_export file and make a database
 my $db = DBI->connect("dbi:SQLite:dbname=fitnessdata.sqlite","","") or die DBI::errstr;
@@ -15,7 +15,7 @@ if ($firstrun) {
     my $result = make_db();
 }
 
-
+# build a table of
 
 $db->disconnect;
 ## subs
@@ -29,7 +29,7 @@ sub build_mfp_tables_from_files {
         my $category = "";
         my $meal = "";
         my $exercise = "";
-        dbdo($db, "BEGIN", 1);
+        dbdo($db, "BEGIN", $verbose);
         while (my $line = <$infh>) {
             chomp $line;
             #print "LINE: |$line|\n" if $verbose;
@@ -88,7 +88,7 @@ sub build_mfp_tables_from_files {
                 $values =~ s/,//g;
                 $values =~ s/;/,/g;
                 my $command = "Insert or replace into [$tablename] ($keys) Values ($values)";
-                dbdo($db, $command, 1)
+                dbdo($db, $command, $verbose)
             }
             #  Fitbit calorie adjustment                                                                   443           1                                
             if ( $line =~ /Fitbit  calorie  adjustment\s+([0-9,]+)\s+([0-9]+)/) {
@@ -97,17 +97,16 @@ sub build_mfp_tables_from_files {
                 $calories =~ s/,//g;
                 #print "DATE: $date Calories Burned: $calories\n" if $verbose;
                 my $command = "Insert or replace into [calories_burned] (Date, Calories) Values (\"$date\", $calories)";
-                dbdo($db, $command, 1)
+                dbdo($db, $command, $verbose)
             }
             # Get the Exercise Totals
             #
 
             #sleep 1;
         }
-        dbdo($db, "COMMIT", 1);
+        dbdo($db, "COMMIT", $verbose);
     }
 }
-
 sub build_fb_tables_from_files {
     my $db = shift;
     my $filename = shift;
@@ -153,13 +152,51 @@ sub build_fb_tables_from_files {
             print "\t$command\n" if $verbose;
             print $outfh "$tableheader\n" if ($numrecords == 0);
             print $outfh "$valueline\n";
-            my $result = dbdo($db, $command, 1);
+            my $result = dbdo($db, $command, $verbose);
             if ($result) { $numrecords++;}
         }
     }
     dbdo($db, "COMMIT", $verbose); # wrap the inserts in a Begin//Commit
     close $fh;
     close $outfh;
+}
+sub build_body_measurement_tables{
+    # build the tables of body measurements
+    my $db = shift;
+    my $filename = "body_measurements.dat";
+    print "Processing $filename\n" if $verbose;
+    open (my $fh, "<", $filename) or die "Can't Open $filename!\n";
+    my $keys = "DateTime, Name, Height, Age, Weight, BodyFat, BodyFatPercent, BodyWaterPercent, BoneMassPercent, Systolic, Diastolic, Pulse, RHR";
+    dbdo($db, "BEGIN", $verbose);
+    while (my $line = <$fh>) {
+        chomp $line;
+        $line =~ s/\%//g;
+        # the -1 in split produces as many fields as possible
+        my @data = split(/;{1}/, $line, -1);
+        #my @data = $line =~ /;/g;
+        #print "\t|$line|\n\t|@data|\n";
+        my @clean_data;
+        foreach my $data (@data) {
+            # check the data for nulls, replace with zero
+            if (length($data) == 0) {
+                $data = 0;
+            }
+            # stringify the first two items
+            if ($data =~ /[A-Za-z: -]+/ ) {
+                $data = "\"$data\"";
+            }
+            push @clean_data, $data;
+        }
+        #print "\t|@clean_data|\n";
+        my $values = join ", ", @clean_data;
+        my $command = "Insert or Replace into [body_measurements] ($keys) Values ($values)";
+        print "\t$command\n" if $verbose;
+        my $result = dbdo($db, $command, $verbose);
+    }
+    dbdo($db, "COMMIT", $verbose);
+}
+sub split_line {
+    my $line = shift;
 }
 sub normalise_value {
     my $input = shift;
@@ -188,7 +225,7 @@ sub trim {
     $string =~ s/\s+$//g;
     return $string;
 }
-
+## Generic Database Utilities
 sub make_db {
     print "making the database: $db\n" if $verbose;
     drop_all_tables($db);
@@ -196,7 +233,8 @@ sub make_db {
         "all_foods"=>"date TEXT PRIMARY KEY, meal TEXT, food TEXT, Calories INTEGER, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer",
         "calories_burned"=>"date TEXT, calories INTEGER",
         "daily_summary"=>"date TEXT PRIMARY KEY, Calories Integer, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer",
-        "fitbit_data"=>"Date TEXT PRIMARY KEY, Total_steps INTEGER, Floors_climbed INTEGER, Calories_burned INTEGER, Elevation_gained INTEGER, Traveled REAL, Sedentary INTEGER, Lightly_active INTEGER, Fairly_active INTEGER, Very_active INTEGER");
+        "fitbit_data"=>"Date TEXT PRIMARY KEY, Total_steps INTEGER, Floors_climbed INTEGER, Calories_burned INTEGER, Elevation_gained INTEGER, Traveled REAL, Sedentary INTEGER, Lightly_active INTEGER, Fairly_active INTEGER, Very_active INTEGER",
+        "body_measurements"=>"DateTime Text, Name Text, Height Real, Age Real, Weight Real, BodyFat Real, BodyFatPercent Real, BodyWaterPercent Real, BoneMassPercent Real, Systolic Integer, Diastolic Integer, Pulse Integer, RHR Integer");
     foreach my $tablename (%tables) {
         if (exists $tables{$tablename} ) {
             my $command = "Create Table if not exists [$tablename] ($tables{$tablename})";
@@ -207,6 +245,7 @@ sub make_db {
     my $filename = "/home/odaiwai/Dropbox/ifttt/Fitbit/fitbit_data.txt";
     my $outfilename = "./fitbit_data.csv";
     build_fb_tables_from_files($db, $filename, $outfilename);
+    build_body_measurement_tables($db);
 }
 sub drop_all_tables {
     # get a list of table names from $db and drop them all

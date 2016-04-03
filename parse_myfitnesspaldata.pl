@@ -7,12 +7,14 @@ use Data::Dumper;
 # script to parse the myfitnesspal pdf output (converted to txt)
 # 20151229 - dave o'brien
 my $verbose = 1;
-my $firstrun = 1;
+my $firstrun = 0;
 # script to parse the fitbit_export file and make a database
 my $db = DBI->connect("dbi:SQLite:dbname=myfitnesspal.sqlite","","") or die DBI::errstr;
 
 if ($firstrun) {
     my $result = make_db();
+} else {
+	build_tables_from_files($db);
 }
 
 ## TODO
@@ -24,9 +26,10 @@ $db->disconnect;
 ## subs
 sub build_tables_from_files {
     my $db = shift;
-    my (@files) = `ls mfp_report*.txt`;
+    my (@files) = `ls myFitnessPal_data/mfp_report_????.txt`;
     foreach my $file (@files) {
         chomp $file;
+        print "Processing file: $file\n";
         open (my $infh, "<", $file) or die "Can't open $file\n";
         my $date = "";
         my $category = "";
@@ -34,6 +37,8 @@ sub build_tables_from_files {
         my $exercise = "";
         my $daily_item = 0;
         my $timestamp = "";
+        my %meals;
+        my %exercises;
         dbdo($db, "BEGIN", 1);
         my %months = ("January"=>1, "February"=>2, "March"=>3, "April"=>4, "May"=>5, "June"=>6, "July"=>7, "August"=>8, "September"=>9, "October"=>10, "November"=>11, "December"=>12);
         #print Dumper(%months);
@@ -44,16 +49,16 @@ sub build_tables_from_files {
             $line =~ s/[\xa0\xc2\xad]/ /g; # gets rid of &nbsp; UTF-8 entities
             #print "$line\n" if $verbose;
             # first, get the date
-            if ( $line =~ /[ \t]+([A-Za-z]+)[ \t]+([0-9]+),[ \t]+([0-9]+)/) {
+            if ( $line =~ /[ \t]*([A-Za-z]+)[ \t]+([0-9]+),[ \t]+([0-9]+)/) {
                 my $month = $1;
                 my $day = $2;
                 my $year = $3;
                 # get a properly formatted Date object?
                 my $mnum = $months{$month};
                 $date = "$day $month $year";
-                $timestamp = sprintf("%04d", $year).sprintf("%02d", $mnum).sprintf("%02d", $date);
+                $timestamp = sprintf("%04d", $year).sprintf("%02d", $mnum).sprintf("%02d", $day);
                 $daily_item = 0;
-                print "DAY: $date ($timestamp)\n" if $verbose;
+                #print "DAY: $date ($timestamp)\n" if $verbose;
             }
             # Get the Category
             if ( $line =~ /^([A-Z]+)\s+(.*)/) {
@@ -65,19 +70,21 @@ sub build_tables_from_files {
             # Next, get the Sub Category (Meals, types of exercise)
             if ( $line =~ /^([A-Z][a-z]+)$/) {
                 my $item = $1;
-                print "SubCat: $category.$item " if $verbose;
+                #print "SubCat: $category.$item " if $verbose;
                 if ( "$category" eq "FOODS") {
                     $meal = $item;
+                    $meals{$meal}++;
                     #print "MEAL: $meal\n" if $verbose;
                 }
                 if ( "$category" eq "EXERCISES") {
                     $exercise = $item;
+                    $exercises{$exercise}++;
                     #print "EXER: $exercise\n" if $verbose;
                 }
             }
             # Now, get the individual foods and nutrition
             #Burger Edge ­ the Original Edge, 336 g                              573       69g    18g      30g       0mg    2,340mg          9g      0g
-            if ( $line =~ /^\s+(.*)\s+([0-9,]+)\s+([0-9,]+)g\s+([0-9,]+)g\s+([0-9,]+)g\s+([0-9,]+)mg\s+([0-9,]+)mg\s+([0-9,]+)g\s+([0-9,]+)g$/ ) {
+            if ( $line =~ /^\s*(.*)\s+([0-9,]+)\s+([0-9,]+)g\s+([0-9,]+)g\s+([0-9,]+)g\s+([0-9,]+)mg\s+([0-9,]+)mg\s+([0-9,]+)g\s+([0-9,]+)g$/ ) {
                 my $food = $1;
                 my @data = ($2, $3, $4, $5, $6, $7, $8, $9);
                 $food = trim($food);
@@ -91,7 +98,7 @@ sub build_tables_from_files {
                     $values = "\"$date\"; ";
                 } else {
                     my $uuid = "$timestamp.".sprintf("%03d", $daily_item);
-                    print "UUID: $uuid: DATE: $date MEAL: $meal FOOD: $food: @data\n" if $verbose;
+                    #print "UUID: $uuid: DATE: $date MEAL: $meal FOOD: $food: @data\n" if $verbose;
                     $keys = "UUID, Date, Meal, Food, Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber";
                     $values = "\"$uuid\"; \"$date\"; \"$meal\"; \"$food\"; ";
                     $tablename = "all_foods";
@@ -104,7 +111,7 @@ sub build_tables_from_files {
                 dbdo($db, $command, 1)
             }
             #  Fitbit calorie adjustment                                                                   443           1                                
-            if ( $line =~ /Fitbit  calorie  adjustment\s+([0-9,]+)\s+([0-9]+)/) {
+            if ( $line =~ /Fitbit calorie adjustment\s+([0-9,]+)\s+([0-9]+)/) {
                 my $calories = $1;
                 my $minutes = $2;
                 $calories =~ s/,//g;
@@ -176,7 +183,7 @@ sub dbdo {
     if (length($command) > 1000000) {
         die "$command too long!";
     }
-    print "\t$db: ".length($command)." $command\n" if $verbose;
+    #print "\t$db: ".length($command)." $command\n" if $verbose;
     my $result = $db->do($command) or die $db->errstr . "\nwith: $command\n";
     return $result;
 }
@@ -192,6 +199,7 @@ sub querydb {
 }
 sub sanitise {
     # some simple substitutions to sanitise a string
+    my $verbose = 0;
     my $string = shift;
     print "sanitise: $string:" if $verbose;
     $string =~ s/\"/inch/g;
