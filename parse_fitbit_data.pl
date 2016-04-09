@@ -7,10 +7,10 @@ use Data::Dumper;
 my $verbose = 1;
 my $firstrun = 1;
 my $basedir = ".";
-my $filename = "fitbit_export_20150131.csv";
-
+my $filename = "/Users/odaiwai/Dropbox/ifttt/Fitbit/fitbit_data.txt";
+my $outfilename = "./fitbit_data.csv";
 # script to parse the fitbit_export file and make a database
-my $db = DBI->connect("dbi:SQLite:dbname=fitbit.sqlite","","") or die DBI::errstr;
+my $db = DBI->connect("dbi:SQLite:dbname=fitbit_data.sqlite","","") or die DBI::errstr;
 
 if ($firstrun) {
 	my $result = make_db();
@@ -24,7 +24,7 @@ $db->disconnect;
 sub make_db {
 	print "making the database: $db\n" if $verbose;
 	drop_all_tables($db);
-	build_tables_from_file($db, "$basedir/$filename");
+	build_tables_from_file($db, "$filename", "$outfilename");
 }
 sub drop_all_tables {
 	# get a list of table names from $db and drop them all
@@ -47,48 +47,84 @@ sub drop_all_tables {
 sub build_tables_from_file {
 	my $db = shift;
 	my $filename = shift;
+	my $outfilename = shift;
 	print "Processing $filename...\n";
 	open (my $fh, "<", "$filename") or die "Can't open $filename\n";
+	open (my $outfh, ">", "$outfilename") or die "Can't open $outfilename\n";
 	# The data is of the form:
-	# 1.tablename
-	# 2.table headers
-	# 3.table data
-	# 4.empty line
-	while (my $tablename = <$fh>) {
-		chomp $tablename;
-		print "\t$tablename:\n" if $verbose;
-		my $headerline = <$fh>;
-		chomp $headerline;
-		my $startpos = tell($fh) ; #Get the position of the second line
-		my $firstline = <$fh>;
-		chomp $firstline;
-		#$firstline =~ s/\"//g; # strip out the "
-		my ($tabledef, $fieldnames) = tabledef_from_headerline($headerline, $firstline);
-		my $command = "Create Table if not exists [$tablename] ($tabledef)";
-		my $result = dbdo($db, $command, $verbose);
-		dbdo($db, "BEGIN", $verbose); # wrap the inserts in a Begin//Commit
-		seek ($fh, $startpos, 0);
-		# parse the records and build the database
-		my $numrecords = 0;
-		my $section_finished = 0;
-		until ($section_finished) {
-			my $line = <$fh>;
-			chomp $line;
-			if ($line eq "") {
-				$section_finished = 1;
-			} else {
-				#$line =~ s/\"//g;
-				my $values = sanitise_line_for_input($line);
-				$command = "Insert or Replace into [$tablename] ($fieldnames) Values ($values)";
-				my $result = dbdo($db, $command, 1);
-				if ($result) { $numrecords++;}
+	# Date: January 4, 2015;Total steps: 14028;Floors climbed: ; Calories burned: 2947; Elevation gained: ,meters; Traveled: 8.42, kilometers; Sedentary minutes: 1015; Lightly active minutes: 237; Fairly active minutes: 150; Very active minutes: 38; 
+	my $tablename = "fitbit_data";
+	my $tabledef = "Date TEXT PRIMARY KEY, Total_steps INTEGER, Floors_climbed INTEGER";
+	$tabledef .= ", Calories_burned INTEGER";
+	$tabledef .= ", Elevation_gained INTEGER, Traveled REAL";
+	$tabledef .= ", Sedentary INTEGER, Lightly_active INTEGER";
+	$tabledef .= ", Fairly_active INTEGER, Very_active INTEGER";
+	my $command = "Create Table if not exists [$tablename] ($tabledef)";
+	my $result = dbdo($db, $command, $verbose);
+	dbdo($db, "BEGIN", $verbose); # wrap the inserts in a Begin//Commit
+	my $numrecords = 0;
+	# parse the file	
+	while (my $line = <$fh>) {
+		chomp $line;
+		#print "\tLINE:\"$line\"\n" if $verbose;
+		$line =~ s/; $//; 
+		my @data = split ";", $line;
+		my $keys;
+		my $tableheader = "";
+		my $valueline = "";
+		my $values;
+		if ($#data>0) {
+			foreach my $kvpair (@data) {
+				my ($key, $value) = split ":", $kvpair;
+				my $clean_key = normalise_key($key);
+				my $clean_value = normalise_value($value);
+				$keys .= "$clean_key, ";
+				$tableheader .= "$clean_key;";
+				if ($clean_key eq "Date") {
+					$values .= "\"$clean_value\", ";
+				} else {
+					$values .= "$clean_value, ";
+				}
+				$valueline .="$clean_value;";
 			}
+			#print "\tKEYS:$keys\n" if $verbose;
+			#print "\tVALUES:$values\n" if $verbose;
+			$keys =~ s/, $//;
+			$values =~ s/, $//;
+			$tableheader =~ s/;$//;
+			$valueline =~ s/;$//;
+			$command = "Insert or Replace into [$tablename] ($keys) Values ($values)";
+			print "\t$command\n" if $verbose;
+			print $outfh "$tableheader\n" if ($numrecords == 0);
+			print $outfh "$valueline\n";
+			my $result = dbdo($db, $command, 1);
+			if ($result) { $numrecords++;}
 		}
-		dbdo($db, "COMMIT", $verbose); # wrap the inserts in a Begin//Commit
 	}
+	dbdo($db, "COMMIT", $verbose); # wrap the inserts in a Begin//Commit
 	close $fh;
+	close $outfh;
+}
+sub normalise_value {
+	my $input = shift;
+	$input =~ s/, kilometers//;
+	$input =~ s/ kilometers//;
+	$input =~ s/,meters//;
+	$input =~ s/ meters//;
+	if ($input eq " ") {$input = 0;}
+	return $input;
+}
 
-	}
+sub normalise_key {
+	my $input = shift;
+	$input =~ s/minutes//g;
+	$input =~ s/ /_/g;
+	$input =~ s/^_+//g;
+	$input =~ s/_+$//g;
+	$input =~ s/,//g;
+	return $input;
+}
+
 sub dbdo {
 	my $db = shift;
 	my $command = shift;
@@ -119,7 +155,7 @@ sub sanitise_line_for_input {
 	my $cleanline;
 	my $index = 0;
 	#print "\t\t$line\n" if $verbose;
-	$line =~ s/\"([0-9]+?),([0-9][0-9][0-9])\"/"\1\2"/g; # remove commas from thousands within quotes.
+	$line =~ s/\"([0-9]+?),([0-9][0-9][0-9])\"/"$1$2"/g; # remove commas from thousands within quotes.
 	#print "\t\t$line\n" if $verbose;
 	$line =~ s/\"//g;
 	#print "\t\t$line\n" if $verbose;
