@@ -4,7 +4,7 @@ Around about the time I got my new Glasses in December 2014, I noticed that I wa
 
 I noticed that I could never get these glasses to appear clean enough, and I had issues with blurring, especially in my left eye. It was like I had a frosted contact lens wandering around my eyeball!
 
-In the last month, I was on assignment in Jakarta, and noticed that I had a vey large Eye Floater in my left eye, and the blurring effect was noticeably distracting.  
+In the last month, I was on assignment in Jakarta, and noticed that I had a very large Eye Floater in my left eye, and the blurring effect was noticeably distracting.  
 
 I found this constant movement of objects in my field of view to be very distracting, and interfered with my ability to focus.
 
@@ -23,6 +23,4 @@ Five hours after the examination, I'm still dilated and non-reactive!
 So, what are the net benefits from an examination that stressed me out for an entire day?  I have nothing major wrong with my eyes, just a natural consequence of being older, and that I am entirely unsuited for any surgical procedures on my eyes. (This I already knew.) I don't have a detached retina or anything like that.
 
 What can I do to make things better?  I should get my glasses prescription reviewed and not skimp on the coatings. I should also go to a better branch/chain where the exam is more competent than at Optical 88.  I have no evidence that they did anything wrong the last time, but I felt that, when I pushed back on the most expensive version of everything, that the staff may have not bothered to care enough to get everything right.
-
-
 
