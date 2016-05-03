@@ -1,0 +1,12 @@
+# Don't try to store Excel files or backups 
+*.xlsx
+*.xls
+*~
+
+*.pdf
+*.sqlite
+*.zip
+.DS_Store
+*.numbers
+*.sxc
+.Rproj.user
