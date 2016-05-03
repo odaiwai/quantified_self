@@ -24,3 +24,5 @@ So, what are the net benefits from an examination that stressed me out for an en
 
 What can I do to make things better?  I should get my glasses prescription reviewed and not skimp on the coatings. I should also go to a better branch/chain where the exam is more competent than at Optical 88.  I have no evidence that they did anything wrong the last time, but I felt that, when I pushed back on the most expensive version of everything, that the staff may have not bothered to care enough to get everything right.
 
+These glasses have been uncomfortable since I got them - the noes pieces in particular have made more or less permanent marks on my nose.
+
