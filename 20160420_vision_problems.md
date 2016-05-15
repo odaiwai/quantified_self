@@ -4,16 +4,11 @@ Around about the time I got my new Glasses in December 2014, I noticed that I wa
 
 I noticed that I could never get these glasses to appear clean enough, and I had issues with blurring, especially in my left eye. It was like I had a frosted contact lens wandering around my eyeball!
 
-<<<<<<< HEAD
 In the last month, I was on assignment in Jakarta, and noticed that I had a vey large Eye Floater in my left eye, and the blurring effect was noticeably distracting.
-
-Today (2016/04/20) I went to an Eye specialist, and she examined my retinas in detail. (The process involved putting a contact lens on, and that caused me to have almost of full on panic attack: I can't tolerate people touching my eyeballs since an ill-fated experiment with contact lenses in the early 1990's.  If you're a fat British woman of Indian extraction, and you worked for Boots in Epsom in 1991/2, you are a monster for not explaining the concept of saline solutions for contact lenses to me.)
-=======
-In the last month, I was on assignment in Jakarta, and noticed that I had a vey large Eye Floater in my left eye, and the blurring effect was noticeably distracting.  
 
 I found this constant movement of objects in my field of view to be very distracting, and interfered with my ability to focus.
 
-Today (2016/04/20) I went to an Eye specialist, and she examined my retinas in detail. The process involved putting a contact lens on, and that caused me to have almost of full on panic attack: I can't tolerate people touching my eyeballs since an ill-fated experiment with contact lenses in the early 1990's. 
+Today (2016/04/20) I went to an Eye specialist, and she examined my retinas in detail. The process involved putting a contact lens on, and that caused me to have almost of full on panic attack: I can't tolerate people touching my eyeballs since an ill-fated experiment with contact lenses in the early 1990's.
 
 (If you're a fat British woman of Indian extraction, and you worked for Boots in Epsom in 1991/2, you are a monster for not explaining the concept of saline solutions for contact lenses to me. You should be burning in hell for all eternity for the amount of pain and infection you caused me.)
 
@@ -29,6 +24,3 @@ So, what are the net benefits from an examination that stressed me out for an en
 
 What can I do to make things better?  I should get my glasses prescription reviewed and not skimp on the coatings. I should also go to a better branch/chain where the exam is more competent than at Optical 88.  I have no evidence that they did anything wrong the last time, but I felt that, when I pushed back on the most expensive version of everything, that the staff may have not bothered to care enough to get everything right.
 
-
-
->>>>>>> unified_parsing
