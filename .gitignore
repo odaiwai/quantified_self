@@ -10,3 +10,5 @@
 *.numbers
 *.sxc
 .Rproj.user
+
+# Should we store the input data files?
