@@ -6,3 +6,5 @@
   food and alcohol
 - Use R to make a linear regression of weight gain/loss vs previous n days
   calorie deficit
+- amend the parsing scripts to use a common database so that a unified report
+  can be made.- 
