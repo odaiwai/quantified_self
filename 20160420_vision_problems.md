@@ -8,7 +8,7 @@ In the last month, I was on assignment in Jakarta, and noticed that I had a very
 
 I found this constant movement of objects in my field of view to be very distracting, and interfered with my ability to focus.
 
-Today (2016/04/20) I went to an Eye specialist, and she examined my retinas in detail. The process involved putting a contact lens on, and that caused me to have almost of full on panic attack: I can't tolerate people touching my eyeballs since an ill-fated experiment with contact lenses in the early 1990's. 
+Today (2016/04/20) I went to an Eye specialist, and she examined my retinas in detail. The process involved putting a contact lens on, and that caused me to have almost of full on panic attack: I can't tolerate people touching my eyeballs since an ill-fated experiment with contact lenses in the early 1990's.
 
 (If you're a fat British woman of Indian extraction, and you worked for Boots in Epsom in 1991/2, you are a monster for not explaining the concept of saline solutions for contact lenses to me. You should be burning in hell for all eternity for the amount of pain and infection you caused me.)
 

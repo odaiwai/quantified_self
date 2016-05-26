@@ -12,3 +12,33 @@
 .Rproj.user
 
 # Should we store the input data files?
+# Don't try to store Excel files or backups 
+*.xlsx
+*.xls
+*~
+*.swp
+fitbitScraper
+*.pdf
+*.sqlite
+*.zip
+.DS_Store
+.RData
+*.numbers
+*.sxc
+.Rproj.user
+mfp_report*
+mistrech.txt
+nutridb-database-sr25.sql
+sharon.txt
+stretching.txt
+76F8C000
+calibrate_modal_split.rscr
+mfp_report*.*
+*.out
+*.html
+fitbit_data.csv
+fitbit_data_20150131.csv
+weightData.dat
+weight_bp_data.csv
+fitbit_charge_hr_chargiing_record.md
+myFitnessPalData.dat
