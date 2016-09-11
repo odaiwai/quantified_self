@@ -41,6 +41,7 @@ sub build_tables_from_files {
         my %exercises;
         dbdo($db, "BEGIN", 1);
         my %months = ("January"=>1, "February"=>2, "March"=>3, "April"=>4, "May"=>5, "June"=>6, "July"=>7, "August"=>8, "September"=>9, "October"=>10, "November"=>11, "December"=>12);
+        my $months = "(January|February|March|April|May|June|July|August|September|October|November|December)";
         #print Dumper(%months);
         #exit;
         while (my $line = <$infh>) {
@@ -49,10 +50,11 @@ sub build_tables_from_files {
             $line =~ s/[\xa0\xc2\xad]/ /g; # gets rid of &nbsp; UTF-8 entities
             #print "$line\n" if $verbose;
             # first, get the date
-            if ( $line =~ /[ \t]*([A-Za-z]+)[ \t]+([0-9]+),[ \t]+([0-9]+)/) {
+            if ( $line =~ /[ \t]*([$months]+)[ \t]*([0-9]{1,2}),[ \t]*([0-9]{4})$/) {
                 my $month = $1;
                 my $day = $2;
                 my $year = $3;
+                print "DATE: $month, $day, $year\n";
                 # get a properly formatted Date object?
                 my $mnum = $months{$month};
                 $date = "$day $month $year";
