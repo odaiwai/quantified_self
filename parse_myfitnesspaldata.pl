@@ -54,7 +54,7 @@ sub build_tables_from_files {
                 my $month = $1;
                 my $day = $2;
                 my $year = $3;
-                print "DATE: $month, $day, $year\n";
+                #print "DATE: $month, $day, $year\n";
                 # get a properly formatted Date object?
                 my $mnum = $months{$month};
                 $date = "$day $month $year";
