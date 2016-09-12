@@ -113,7 +113,7 @@ sub build_tables_from_files {
                 dbdo($db, $command, 1)
             }
             #  Fitbit calorie adjustment                                                                   443           1                                
-            if ( $line =~ /Fitbit calorie adjustment\s+([0-9,]+)\s+([0-9]+)/) {
+            if ( $line =~ /Fitbit[ ]*calorie[ ]*adjustment\s+([0-9,]+)\s+([0-9]+)/) {
                 my $calories = $1;
                 my $minutes = $2;
                 $calories =~ s/,//g;
