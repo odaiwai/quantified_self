@@ -72,8 +72,12 @@ sub get_printable_report {# Go get the report URL
         open (my $fh, ">", "$outfile.html");
         print $fh $agent->content();
         close $outfile;
+        # Using wkhtmltopdf on OS X produces PDF files with spacing issues.
+        # This doesn't appear to happen under Linux.
+        # A work around is to use the OS to print to PDF and
         my $result = `wkhtmltopdf --disable-javascript --disable-local-file-access $outfile.html $outfile.pdf`;
-        $result = `pdftotext -layout $outfile.pdf`;
+        # Add -table: adds extra white space and makes sure that things stay on a line if they should
+        $result = `pdftotext -layout -table $outfile.pdf`;
         print "\tSaved file: $outfile.txt\n";
     }
 }
