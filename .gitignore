@@ -33,9 +33,10 @@ sharon.txt
 stretching.txt
 76F8C000
 calibrate_modal_split.rscr
-mfp_report*.*
+mfp_report*.pdf
+mfp_report*.txt
+!myFitnessPal_data/mfp_report*.html
 *.out
-*.html
 fitbit_data.csv
 fitbit_data_20150131.csv
 weightData.dat
