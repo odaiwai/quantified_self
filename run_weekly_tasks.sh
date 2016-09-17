@@ -7,4 +7,4 @@ sqlite='/usr/bin/sqlite3'
 ./parse_fitbit_data.pl
 $sqlite myfitnesspal.sqlite -csv 'select * from daily_summary join calories_burned using (date);'
 #$sqlite fitbit_data.sqlite -csv 'select date, calories_burned from fitbit_data;'
-/usr/bin/sqlite3 fitbit_data -csv 'select date, Calories_burned, Total_steps, Traveled, Floors_climbed, Sedentary, Lightly_active, Fairly_active, Very_active from [fitbit_data];'
+$sqlite fitbit_data.sqlite -csv 'select date, Calories_burned, Total_steps, Traveled, Floors_climbed, Sedentary, Lightly_active, Fairly_active, Very_active from [fitbit_data];'
