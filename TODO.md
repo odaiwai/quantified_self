@@ -8,3 +8,5 @@
   calorie deficit
 - amend the parsing scripts to use a common database so that a unified report
   can be made.- 
+- Fix the different date formats used: ideally, there should be a common yyyy/mm/dd for all dates
+- 
