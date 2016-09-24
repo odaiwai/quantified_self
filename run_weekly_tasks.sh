@@ -8,16 +8,16 @@ sqlite='/usr/bin/sqlite3'
 
 # run the weekly tasks
 # Download this years myfitnesspal report and parse it into a database
-#./getMyFitnessPalData.pl
-#./parse_myfitnesspaldata.pl
+./getMyFitnessPalData.pl
+./parse_myfitnesspaldata.pl
 
 # Fitbit Data is automatically downloaded to the Dropbox folder
 # This is just the daily report in a single line, and only includes a certain subset of data
-#./parse_fitbit_data.pl
+./parse_fitbit_data.pl
 
 # The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be 
 # done automatically at the moment. At least, not by me.
-#./parse_fitbit_export.pl
+./parse_fitbit_export.pl
 
 MONTH=`date +"%B"`
 YEAR=`date +"%Y"`
