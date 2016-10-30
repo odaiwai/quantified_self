@@ -6,9 +6,15 @@
 # Use this one, not the one that got installed with Anaconda
 sqlite='/usr/bin/sqlite3'
 
-# run the weekly tasks
-# Download this years myfitnesspal report and parse it into a database
-./getMyFitnessPalData.pl
+# Any option on the command line just parses and prints out the existing results
+if (-n  [$1])
+then
+	# run the weekly tasks
+	# Download this years myfitnesspal report
+	./getMyFitnessPalData.pl
+fi
+
+# Parse this years myfitnesspal report into a database
 ./parse_myfitnesspaldata.pl
 
 # Fitbit Data is automatically downloaded to the Dropbox folder
@@ -19,9 +25,9 @@ sqlite='/usr/bin/sqlite3'
 # done automatically at the moment. At least, not by me.
 ./parse_fitbit_export.pl
 
+# Print out the data collected
 MONTH=`date +"%B"`
 YEAR=`date +"%Y"`
-# Print out the data collected
 echo "MyFitnessPal Data for this month:"
 $sqlite myfitnesspal.sqlite -csv "select * from daily_summary join calories_burned using (date) where date like '%$MONTH $YEAR';"
 

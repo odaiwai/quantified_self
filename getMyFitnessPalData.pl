@@ -77,7 +77,7 @@ sub get_printable_report {# Go get the report URL
         # A work around is to use the OS to print to PDF and
         my $result = `wkhtmltopdf --disable-javascript --disable-local-file-access $outfile.html $outfile.pdf`;
         # Add -table: adds extra white space and makes sure that things stay on a line if they should
-        $result = `pdftotext -layout -table $outfile.pdf`;
+        $result = `pdftotext -layout -table $outfile.pdf $outfile.txt`;
         print "\tSaved file: $outfile.txt\n";
     }
 }
