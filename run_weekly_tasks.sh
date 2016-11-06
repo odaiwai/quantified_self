@@ -5,11 +5,27 @@
 
 # Use this one, not the one that got installed with Anaconda
 sqlite='/usr/bin/sqlite3'
+DOWNLOAD=0
 
-# Any option on the command line just parses and prints out the existing results
-if (-n  [$1])
+# PArse the Command line options
+for arg in "$@"
+do
+	case $arg in
+		-d|--download)
+			DOWNLOAD=1
+			shift
+			;;
+		-h|--help|*)
+			echo "Usage:"
+			echo "-d, --download: get MyFitnessPal data"
+			echo "-h, --help: show this help"
+			shift
+			;;
+	esac
+done
+
+if [[ $DOWNLOAD=1 ]]
 then
-	# run the weekly tasks
 	# Download this years myfitnesspal report
 	./getMyFitnessPalData.pl
 fi
@@ -21,7 +37,7 @@ fi
 # This is just the daily report in a single line, and only includes a certain subset of data
 ./parse_fitbit_data.pl
 
-# The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be 
+# The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be
 # done automatically at the moment. At least, not by me.
 ./parse_fitbit_export.pl
 
