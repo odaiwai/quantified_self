@@ -6,14 +6,20 @@
 # Use this one, not the one that got installed with Anaconda
 sqlite='/usr/bin/sqlite3'
 DOWNLOAD=0
-
+VERBOSE=0
 # PArse the Command line options
 for arg in "$@"
 do
+	echo "Argument: $arg"
 	case $arg in
 		-d|--download)
 			DOWNLOAD=1
+			echo "Downloading On"
 			shift
+			;;
+		-v|--verbose)
+			VERBOSE=1
+			echo "Verbose On"
 			;;
 		-h|--help|*)
 			echo "Usage:"
@@ -24,7 +30,7 @@ do
 	esac
 done
 
-if [[ $DOWNLOAD=1 ]]
+if [[ $DOWNLOAD -gt 0 ]]
 then
 	# Download this years myfitnesspal report
 	./getMyFitnessPalData.pl
