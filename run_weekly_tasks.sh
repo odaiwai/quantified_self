@@ -6,7 +6,7 @@
 # Use this one, not the one that got installed with Anaconda
 sqlite='/usr/bin/sqlite3'
 DOWNLOAD=0
-VERBOSE=0
+ VERBOSE=0
 # PArse the Command line options
 for arg in "$@"
 do
@@ -51,9 +51,9 @@ fi
 MONTH=`date +"%B"`
 YEAR=`date +"%Y"`
 echo "MyFitnessPal Data for this month:"
-$sqlite myfitnesspal.sqlite -csv "select * from daily_summary join calories_burned using (date) where date like '%$MONTH $YEAR';"
+$sqlite myfitnesspal.sqlite -csv -header "select * from daily_summary join calories_burned using (date) where date like '%$MONTH $YEAR';"
 
 echo "Fitbit Calories_burned for this month:"
-$sqlite fitbit_data.sqlite -csv "select date, calories_burned from fitbit_data where date like ' $MONTH % $YEAR';"
+$sqlite fitbit_data.sqlite -csv -header "select date, calories_burned from fitbit_data where date like ' $MONTH % $YEAR';"
 echo "FitBit Data for this month:"
-$sqlite fitbit_data.sqlite -csv "select date, Calories_burned, Total_steps, Traveled, Floors_climbed, Sedentary, Lightly_active, Fairly_active, Very_active from [fitbit_data] where date like ' $MONTH % $YEAR';"
+$sqlite fitbit_data.sqlite -csv -header "select date, Calories_burned, Total_steps, Traveled, Floors_climbed, Sedentary, Lightly_active, Fairly_active, Very_active from [fitbit_data] where date like ' $MONTH % $YEAR';"
