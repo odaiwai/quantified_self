@@ -6,7 +6,8 @@
 # Use this one, not the one that got installed with Anaconda
 sqlite='/usr/bin/sqlite3'
 DOWNLOAD=0
- VERBOSE=0
+VERBOSE=0
+PARSE=1
 # PArse the Command line options
 for arg in "$@"
 do
@@ -16,6 +17,10 @@ do
 			DOWNLOAD=1
 			echo "Downloading On"
 			shift
+			;;
+		-p|--noparse)
+			PARSE=0
+			echo "Don't Parse the Data"
 			;;
 		-v|--verbose)
 			VERBOSE=1
@@ -36,24 +41,41 @@ then
 	./getMyFitnessPalData.pl
 fi
 
-# Parse this years myfitnesspal report into a database
-./parse_myfitnesspaldata.pl
+if [[ $PARSE -gt 0 ]]
+then
+	# Parse this years myfitnesspal report into a database
+	./parse_myfitnesspaldata.pl
 
-# Fitbit Data is automatically downloaded to the Dropbox folder
-# This is just the daily report in a single line, and only includes a certain subset of data
-./parse_fitbit_data.pl
+	# Fitbit Data is automatically downloaded to the Dropbox folder
+	# This is just the daily report in a single line, and only includes a certain subset of data
+	./parse_fitbit_data.pl
 
-# The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be
-# done automatically at the moment. At least, not by me.
-./parse_fitbit_export.pl
+	# The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be
+	# done automatically at the moment. At least, not by me.
+	./parse_fitbit_export.pl
+fi
 
 # Print out the data collected
+## FIXME: Need to make this show the last 30 days, not the current month
 MONTH=`date +"%B"`
 YEAR=`date +"%Y"`
-echo "MyFitnessPal Data for this month:"
-$sqlite myfitnesspal.sqlite -csv -header "select * from daily_summary join calories_burned using (date) where date like '%$MONTH $YEAR';"
+#Get a timestamp for 1 month ago
+OS=`uname -s`
+
+if [[ $OS = "Linux" ]]
+then
+	TIMESTAMP=`date -d '-1 month' +%Y%m%d ` # for Linux
+else
+	TIMESTAMP=`date -j -v-1m +%Y%m%d` # MacOS
+fi
+
+echo "MyFitnessPal Data for this month: ($OS, $TIMESTAMP)"
+$sqlite myfitnesspal.sqlite -csv -header "select * from daily_summary JOIN calories_burned using (timestamp, date) where daily_summary.timestamp > $TIMESTAMP;"
 
 echo "Fitbit Calories_burned for this month:"
 $sqlite fitbit_data.sqlite -csv -header "select date, calories_burned from fitbit_data where date like ' $MONTH % $YEAR';"
+#$sqlite fitbit_data.sqlite -csv -header "select date, calories_burned from fitbit_data where timestamp > $TIMESTAMP;"
+
 echo "FitBit Data for this month:"
 $sqlite fitbit_data.sqlite -csv -header "select date, Calories_burned, Total_steps, Traveled, Floors_climbed, Sedentary, Lightly_active, Fairly_active, Very_active from [fitbit_data] where date like ' $MONTH % $YEAR';"
+#$sqlite fitbit_data.sqlite -csv -header "select date, Calories_burned, Total_steps, Traveled, Floors_climbed, Sedentary, Lightly_active, Fairly_active, Very_active from [fitbit_data] where timestamp > $TIMESTAMP;"

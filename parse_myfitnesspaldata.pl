@@ -18,6 +18,7 @@ if ($firstrun) {
 }
 
 ## TODO
+# Add a Timestamp
 # Need to calculate calories from Alcohol as well
 # Need to calculate quantities of Caffeine/Alcohol
 # Need to build data panels for statistical analysis
@@ -94,10 +95,10 @@ sub build_tables_from_files {
                 $food = sanitise($food);
                 my ($tablename, $keys, $values);
                 if ($food =~ /TOTAL/) {
-                    print "DATE: $date: TOTAL: @data\n" if $verbose;
-                    $keys = "Date, Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber";
+                    print "DATE: [$timestamp] $date: TOTAL: @data\n" if $verbose;
+                    $keys = "timestamp, Date, Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber";
                     $tablename = "daily_summary";
-                    $values = "\"$date\"; ";
+                    $values = "$timestamp; \"$date\"; ";
                 } else {
                     my $uuid = "$timestamp.".sprintf("%03d", $daily_item);
                     #print "UUID: $uuid: DATE: $date MEAL: $meal FOOD: $food: @data\n" if $verbose;
@@ -117,8 +118,8 @@ sub build_tables_from_files {
                 my $calories = $1;
                 my $minutes = $2;
                 $calories =~ s/,//g;
-                print "DATE: $date Calories Burned: $calories\n" if $verbose;
-                my $command = "Insert or replace into [calories_burned] (Date, Calories) Values (\"$date\", $calories)";
+                print "DATE: [$timestamp] $date Calories Burned: $calories\n" if $verbose;
+                my $command = "Insert or replace into [calories_burned] (Timestamp, Date, Calories) Values ($timestamp, \"$date\", $calories)";
                 dbdo($db, $command, 1)
             }
             # Get the Exercise Totals
@@ -150,8 +151,8 @@ sub make_db {
     drop_all_tables($db);
     my %tables = (
         "all_foods"=>"UUID Text PRIMARY Key, date TEXT, meal TEXT, food TEXT, Calories INTEGER, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer",
-        "calories_burned"=>"date TEXT, calories INTEGER",
-        "daily_summary"=>"date TEXT PRIMARY KEY, Calories Integer, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer");
+        "calories_burned"=>"timestamp INTEGER PRIMARY KEY, date TEXT, calories INTEGER",
+        "daily_summary"=>"timestamp INTEGER PRIMARY KEY, date TEXT, Calories Integer, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer");
     foreach my $tablename (%tables) {
         if (exists $tables{$tablename} ) {
             my $command = "Create Table if not exists [$tablename] ($tables{$tablename})";
