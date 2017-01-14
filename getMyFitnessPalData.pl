@@ -7,8 +7,10 @@ use WWW::Mechanize;
 # script to retrieve MyFitnessPal Data from the website
 # will need to login, or have cookies
 # 20160317: fixed login and retrieval procedures - dob
-my $username = "odaiwai";
-my $password = "wurble99";
+# 20170114: got the password out of this file!
+my $credentials = `cat credentials.txt`;
+chomp $credentials;
+my ($username, $password) = split(":", $credentials);
 my $siteurl = "https://www.myfitnesspal.com";
 my $realm = "MyFitnessPal";
 my $loginurl = "$siteurl/account/login";
