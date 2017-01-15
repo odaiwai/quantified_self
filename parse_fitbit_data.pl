@@ -19,7 +19,7 @@ if ($system eq "Darwin") {
 }
 my $outfilename = "./fitbit_data.csv";
 # script to parse the fitbit_export file and make a database
-my $db = DBI->connect("dbi:SQLite:dbname=fitbit_data.sqlite","","") or die DBI::errstr;
+my $db = DBI->connect("dbi:SQLite:dbname=health_data.sqlite","","") or die DBI::errstr;
 
 if ($firstrun) {
     my $result = make_db();
@@ -32,15 +32,16 @@ $db->disconnect;
 ## subroutines
 sub make_db {
     print "making the database: $db\n" if $verbose;
-    drop_all_tables($db);
+    drop_all_tables($db, "fitbit_data");
     build_tables_from_file($db, "$filename", "$outfilename");
 }
 sub drop_all_tables {
     # get a list of table names from $db and drop them all
     my $db = shift;
+    my $prefix = shift;
     print "Clearing the database because \$firstrun == $firstrun\n";
     my @tables;
-    my $query = querydb($db, "select name from sqlite_master where type='table' order by name", 1);
+    my $query = querydb($db, "select name from sqlite_master where type='table' and name like '$prefix%' order by name", 1);
     # we need to extract the list of tables first - sqlite doesn't like
     # multiple queries at the same time.
     while (my @row = $query->fetchrow_array) {
@@ -63,7 +64,7 @@ sub build_tables_from_file {
     # The data is of the form:
     # Date: January 4, 2015;Total steps: 14028;Floors climbed: ; Calories burned: 2947; Elevation gained: ,meters; Traveled: 8.42, kilometers; Sedentary minutes: 1015; Lightly active minutes: 237; Fairly active minutes: 150; Very active minutes: 38;
     my $tablename = "fitbit_data";
-    my $tabledef = "Date TEXT PRIMARY KEY, Total_steps INTEGER, Floors_climbed INTEGER";
+    my $tabledef = "timestamp INTEGER PRIMARY KEY, Date TEXT, Total_steps INTEGER, Floors_climbed INTEGER";
     $tabledef .= ", Calories_burned INTEGER";
     $tabledef .= ", Elevation_gained INTEGER, Traveled REAL";
     $tabledef .= ", Sedentary INTEGER, Lightly_active INTEGER";
@@ -78,7 +79,7 @@ sub build_tables_from_file {
         #print "\tLINE:\"$line\"\n" if $verbose;
         $line =~ s/; $//;
         my @data = split ";", $line;
-        my $keys;
+        my $keys = "timestamp, ";
         my $tableheader = "";
         my $valueline = "";
         my $values;
@@ -90,7 +91,8 @@ sub build_tables_from_file {
                 $keys .= "$clean_key, ";
                 $tableheader .= "$clean_key;";
                 if ($clean_key eq "Date") {
-                    $values .= "\"$clean_value\", ";
+                    my $timestamp = timestamp_from_date($clean_value);
+                    $values .= "$timestamp, \"$clean_value\", ";
                 } else {
                     $values .= "$clean_value, ";
                 }
@@ -232,4 +234,16 @@ sub type_from_data {
         $type = "Integer";
     }
     return $type;
+}
+sub timestamp_from_date {
+    # sub to return yyyymmdd from "January 15, 2015"
+    my $date = shift;
+    my ($month, $day, $year) = split " ", $date;
+    $day =~ s/,//g;
+    my %months=("January"=>"01", "February"=>"02", "March"=>"03", "April"=>"04",
+                "May"=>"05", "June"=>"06", "July"=>"07", "August"=>"08",
+                "September"=>"09", "October"=>"10", "November"=>"11",
+                "December"=>"12");
+    my $timestamp = "$year".$months{$month}.sprintf("%02d",$day);
+    return $timestamp;
 }

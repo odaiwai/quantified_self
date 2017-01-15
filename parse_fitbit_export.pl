@@ -10,7 +10,7 @@ my $basedir  = ".";
 my $filename = "fitbit_export_20150131.csv";
 
 # script to parse the fitbit_export file and make a database
-my $db = DBI->connect( "dbi:SQLite:dbname=fitbit.sqlite", "", "" )
+my $db = DBI->connect( "dbi:SQLite:dbname=health_data.sqlite", "", "" )
   or die DBI::errstr;
 
 if ($firstrun) {
@@ -22,7 +22,7 @@ $db->disconnect;
 ## subroutines
 sub make_db {
     print "making the database: $db\n" if $verbose;
-    drop_all_tables($db);
+    drop_all_tables($db, "fitbit_");
     my @files = `ls fitbit_data/fitbit_export*.csv`;
     foreach my $file (@files) {
         chomp $file;
@@ -34,10 +34,11 @@ sub make_db {
 sub drop_all_tables {
     # get a list of table names from $db and drop them all
     my $db = shift;
+    my $prefix = shift;
     print "Clearing the database because \$firstrun == $firstrun\n";
     my @tables;
     my $query = querydb( $db,
-        "select name from sqlite_master where type='table' order by name", 1 );
+        "select name from sqlite_master where type='table' and name like '$prefix%' order by name", 1 );
 
     # we need to extract the list of tables first - sqlite doesn't like
     # multiple queries at the same time.
@@ -75,6 +76,7 @@ sub build_tables_from_file {
             }
         }
         else {
+            my $new_tablename = "fitbit_$tablename";
             my $headerline = <$fh>;
             chomp $headerline;
             my $startpos  = tell($fh);    #Get the position of the second line
@@ -83,8 +85,8 @@ sub build_tables_from_file {
 
             #$firstline =~ s/\"//g; # strip out the "
             my ( $tabledef, $fieldnames ) =
-              tabledef_from_headerline( $headerline, $firstline );
-            my $command = "Create Table if not exists [$tablename] ($tabledef)";
+              tabledef_from_headerline( $headerline, $firstline);
+            my $command = "Create Table if not exists [$new_tablename] ($tabledef)";
             my $result = dbdo( $db, $command, $verbose );
             dbdo( $db, "BEGIN", $verbose )
               ;                           # wrap the inserts in a Begin//Commit
@@ -102,7 +104,9 @@ sub build_tables_from_file {
                 else {
                     #$line =~ s/\"//g;
                     my $values = sanitise_line_for_input($line);
-                    $command = "Insert or Replace into [$tablename] ($fieldnames) Values ($values)";
+                    my @values = split ",", $values;
+                    my $timestamp = timestamp_from_date($values[0]);
+                    $command = "Insert or Replace into [$new_tablename] ($fieldnames) Values ($timestamp, $values)";
                     my $result = dbdo( $db, $command, 1 );
                     if ($result) { $numrecords++; }
                 }
@@ -173,21 +177,23 @@ sub sanitise_line_for_input {
 }
 
 sub tabledef_from_headerline {
-
     # take the header line, and a data line and figure out the DB Structure
     my $headerline = shift;
     my $firstline  = shift;
     my $values     = sanitise_line_for_input($firstline);
     my @headers    = split /,/, $headerline;
-    my @first      = split /,/, $values;
+    my @values      = split /,/, $values;
+    # Need to add in the timestamp field
+    my $timestamp = timestamp_from_date(@values[0]); # The first field is the date
+    unshift @headers, "timestamp";
+    unshift @values, $timestamp;
     my ( $dbstructure, $fieldnames );
     foreach my $index ( 0 .. ($#headers) ) {
-
         # do we need to sanitise the header?
         my $header = $headers[$index];
         $header =~ s/ /_/g;
         $header =~ s/[()]+//g;
-        my $field = $first[$index];
+        my $field = $values[$index];
 
         # see what the content is to decide the type
         print "\t\t3.$index: $header: \"$field\" " if $verbose;
@@ -228,4 +234,13 @@ sub type_from_data {
         $type = "Integer";
     }
     return $type;
+}
+sub timestamp_from_date {
+    # sub to return yyyymmdd from "dd/mm/yyyy"
+    my $date = shift;
+    $date =~ s/\"//g;
+    my ($day, $month, $year) = split "/", $date;
+    print "$date -> $year.$month.$day\n";
+    my $timestamp = sprintf("%04d", $year).sprintf("%02d",$month).sprintf("%02d",$day);
+    return $timestamp;
 }

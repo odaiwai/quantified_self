@@ -9,7 +9,7 @@ use Data::Dumper;
 my $verbose = 1;
 my $firstrun = 1;
 # script to parse the fitbit_export file and make a database
-my $db = DBI->connect("dbi:SQLite:dbname=myfitnesspal.sqlite","","") or die DBI::errstr;
+my $db = DBI->connect("dbi:SQLite:dbname=health_data.sqlite","","") or die DBI::errstr;
 
 if ($firstrun) {
     my $result = make_db();
@@ -97,14 +97,14 @@ sub build_tables_from_files {
                 if ($food =~ /TOTAL/) {
                     print "DATE: [$timestamp] $date: TOTAL: @data\n" if $verbose;
                     $keys = "timestamp, Date, Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber";
-                    $tablename = "daily_summary";
+                    $tablename = "mfp_daily_summary";
                     $values = "$timestamp; \"$date\"; ";
                 } else {
                     my $uuid = "$timestamp.".sprintf("%03d", $daily_item);
                     #print "UUID: $uuid: DATE: $date MEAL: $meal FOOD: $food: @data\n" if $verbose;
                     $keys = "UUID, Date, Meal, Food, Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber";
                     $values = "\"$uuid\"; \"$date\"; \"$meal\"; \"$food\"; ";
-                    $tablename = "all_foods";
+                    $tablename = "mfp_all_foods";
                     $daily_item++;
                 }
                 $values .= join("; ", @data);
@@ -119,7 +119,7 @@ sub build_tables_from_files {
                 my $minutes = $2;
                 $calories =~ s/,//g;
                 print "DATE: [$timestamp] $date Calories Burned: $calories\n" if $verbose;
-                my $command = "Insert or replace into [calories_burned] (Timestamp, Date, Calories) Values ($timestamp, \"$date\", $calories)";
+                my $command = "Insert or replace into [mfp_calories_burned] (Timestamp, Date, Calories) Values ($timestamp, \"$date\", $calories)";
                 dbdo($db, $command, 1)
             }
             # Get the Exercise Totals
@@ -148,11 +148,11 @@ sub display_as_hex {
 ## subroutines
 sub make_db {
     print "making the database: $db\n" if $verbose;
-    drop_all_tables($db);
+    drop_all_tables($db, "mfp_");
     my %tables = (
-        "all_foods"=>"UUID Text PRIMARY Key, date TEXT, meal TEXT, food TEXT, Calories INTEGER, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer",
-        "calories_burned"=>"timestamp INTEGER PRIMARY KEY, date TEXT, calories INTEGER",
-        "daily_summary"=>"timestamp INTEGER PRIMARY KEY, date TEXT, Calories Integer, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer");
+        "mfp_all_foods"=>"UUID Text PRIMARY Key, date TEXT, meal TEXT, food TEXT, Calories INTEGER, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer",
+        "mfp_calories_burned"=>"timestamp INTEGER PRIMARY KEY, date TEXT, calories INTEGER",
+        "mfp_daily_summary"=>"timestamp INTEGER PRIMARY KEY, date TEXT, Calories Integer, Carbs INTEGER,Fat Integer, Protein Integer, Cholesterol Integer, Sodium Integer, Sugars Integer, Fiber Integer");
     foreach my $tablename (%tables) {
         if (exists $tables{$tablename} ) {
             my $command = "Create Table if not exists [$tablename] ($tables{$tablename})";
@@ -164,9 +164,10 @@ sub make_db {
 sub drop_all_tables {
     # get a list of table names from $db and drop them all
     my $db = shift;
+    my $prefix = shift;
     print "Clearing the database because \$firstrun == $firstrun\n";
     my @tables;
-    my $query = querydb($db, "select name from sqlite_master where type='table' order by name", 1);
+    my $query = querydb($db, "select name from sqlite_master where type='table' and name like '$prefix%' order by name", 1);
     # we need to extract the list of tables first - sqlite doesn't like
     # multiple queries at the same time.
     while (my @row = $query->fetchrow_array) {

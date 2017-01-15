@@ -61,7 +61,6 @@ MONTH=`date +"%B"`
 YEAR=`date +"%Y"`
 #Get a timestamp for 1 month ago
 OS=`uname -s`
-
 if [[ $OS = "Linux" ]]
 then
 	TIMESTAMP=`date -d '-1 month' +%Y%m%d ` # for Linux
@@ -70,12 +69,12 @@ else
 fi
 
 echo "MyFitnessPal Data for this month: ($OS, $TIMESTAMP)"
-$sqlite myfitnesspal.sqlite -csv -header "select * from daily_summary JOIN calories_burned using (timestamp, date) where daily_summary.timestamp > $TIMESTAMP;"
+$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories, fitbit_data.calories_burned from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) JOIN fitbit_data using (timestamp) where mfp_daily_summary.timestamp > $TIMESTAMP;"
 
-echo "Fitbit Calories_burned for this month:"
-$sqlite fitbit_data.sqlite -csv -header "select date, calories_burned from fitbit_data where date like ' $MONTH % $YEAR';"
-#$sqlite fitbit_data.sqlite -csv -header "select date, calories_burned from fitbit_data where timestamp > $TIMESTAMP;"
+#echo "Fitbit Calories_burned for this month:"
+#$sqlite fitbit_data.sqlite -csv -header "select date, calories_burned from fitbit_data where date like ' $MONTH % $YEAR';"
+#$sqlite health_data.sqlite -csv -header "select timestamp, date, calories_burned from fitbit_data where timestamp > $TIMESTAMP ;"
 
-echo "FitBit Data for this month:"
-$sqlite fitbit_data.sqlite -csv -header "select date, Calories_burned, Total_steps, Traveled, Floors_climbed, Sedentary, Lightly_active, Fairly_active, Very_active from [fitbit_data] where date like ' $MONTH % $YEAR';"
+#echo "FitBit Data for this month:"
+#$sqlite fitbit_data.sqlite -csv -header "select date, Calories_burned, Total_steps, Traveled, Floors_climbed, Sedentary, Lightly_active, Fairly_active, Very_active from [fitbit_data] where date like ' $MONTH % $YEAR';"
 #$sqlite fitbit_data.sqlite -csv -header "select date, Calories_burned, Total_steps, Traveled, Floors_climbed, Sedentary, Lightly_active, Fairly_active, Very_active from [fitbit_data] where timestamp > $TIMESTAMP;"
