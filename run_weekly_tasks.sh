@@ -46,13 +46,15 @@ then
 	# Parse this years myfitnesspal report into a database
 	./parse_myfitnesspaldata.pl
 
-	# Fitbit Data is automatically downloaded to the Dropbox folder
-	# This is just the daily report in a single line, and only includes a certain subset of data
-	./parse_fitbit_data.pl
-
 	# The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be
 	# done automatically at the moment. At least, not by me.
 	./parse_fitbit_export.pl
+
+	# Fitbit Data is automatically downloaded to the Dropbox folder
+	# This is just the daily report in a single line, and only includes a certain subset of data
+	# This needs to be run after the other one, as all the fitbit_* tables get deleted in that step
+	# while this step only deletes it's own table
+	./parse_fitbit_data.pl
 fi
 
 # Print out the data collected
