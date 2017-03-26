@@ -113,6 +113,10 @@ sub build_tables_from_files {
                 my $command = "Insert or replace into [$tablename] ($keys) Values ($values)";
                 dbdo($db, $command, 1)
             }
+            #Alternative Split line style from Lynx -dump
+            #Coffee - Aeropress, 1 with 40ml Milk
+            #30                                                  0g       0g    0g  0mg     0mg     0g      0g
+
             #  Fitbit calorie adjustment                                                                   443           1                                
             if ( $line =~ /Fitbit[ ]*calorie[ ]*adjustment\s+([0-9,]+)\s+([0-9]+)/) {
                 my $calories = $1;
@@ -121,6 +125,21 @@ sub build_tables_from_files {
                 print "DATE: [$timestamp] $date Calories Burned: $calories\n" if $verbose;
                 my $command = "Insert or replace into [mfp_calories_burned] (Timestamp, Date, Calories) Values ($timestamp, \"$date\", $calories)";
                 dbdo($db, $command, 1)
+            }
+            #  Fitbit calorie adjustment on split lines
+            if ( $line =~ /\s+Fitbit calorie adjustment$/) {
+                #print "DATE: [$timestamp] $line\n" if $verbose;
+                my $next_line = <$infh>;
+                chomp $next_line;
+                #print "DATE: [$timestamp] $next_line\n" if $verbose;
+                if ($next_line =~ /([0-9,]+)\s+([0-9]+)/) {
+                    my $calories = $1;
+                    my $minutes = $2;
+                    $calories =~ s/,//g;
+                    print "DATE: [$timestamp] $date Calories Burned: $calories\n" if $verbose;
+                    my $command = "Insert or replace into [mfp_calories_burned] (Timestamp, Date, Calories) Values ($timestamp, \"$date\", $calories)";
+                    dbdo($db, $command, 1);
+                }
             }
             # Get the Exercise Totals
             #

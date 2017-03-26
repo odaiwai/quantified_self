@@ -38,7 +38,7 @@ if ($agent->success) {
     $agent->submit(input => $submits[0]);
 
 }
-my $start_year = 2016;
+my $start_year = 2017;
 my $end_year = `date +%Y`;
 for my $year ($start_year..$end_year) {
     print "Year: $year\n";
@@ -65,8 +65,11 @@ sub get_printable_report {# Go get the report URL
             from => $startdate,
             to => $enddate
         );
-        #$agent->tick('show exercise notes', undef, 'true');
-        #$agent->tick('show exercise diary', undef, 'true');
+        #$agent->tick('show_exercise_notes', undef, 'false');
+        #$agent->tick('show_exercise_diary', undef, 'false');
+        #$agent->tick('show_food_notes', undef, 'false');
+        #$agent->tick('show_food_diary', undef, 'false');
+        #$agent->tick('Food Diary', undef, 'false');
         $agent->submit();
         print "\tSubmitted changes\n";
         #my @forms = $agent->forms();
@@ -77,9 +80,13 @@ sub get_printable_report {# Go get the report URL
         # Using wkhtmltopdf on OS X produces PDF files with spacing issues.
         # This doesn't appear to happen under Linux.
         # 20170114 added the --quiet option to tidy up the output
-        my $result = `wkhtmltopdf --disable-javascript --disable-local-file-access --quiet $outfile.html $outfile.pdf 2>log.out`;
-        # Add -table: adds extra white space and makes sure that things stay on a line if they should
-        $result = `pdftotext -layout -table $outfile.pdf $outfile.txt`;
+        #my $options ="--disable-javascript --disable-local-file-access --quiet ";
+        #$options .= " --orientation portrait --print-media-type";
+        #my $result = `wkhtmltopdf $options $outfile.html $outfile.pdf 2>log.out`;
+        ## Add -table: adds extra white space and makes sure that things stay on a line if they should
+        #$result = `pdftotext -layout -table $outfile.pdf $outfile.txt`;
+        # Try using Lynx
+        my $result = `lynx -dump -width 512 $outfile.html > $outfile.txt`;
         print "\tSaved file: $outfile.txt\n";
     }
 }
