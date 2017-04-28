@@ -55,6 +55,9 @@ then
 	# This needs to be run after the other one, as all the fitbit_* tables get deleted in that step
 	# while this step only deletes it's own table
 	./parse_fitbit_data.pl
+
+    # Parse the Apple Health Data
+	./parse_apple_health_data.pl
 fi
 
 # Print out the data collected
