@@ -90,11 +90,10 @@ sub build_tables_from_file {
 	my $section_finished = 0;
 	until ($section_finished) {
 		my $line = <$fh>;
-		chomp $line;
 		if ( $line eq "" ) {
 			$section_finished = 1;
-		}
-		else {
+		} else {
+			chomp $line;
 			#$line =~ s/\"//g;
 			my $values = sanitise_line_for_input($line);
 			my @values = split ",", $values;
