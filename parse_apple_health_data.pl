@@ -8,9 +8,9 @@ use Data::Dumper;
 # 20170415 dave o'brien
 #
 
-my $verbose  = 1;
+my $verbose  = 0;
 my $firstrun = 1;
-my $basedir  = "./apple_health";
+my $basedir  = "./apple_health_export";
 my $filename = "fitbit_export_20150131.csv";
 
 # script to parse the fitbit_export file and make a database
@@ -90,7 +90,7 @@ sub build_tables_from_file {
 	my $section_finished = 0;
 	until ($section_finished) {
 		my $line = <$fh>;
-		if ( $line eq "" ) {
+		if ( !$line) {
 			$section_finished = 1;
 		} else {
 			chomp $line;
@@ -100,16 +100,16 @@ sub build_tables_from_file {
 			my $timestamp = timestamp_from_date($values[0]);
 			my $these_fields;
 			my $num_values = $#values + 1; # Need to include the timestamp
-			print "$#fields, $num_values\n";
+			print "$#fields, $num_values\n" if $verbose;
 			foreach my $fieldnum (0..$num_values) {
 				if ($fieldnum > 0) {$these_fields .= ", ";}
 				$these_fields .= "$fields[$fieldnum]";
 			}
 			$these_fields =~ s/,,/,/g;
 			$these_fields =~ s/,$//g;
-			print "These Fields: $these_fields\n";
+			print "These Fields: $these_fields\n" if $verbose;
 			$command = "Insert or Replace into [$tablename] ($these_fields) Values ($timestamp, $values)";
-			my $result = dbdo( $db, $command, 1 );
+			my $result = dbdo( $db, $command, $verbose );
 			if ($result) { $numrecords++; }
 		}
 	}
@@ -265,7 +265,7 @@ sub timestamp_from_date {
 				"Jul"=>"07", "Aug"=>"08", "Sep"=>"09", "Oct"=>"10", "Nov"=>"11", "Dec"=>"12");
 	#my $date1 = split " ", $date;
     my ($day, $month, $year, $hours, $minutes) = split "[- :]", $date;
-    print "$date -> $year.$month.$day.$hours.$minutes\n";
+    print "$date -> $year.$month.$day.$hours.$minutes\n" if $verbose;
     my $mnum = $months{$month};
     my $timestamp = sprintf("%04d", $year).$mnum.sprintf("%02d",$day).sprintf("%02d",$hours).sprintf("%02d",$minutes);
     return $timestamp;

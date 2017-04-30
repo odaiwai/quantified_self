@@ -4,7 +4,7 @@ use warnings;
 use DBI;
 use Data::Dumper;
 
-my $verbose = 1;
+my $verbose = 0;
 my $firstrun = 1;
 my $basedir = ".";
 my $filename;
@@ -108,7 +108,7 @@ sub build_tables_from_file {
             print "\t$command\n" if $verbose;
             print $outfh "$tableheader\n" if ($numrecords == 0);
             print $outfh "$valueline\n";
-            my $result = dbdo($db, $command, 1);
+            my $result = dbdo($db, $command, $verbose);
             if ($result) { $numrecords++;}
         }
     }

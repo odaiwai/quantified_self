@@ -4,7 +4,7 @@ use warnings;
 use DBI;
 use Data::Dumper;
 
-my $verbose  = 1;
+my $verbose  = 0;
 my $firstrun = 1;
 my $basedir  = ".";
 my $filename = "fitbit_export_20150131.csv";
@@ -107,7 +107,7 @@ sub build_tables_from_file {
                     my @values = split ",", $values;
                     my $timestamp = timestamp_from_date($values[0]);
                     $command = "Insert or Replace into [$new_tablename] ($fieldnames) Values ($timestamp, $values)";
-                    my $result = dbdo( $db, $command, 1 );
+                    my $result = dbdo( $db, $command, $verbose );
                     if ($result) { $numrecords++; }
                 }
             }
@@ -240,7 +240,7 @@ sub timestamp_from_date {
     my $date = shift;
     $date =~ s/\"//g;
     my ($day, $month, $year) = split "/", $date;
-    print "$date -> $year.$month.$day\n";
+    print "$date -> $year.$month.$day\n" if $verbose;
     my $timestamp = sprintf("%04d", $year).sprintf("%02d",$month).sprintf("%02d",$day);
     return $timestamp;
 }

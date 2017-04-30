@@ -6,7 +6,7 @@ use Data::Dumper;
 
 # script to parse the myfitnesspal pdf output (converted to txt)
 # 20151229 - dave o'brien
-my $verbose = 1;
+my $verbose = 0;
 my $firstrun = 1;
 # script to parse the fitbit_export file and make a database
 my $db = DBI->connect("dbi:SQLite:dbname=health_data.sqlite","","") or die DBI::errstr;
