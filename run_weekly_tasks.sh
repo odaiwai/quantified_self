@@ -57,7 +57,9 @@ then
 	./parse_fitbit_data.pl
 
     # Parse the Apple Health Data
-	./parse_apple_health_data.pl
+	unzip -f ~/Dropbox/ifttt/Fitbit/export.zip
+    ./xml_rules_apple_health.pl
+    
 fi
 
 # Print out the data collected
@@ -68,14 +70,16 @@ YEAR=`date +"%Y"`
 OS=`uname -s`
 if [[ $OS = "Linux" ]]
 then
-	TIMESTAMP=`date -d '-1 month' +%Y%m%d ` # for Linux
+	TIMESTAMP=`date -d '-2 month' +%Y%m%d ` # for Linux
 else
-	TIMESTAMP=`date -j -v-1m +%Y%m%d` # MacOS
+	TIMESTAMP=`date -j -v-2m +%Y%m%d` # MacOS
 fi
 
 echo "MyFitnessPal Data for this month: ($OS, $TIMESTAMP)"
 #$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories, fitbit_data.calories_burned from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) JOIN fitbit_data using (timestamp) where mfp_daily_summary.timestamp > $TIMESTAMP;"
-$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) where mfp_daily_summary.timestamp > $TIMESTAMP;"
+#$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) where mfp_daily_summary.timestamp > $TIMESTAMP;"
+$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories, 0, apple_activity_summary.activeCalories, basalEnergyBurnedAdj from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) JOIN apple_activity_summary using (timestamp) JOIN apple_BasalEnergyBurnedAdj using (timestamp) where mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"
+#$sqlite health_data.sqlite -csv -header "select timestamp, activeCalories, sum(value) from apple_activity_summary JOIN apple_BasalEnergyBurned using (timestamp) where timestamp > $TIMESTAMP and sourceName not like 'Sync Solver' group by timestamp;"
 
 #echo "Fitbit Calories_burned for this month:"
 #$sqlite fitbit_data.sqlite -csv -header "select date, calories_burned from fitbit_data where date like ' $MONTH % $YEAR';"

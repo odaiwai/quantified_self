@@ -141,7 +141,48 @@ sub build_tables_from_files {
                     dbdo($db, $command, 1);
                 }
             }
-            # Get the Exercise Totals
+            #  MFP iOS calorie adjustment on split lines - Can have multiple entries
+            if ( $line =~ /\s+MFP iOS calorie adjustment$/) {
+                #print "DATE: [$timestamp] $line\n" if $verbose;
+                my $next_line = <$infh>;
+                chomp $next_line;
+                #print "DATE: [$timestamp] $next_line\n" if $verbose;
+                if ($next_line =~ /([0-9,]+)\s+([0-9]+)/) {
+                    my $calories = $1;
+                    my $minutes = $2;
+                    $calories =~ s/,//g;
+                    print "DATE: [$timestamp] $date Calories Burned: $calories\n" if $verbose;
+                    #my $command = "Insert or replace into [mfp_calories_burned] (Timestamp, Date, Calories) Values ($timestamp, \"$date\", $calories)";
+                    #dbdo($db, $command, 1);
+                }
+            }
+            #  Exercise calorie adjustment on split lines - Can have multiple entries
+            if ( $line =~ /\s+Walking.*$/) {
+                #print "DATE: [$timestamp] $line\n" if $verbose;
+                my $next_line = <$infh>;
+                chomp $next_line;
+                #print "DATE: [$timestamp] $next_line\n" if $verbose;
+                if ($next_line =~ /([0-9,]+)\s+([0-9]+)/) {
+                    my $calories = $1;
+                    my $minutes = $2;
+                    $calories =~ s/,//g;
+                    print "DATE: [$timestamp] $date Calories Burned: $calories\n" if $verbose;
+                    #my $command = "Insert or replace into [mfp_calories_burned] (Timestamp, Date, Calories) Values ($timestamp, \"$date\", $calories)";
+                    #dbdo($db, $command, 1);
+                }
+            }
+            # Get the Exercise Totals - Cals, Minutes, sets, Reps, Weight
+            if ( $line =~ /\s+TOTALS:\s+([0-9,]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)$/) {
+                my $calories = $1;
+                my $minutes = $2;
+                my $sets = $3;
+                my $reps = $4;
+                my $weight = $5;
+                $calories =~ s/,//g;
+                print "DATE: [$timestamp] $date Calories Burned: $calories\n" if $verbose;
+                my $command = "Insert or replace into [mfp_calories_burned] (Timestamp, Date, Calories) Values ($timestamp, \"$date\", $calories)";
+                dbdo($db, $command, 1)
+            }
             #
 
             #sleep 1;
