@@ -3,12 +3,20 @@
 # Script to run the various weekly tasks
 # Dave O'Brien
 
+declare -i starttime=`date +%s`
+
+function print_elapsed_time {
+    declare -i now=`date +%s`
+    declare -i elapsed=$(( now - starttime ))
+    echo "Operation took $elapsed seconds"
+}
+
 # Use this one, not the one that got installed with Anaconda
 sqlite='/usr/bin/sqlite3'
 DOWNLOAD=0
 VERBOSE=0
 PARSE=1
-# PArse the Command line options
+# Parse the Command line options
 for arg in "$@"
 do
 	echo "Argument: $arg"
@@ -34,32 +42,36 @@ do
 			;;
 	esac
 done
-
 if [[ $DOWNLOAD -gt 0 ]]
 then
 	# Download this years myfitnesspal report
 	./getMyFitnessPalData.pl
+    print_elapsed_time
 fi
+
 
 if [[ $PARSE -gt 0 ]]
 then
 	# Parse this years myfitnesspal report into a database
 	./parse_myfitnesspaldata.pl
+    print_elapsed_time
 
 	# The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be
 	# done automatically at the moment. At least, not by me.
 	./parse_fitbit_export.pl
+    print_elapsed_time
 
 	# Fitbit Data is automatically downloaded to the Dropbox folder
 	# This is just the daily report in a single line, and only includes a certain subset of data
 	# This needs to be run after the other one, as all the fitbit_* tables get deleted in that step
 	# while this step only deletes it's own table
 	./parse_fitbit_data.pl
+    print elapsed_time
 
     # Parse the Apple Health Data
-	unzip -f ~/Dropbox/ifttt/Fitbit/export.zip
+	unzip -o ~/Dropbox/ifttt/Fitbit/export.zip
     ./xml_rules_apple_health.pl
-    
+    print_elapsed_time
 fi
 
 # Print out the data collected
@@ -70,9 +82,9 @@ YEAR=`date +"%Y"`
 OS=`uname -s`
 if [[ $OS = "Linux" ]]
 then
-	TIMESTAMP=`date -d '-2 month' +%Y%m%d ` # for Linux
+	TIMESTAMP=`date -d '-1 month' +%Y%m%d ` # for Linux
 else
-	TIMESTAMP=`date -j -v-2m +%Y%m%d` # MacOS
+	TIMESTAMP=`date -j -v-1m +%Y%m%d` # MacOS
 fi
 
 echo "MyFitnessPal Data for this month: ($OS, $TIMESTAMP)"
