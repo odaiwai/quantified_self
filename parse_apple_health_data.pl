@@ -27,7 +27,7 @@ $db->disconnect;
 ## subroutines
 sub make_db {
     print "making the database: $db\n" if $verbose;
-    drop_all_tables($db, "apple_");
+    drop_all_tables($db, "apple_qs_");
     my @files = ("Health Data.csv", "Sleep Analysis.csv");
     foreach my $file (@files) {
         chomp $file;
@@ -70,8 +70,9 @@ sub build_tables_from_file {
     # line 2 to end: table data
     
     # The table name comes from the file name, lowercased and underscored.
-    my $tablename = "apple_" . lc($filename);
+    my $tablename = "apple_qs_" . lc($filename);
     $tablename =~ s/\s+/_/g;
+    $tablename =~ s/\.csv//g;
 	
     # read in the first line and parse it for the type def
 	my $headerline = <$fh>;
@@ -268,6 +269,6 @@ sub timestamp_from_date {
     my ($day, $month, $year, $hours, $minutes) = split "[- :]", $date;
     print "$date -> $year.$month.$day.$hours.$minutes\n" if $verbose;
     my $mnum = $months{$month};
-    my $timestamp = sprintf("%04d", $year).$mnum.sprintf("%02d",$day).sprintf("%02d",$hours).sprintf("%02d",$minutes);
+    my $timestamp = sprintf("%04d", $year).$mnum.sprintf("%02d",$day);#.sprintf("%02d",$hours).sprintf("%02d",$minutes);
     return $timestamp;
 }

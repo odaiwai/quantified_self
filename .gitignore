@@ -51,3 +51,5 @@ mfp_report*.txt
 myFitnessPal_data/mfp_report*.html
 fitbit_data.txt
 
+
+apple_health_export/

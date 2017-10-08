@@ -13,7 +13,7 @@ my $firstrun = 1;
 my $db = DBI->connect("dbi:SQLite:dbname=health_data.sqlite","","") or die DBI::errstr;
 
 if ($firstrun) {
-	my $result = drop_all_tables($db, "apple");
+	my $result = drop_all_tables($db, "apple_xml_");
 	$result = make_db($db);
 }
 
@@ -71,7 +71,7 @@ foreach my $metaDataType (%metadata_keys) {
 }
 
 # Calculate the basalEnergyBurned by day, adjust to the correct numbers
-my $command = "create table apple_BasalEnergyBurnedAdj as select timestamp, sum(value) as basalEnergyBurned, sum(duration), sum(value)/(sum(duration)/86400) as basalEnergyBurnedAdj from apple_BasalEnergyBurned where sourcename not like '%Sync Solver%'group by timestamp";
+my $command = "create table apple_xml_BasalEnergyBurnedAdj as select timestamp, sum(value) as basalEnergyBurned, sum(duration), sum(value)/(sum(duration)/86400) as basalEnergyBurnedAdj from apple_xml_BasalEnergyBurned where sourcename not like '%Sync Solver%'group by timestamp";
 my $result = dbdo($db, $command, $verbose);
 
 $db->disconnect;
@@ -270,8 +270,8 @@ sub make_db {
 	Make the Database Structure
     print "making the database: $db\n" if $verbose;
     my %tables = (
-        "apple_activity_summary"=>"timestamp Integer, date TEXT PRIMARY KEY, activeCalories REAL, activeCaloriesGoal REAL, exerciseTime REAL, exerciseTimeGoal REAL, standHours REAL, standHoursGoal REAL",
-		"apple_health_records"=>"date text PRIMARY KEY, DietaryVitaminC Integer, AppleExerciseTime Integer, BloodPressureSystolic Integer, SleepAnalysis Integer, DietarySodium Integer, DistanceWalkingRunning Integer, DietarySugar Integer, AppleStandHour Integer, StepCount Integer, DietaryCalcium Integer, MindfulSession Integer, BloodAlcoholContent Integer, BodyMass Integer, DietaryCaffeine Integer, BodyMassIndex Integer, FlightsClimbed Integer, BasalEnergyBurned Integer, DietaryFatMonounsaturated Integer, DietaryFiber Integer, Height Integer, HeartRate Integer, WorkoutPause Integer, WorkoutResume Integer, ActiveEnergyBurned Integer, WorkoutMarker Integer, DietaryCholesterol Integer, BodyFatPercentage Integer, DistanceCycling Integer, DietaryWater Integer, DietaryCarbohydrates Integer, DietaryEnergyConsumed Integer, DietaryFatSaturated Integer, DietaryPotassium Integer, BloodPressureDiastolic Integer, DietaryIron Integer, DietaryFatTotal Integer, DietaryFatPolyunsaturated Integer, DietaryProtein Integer");
+        "apple_xml_activity_summary"=>"timestamp Integer, date TEXT PRIMARY KEY, activeCalories REAL, activeCaloriesGoal REAL, exerciseTime REAL, exerciseTimeGoal REAL, standHours REAL, standHoursGoal REAL",
+		"apple_xnl_health_records"=>"date text PRIMARY KEY, DietaryVitaminC Integer, AppleExerciseTime Integer, BloodPressureSystolic Integer, SleepAnalysis Integer, DietarySodium Integer, DistanceWalkingRunning Integer, DietarySugar Integer, AppleStandHour Integer, StepCount Integer, DietaryCalcium Integer, MindfulSession Integer, BloodAlcoholContent Integer, BodyMass Integer, DietaryCaffeine Integer, BodyMassIndex Integer, FlightsClimbed Integer, BasalEnergyBurned Integer, DietaryFatMonounsaturated Integer, DietaryFiber Integer, Height Integer, HeartRate Integer, WorkoutPause Integer, WorkoutResume Integer, ActiveEnergyBurned Integer, WorkoutMarker Integer, DietaryCholesterol Integer, BodyFatPercentage Integer, DistanceCycling Integer, DietaryWater Integer, DietaryCarbohydrates Integer, DietaryEnergyConsumed Integer, DietaryFatSaturated Integer, DietaryPotassium Integer, BloodPressureDiastolic Integer, DietaryIron Integer, DietaryFatTotal Integer, DietaryFatPolyunsaturated Integer, DietaryProtein Integer");
     foreach my $tablename (%tables) {
         if (exists $tables{$tablename} ) {
             my $command = "Create Table if not exists [$tablename] ($tables{$tablename})";
@@ -312,11 +312,12 @@ sub dbdo {
 }
 sub datatype_from_healthkit {
 	my $datatype = shift;
-	$datatype =~ s/HKQuantityTypeIdentifier/apple_/;
-	$datatype =~ s/HKCategoryTypeIdentifier/apple_/;
-	$datatype =~ s/HKCorrelationTypeIdentifier/apple_/;
-	$datatype =~ s/HKCategoryValue/apple_/;
-	$datatype =~ s/HKWorkoutEventType/apple_Workout/;
+	my $prefix = "apple_xml_";
+	$datatype =~ s/HKQuantityTypeIdentifier/$prefix/;
+	$datatype =~ s/HKCategoryTypeIdentifier/$prefix/;
+	$datatype =~ s/HKCorrelationTypeIdentifier/$prefix/;
+	$datatype =~ s/HKCategoryValue/$prefix/;
+	$datatype =~ s/HKWorkoutEventType/$prefix\_Workout/;
 	return $datatype;
 }
 sub querydb {
