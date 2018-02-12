@@ -69,8 +69,8 @@ then
     print_elapsed_time
     
     # Parse the Apple Health Data from QS
-    #cp ~/Dropbox/apple_health/*.csv ./apple_health_export/
-    cp ~/Library/Mobile\ Documents/com~apple~CloudDocs/*.csv ./apple_health_export/
+    cp ~/Dropbox/apple_health/*.csv ./apple_health_export/
+    #cp ~/Library/Mobile\ Documents/com~apple~CloudDocs/*.csv ./apple_health_export/
     ./parse_apple_health_data.pl
     print_elapsed_time
     
