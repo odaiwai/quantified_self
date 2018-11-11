@@ -9,10 +9,10 @@ use Data::Dumper;
 # 20170415 dave o'brien
 #
 
-my $verbose  = 0;
+my $verbose  = 1;
 my $firstrun = 1;
 my $basedir  = "./apple_health_export";
-my $filename = "fitbit_export_20150131.csv";
+#my $filename = "fitbit_export_20150131.csv";
 
 # script to parse the fitbit_export file and make a database
 my $db = DBI->connect( "dbi:SQLite:dbname=health_data.sqlite", "", "" )
@@ -157,7 +157,7 @@ sub sanitise_line_for_input {
            #print "\t\t$line\n" if $verbose;
     $line =~ s/\"//g;
 
-    #print "\t\t$line\n" if $verbose;
+    print "\t\t$line\n" if $verbose;
     my @fields = split /,/, $line;
     foreach my $field (@fields) {
         my $type = type_from_data($field);
