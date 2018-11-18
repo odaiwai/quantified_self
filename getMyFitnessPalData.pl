@@ -16,6 +16,7 @@ my $realm = "MyFitnessPal";
 my $loginurl = "$siteurl/account/login";
 my $reporturl = "$siteurl/reports/printable_diary/$username";
 #\?from=$startdate\&to=$enddate";
+my $verbose = 1;
 
 my $agent =  WWW::Mechanize->new( autocheck => 1);
 #$agent->get($loginurl);
@@ -38,7 +39,7 @@ if ($agent->success) {
     $agent->submit(input => $submits[0]);
 
 }
-my $start_year = 2017;
+my $start_year = 2018;
 my $end_year = `date +%Y`;
 for my $year ($start_year..$end_year) {
     print "Year: $year\n";
@@ -59,8 +60,8 @@ sub get_printable_report {# Go get the report URL
     if ($agent->success) {
         #my @forms = $agent->forms();
         #printall(@forms) if $verbose;
-        #my @submits = $agent->find_all_submits();
-        #printall (@submits) if $verbose;
+        my @submits = $agent->find_all_submits();
+        printall (@submits) if $verbose;
         $agent->set_fields (
             from => $startdate,
             to => $enddate
@@ -70,7 +71,7 @@ sub get_printable_report {# Go get the report URL
         #$agent->tick('show_food_notes', undef, 'false');
         #$agent->tick('show_food_diary', undef, 'false');
         #$agent->tick('Food Diary', undef, 'false');
-        $agent->submit();
+        $agent->submit() or die "Can't Open $!";
         print "\tSubmitted changes\n";
         #my @forms = $agent->forms();
         #printall(@forms);
