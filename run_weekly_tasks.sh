@@ -58,14 +58,14 @@ then
 
 	# The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be
 	# done automatically at the moment. At least, not by me.
-	./parse_fitbit_export.pl
+	#./parse_fitbit_export.pl
     print_elapsed_time
 
 	# Fitbit Data is automatically downloaded to the Dropbox folder
 	# This is just the daily report in a single line, and only includes a certain subset of data
 	# This needs to be run after the other one, as all the fitbit_* tables get deleted in that step
 	# while this step only deletes it's own table
-	./parse_fitbit_data.pl
+	#./parse_fitbit_data.pl
     print_elapsed_time
     
     # Parse the Apple Health Data from QS
@@ -95,11 +95,17 @@ else
 	TIMESTAMP=`date -j -v-1m +%Y%m%d` # MacOS
 fi
 
+echo "Last Dates:"
+echo "mfp_daily_summary         : `$sqlite health_data.sqlite "select timestamp from mfp_daily_summary order by timestamp DESC limit 1;"`"
+echo "apple_qs_health_data      : `$sqlite health_data.sqlite "select timestamp from apple_qs_health_data order by timestamp DESC limit 1;"`"
+echo "apple_qs_sleep_analysis   : `$sqlite health_data.sqlite "select timestamp from apple_qs_sleep_analysis order by timestamp DESC limit 1;"`"
+echo ""
+
 echo "MyFitnessPal Data for this month: ($OS, $TIMESTAMP)"
 #$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories, fitbit_data.calories_burned from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) JOIN fitbit_data using (timestamp) where mfp_daily_summary.timestamp > $TIMESTAMP;"
 #$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) where mfp_daily_summary.timestamp > $TIMESTAMP;"
 #$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories, 0, apple_xml_activity_summary.activeCalories, basalEnergyBurnedAdj from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) JOIN apple_xml_activity_summary using (timestamp) JOIN apple_xml_BasalEnergyBurnedAdj using (timestamp) where mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"
-
+$sqlite health_data.sqlite "vacuum"
 $sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, mfp_daily_summary.Protein, mfp_daily_summary.Cholesterol, mfp_daily_summary.Sodium, Sugars, mfp_daily_summary.Fiber, 0, 0, apple_qs_health_data.Active_Calories, 0 from [mfp_daily_summary] JOIN apple_qs_health_data using (timestamp) where mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"
 
 #$sqlite health_data.sqlite -csv -header "select timestamp, activeCalories, sum(value) from apple_activity_summary JOIN apple_BasalEnergyBurned using (timestamp) where timestamp > $TIMESTAMP and sourceName not like 'Sync Solver' group by timestamp;"
