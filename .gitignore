@@ -5,7 +5,7 @@
 
 *.pdf
 *.sqlite
-*.zip
+#*.zip
 .DS_Store
 *.numbers
 *.sxc
