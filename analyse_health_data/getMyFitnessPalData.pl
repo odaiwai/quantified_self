@@ -8,9 +8,9 @@ use WWW::Mechanize;
 # will need to login, or have cookies
 # 20160317: fixed login and retrieval procedures - dob
 # 20170114: got the password out of this file!
-my $credentials = `cat credentials.txt`;
+my $credentials = `cat credentials.txt | grep mfp`;
 chomp $credentials;
-my ($username, $password) = split(":", $credentials);
+my ($service, $username, $password) = split(":", $credentials);
 my $siteurl = "https://www.myfitnesspal.com";
 my $realm = "MyFitnessPal";
 my $loginurl = "$siteurl/account/login";
@@ -45,7 +45,7 @@ for my $year ($start_year..$end_year) {
     print "Year: $year\n";
     my $startdate = "$year-01-01";
     my $enddate = "$year-12-31";
-    my $outfile = "myFitnessPal_data/mfp_report_$year";
+    my $outfile = "../myFitnessPal_data/mfp_report_$year";
     get_printable_report($agent, $reporturl, $startdate, $enddate, $outfile);
 }
 
@@ -61,7 +61,7 @@ sub get_printable_report {# Go get the report URL
         #my @forms = $agent->forms();
         #printall(@forms) if $verbose;
         my @submits = $agent->find_all_submits();
-        printall (@submits) if $verbose;
+        #printall (@submits) if $verbose;
         $agent->set_fields (
             from => $startdate,
             to => $enddate

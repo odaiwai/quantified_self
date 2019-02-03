@@ -7,7 +7,7 @@ use Data::Dumper;
 my $verbose  = 0;
 my $firstrun = 1;
 my $basedir  = ".";
-my $filename = "fitbit_export_20150131.csv";
+#my $filename = "fitbit_export_20150131.csv";
 
 # script to parse the fitbit_export file and make a database
 my $db = DBI->connect( "dbi:SQLite:dbname=health_data.sqlite", "", "" )
@@ -23,7 +23,7 @@ $db->disconnect;
 sub make_db {
     print "making the database: $db\n" if $verbose;
     drop_all_tables($db, "fitbit_");
-    my @files = `ls fitbit_data/fitbit_export*.csv`;
+    my @files = `ls ../fitbit_data/fitbit_export*.csv`;
     foreach my $file (@files) {
         chomp $file;
         build_tables_from_file( $db, "$basedir/$file" );

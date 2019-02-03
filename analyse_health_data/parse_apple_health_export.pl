@@ -13,7 +13,7 @@ use XML::Rules;
 
 my $verbose  = 1;
 my $firstrun = 1;
-my $basedir  = "./apple_health_export";
+my $basedir  = "../apple_health_export";
 my $filename = "export.xml";
 
 # script to parse the fitbit_export file and make a database
@@ -92,12 +92,12 @@ sub build_tables_from_file {
 		});
 
 
-    print Dumper ($parser->parsefile('ko00010.xml'));  
-    
+    print Dumper ($parser->parsefile('ko00010.xml'));
+
     # The table name comes from the file name, lowercased and underscored.
     my $tablename = "HK_" . lc($filename);
     $tablename =~ s/\s+/_/g;
-	
+
     # read in the first line and parse it for the type def
 	my $headerline = <$fh>;
 	chomp $headerline;
@@ -148,7 +148,7 @@ sub hdl_start{
 	my ($p, $elt, %atts) = @_;
 	return unless $elt eq 'Record';  # Only bother with Messages
 	$atts{'_str'} = '';
-	$message = \%atts; 
+	$message = \%atts;
 }
 
 sub hdl_end{

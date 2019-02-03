@@ -67,17 +67,17 @@ then
 	# while this step only deletes it's own table
 	#./parse_fitbit_data.pl
     print_elapsed_time
-    
+
     # Parse the Apple Health Data from QS
-    cp -p ~/Dropbox/apple_health/*.csv ./apple_health_export/
-    #cp ~/Library/Mobile\ Documents/com~apple~CloudDocs/*.csv ./apple_health_export/
+    cp -p ~/Dropbox/apple_health/*.csv ../apple_health_export/
+    #cp ~/Library/Mobile\ Documents/com~apple~CloudDocs/*.csv ../apple_health_export/
     ./parse_apple_health_data.pl
     print_elapsed_time
-    
+
     # Parse the Apple Health Data from XML
     # This isn't exporting properly so use the QS data above
 	# Also, this takes a lot of time (like 5+ hours!)
-	# unzip -o ~/Dropbox/apple_health/export.zip
+	# unzip -o ~/Dropbox/apple_health/export.zip -d ../apple_health_export
     #./xml_rules_apple_health.pl
     print_elapsed_time
 fi

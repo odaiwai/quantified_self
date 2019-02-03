@@ -11,8 +11,7 @@ use Data::Dumper;
 
 my $verbose  = 1;
 my $firstrun = 1;
-my $basedir  = "./apple_health_export";
-#my $filename = "fitbit_export_20150131.csv";
+my $basedir  = "../apple_health_export";
 
 # script to parse the fitbit_export file and make a database
 my $db = DBI->connect( "dbi:SQLite:dbname=health_data.sqlite", "", "" )
@@ -68,12 +67,12 @@ sub build_tables_from_file {
     # The data is of the form:
     # line 1: table headers
     # line 2 to end: table data
-    
+
     # The table name comes from the file name, lowercased and underscored.
     my $tablename = "apple_qs_" . lc($filename);
     $tablename =~ s/\s+/_/g;
     $tablename =~ s/\.csv//g;
-	
+
     # read in the first line and parse it for the type def
 	my $headerline = <$fh>;
 	chomp $headerline;

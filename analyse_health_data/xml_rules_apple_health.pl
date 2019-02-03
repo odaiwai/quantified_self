@@ -17,7 +17,7 @@ if ($firstrun) {
 	$result = make_db($db);
 }
 
-my $xml = "apple_health_export/export.xml";
+my $xml = "../apple_health_export/export.xml";
 my %dataTypes;
 my %sourceNames;
 my %units;
@@ -185,10 +185,10 @@ sub define_xml_rules {
 			dbdo($db, $command, $verbose);
 			$command = "insert or replace into [$tablename] ($fields) Values ($values)";
 			dbdo($db, $command, $verbose);
-			return; 
+			return;
 		},
 		Correlation => sub {
-			# Required: type, sourceName, startDate, endDate 
+			# Required: type, sourceName, startDate, endDate
 			# Implied: sourceVersion, device, creationDate
 			$correlation_types{$_[1]->{type}}++;
 			$_[1]->{sourceName} = clean_wide_char($_[1]->{sourceName});
