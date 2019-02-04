@@ -34,3 +34,4 @@ stretching.txt
 calibrate_modal_split.rscr
 *.out
 
+*.sqlite-journal

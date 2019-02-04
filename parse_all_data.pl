@@ -44,7 +44,7 @@ $db->disconnect;
 ## subs
 sub build_mfp_tables_from_files {
     my $db = shift;
-    my (@files) = `ls myFitnessPal_data/mfp_report_????.txt`;
+    my @files = (`ls ../health_data/myFitnessPal_data/mfp_report_????.txt`);
     foreach my $file (@files) {
         chomp $file;
         print "Processing file: $file\n";

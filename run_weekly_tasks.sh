@@ -47,6 +47,13 @@ then
 	# Download this years myfitnesspal report
 	./getMyFitnessPalData.pl
     print_elapsed_time
+    
+    # Get the updated Apple HEalth Export
+    cp -p ~/Dropbox/apple_health/*.csv ../health_data/apple_health_export/
+    #cp ~/Library/Mobile\ Documents/com~apple~CloudDocs/*.csv ../health_data/apple_health_export/
+    
+    # get the Fitbit Data - not doing this anymore
+    # ./get_fitbit_data.pl
 fi
 
 
@@ -69,15 +76,13 @@ then
     print_elapsed_time
 
     # Parse the Apple Health Data from QS
-    cp -p ~/Dropbox/apple_health/*.csv ../apple_health_export/
-    #cp ~/Library/Mobile\ Documents/com~apple~CloudDocs/*.csv ../apple_health_export/
     ./parse_apple_health_data.pl
     print_elapsed_time
 
     # Parse the Apple Health Data from XML
     # This isn't exporting properly so use the QS data above
 	# Also, this takes a lot of time (like 5+ hours!)
-	# unzip -o ~/Dropbox/apple_health/export.zip -d ../apple_health_export
+	# unzip -o ~/Dropbox/apple_health/export.zip -d ../health_data/apple_health_export
     #./xml_rules_apple_health.pl
     print_elapsed_time
 fi
@@ -95,6 +100,7 @@ else
 	TIMESTAMP=`date -j -v-1m +%Y%m%d` # MacOS
 fi
 
+# Show the last dates for each of the databases just to make sure the retrieval process worked.
 echo "Last Dates:"
 echo "mfp_daily_summary         : `$sqlite health_data.sqlite "select timestamp from mfp_daily_summary order by timestamp DESC limit 1;"`"
 echo "apple_qs_health_data      : `$sqlite health_data.sqlite "select timestamp from apple_qs_health_data order by timestamp DESC limit 1;"`"

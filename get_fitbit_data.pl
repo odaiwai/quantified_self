@@ -10,12 +10,14 @@ say "Starting...";
 ## Lessons learned: I had a username instead of an email address, and the
 # password was an old one.  Special Snowflake login problems solved
 # by supplying the right credentials!
-my $credentials = `cat credentials.txt | grep fitbit`;
+my $credentials = `cat ../health_data/credentials.txt | grep fitbit`;
 chomp $credentials;
 my ($service,$username, $password) = split(":", $credentials);
-
-my $outfile = "../fitbit_data/fitbit_export.html";
+my $datadir="..health_data/fitbit_data/";
+my $outfile = "$datadir/fitbit_export.html";
 #https://www.fitbit.com/export/user/data
+
+# 
 my $siteurl = "https://www.fitbit.com";
 my $realm = "fitbit";
 my $loginurl = "$siteurl/login";

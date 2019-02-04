@@ -23,7 +23,7 @@ $db->disconnect;
 sub make_db {
     print "making the database: $db\n" if $verbose;
     drop_all_tables($db, "fitbit_");
-    my @files = `ls ../fitbit_data/fitbit_export*.csv`;
+    my @files = (`ls ../health_data/fitbit_data/fitbit_export*.csv`);
     foreach my $file (@files) {
         chomp $file;
         build_tables_from_file( $db, "$basedir/$file" );

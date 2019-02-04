@@ -8,7 +8,7 @@ use WWW::Mechanize;
 # will need to login, or have cookies
 # 20160317: fixed login and retrieval procedures - dob
 # 20170114: got the password out of this file!
-my $credentials = `cat credentials.txt | grep mfp`;
+my $credentials = `cat ../health_data/credentials.txt | grep mfp`;
 chomp $credentials;
 my ($service, $username, $password) = split(":", $credentials);
 my $siteurl = "https://www.myfitnesspal.com";
@@ -45,7 +45,7 @@ for my $year ($start_year..$end_year) {
     print "Year: $year\n";
     my $startdate = "$year-01-01";
     my $enddate = "$year-12-31";
-    my $outfile = "../myFitnessPal_data/mfp_report_$year";
+    my $outfile = "../health_data/myFitnessPal_data/mfp_report_$year";
     get_printable_report($agent, $reporturl, $startdate, $enddate, $outfile);
 }
 

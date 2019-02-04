@@ -3,15 +3,18 @@ use strict;
 use warnings;
 use DBI;
 use Data::Dumper;
+use IO::File;
+use XML::Parser;
+use XML::Rules;
 
-# Script to parse the Apple Health data in the Health.CSV file
-# This is the data from QS Access, and is a daily summary of the data.
-# 20170415 dave o'brien
+# Script to parse the Apple Health Export Data XML file
+# 20170511 dave o'brien
 #
 
 my $verbose  = 1;
 my $firstrun = 1;
-my $basedir  = "../apple_health_export";
+my $basedir  = "../health_data/apple_health_export";
+my $filename = "export.xml";
 
 # script to parse the fitbit_export file and make a database
 my $db = DBI->connect( "dbi:SQLite:dbname=health_data.sqlite", "", "" )
@@ -26,8 +29,8 @@ $db->disconnect;
 ## subroutines
 sub make_db {
     print "making the database: $db\n" if $verbose;
-    drop_all_tables($db, "apple_qs_");
-    my @files = ("Health Data.csv", "Sleep Analysis.csv");
+    drop_all_tables($db, "HK_"); # Health kit
+    my @files = ("export.xml");
     foreach my $file (@files) {
         chomp $file;
         build_tables_from_file( $db, "$basedir", "$file" );
@@ -35,43 +38,65 @@ sub make_db {
 
 }
 
-sub drop_all_tables {
-    # get a list of table names from $db and drop them all
-    my $db = shift;
-    my $prefix = shift;
-    print "Clearing the database because \$firstrun == $firstrun\n";
-    my @tables;
-    my $query = querydb( $db,
-        "select name from sqlite_master where type='table' and name like '$prefix%' order by name", 1 );
-
-    # we need to extract the list of tables first - sqlite doesn't like
-    # multiple queries at the same time.
-    while ( my @row = $query->fetchrow_array ) {
-        push @tables, $row[0];
-    }
-    dbdo( $db, "BEGIN", 1 );
-    foreach my $table (@tables) {
-        dbdo( $db, "DROP TABLE if Exists [$table]", 1 );
-    }
-    dbdo( $db, "COMMIT", 1 );
-    return 1;
-}
-
 sub build_tables_from_file {
     my $db       = shift;
     my $basedir = shift;
     my $filename = shift;
     print "Processing $basedir/$filename...\n";
-    open( my $fh, "<", "$basedir/$filename" ) or die "Can't open $basedir/$filename\n";
+	my $parser = new XML::Parser ( Handlers => {   # Creates our parser object
+			Start   => \&hdl_start,
+			End     => \&hdl_end,
+			Char    => \&hdl_char,
+			Default => \&hdl_def,
+			});
+	$parser->parsefile($filename);
+	#open( my $fh, "<", "$basedir/$filename" ) or die "Can't open $basedir/$filename\n";
 
     # The data is of the form:
-    # line 1: table headers
-    # line 2 to end: table data
+    # line 1: <?xml...
+    # line 2: <!DOCTYPE HealthData [...
+    # Line n: ]>
+    # Line n+1: <HealthData locale="en_HK">
+	#	 <ExportDate value="2017-04-20 14:55:46 +0800"/>
+	# <Me HKCharacteristicTypeIdentifierDateOfBirth="1967-11-24" HKCharacteristicTypeIdentifierBiologicalSex="HKBiologicalSexMale" HKCharacteristicTypeIdentifierBloodType="HKBloodTypeNotSet" HKCharacteristicTypeIdentifierFitzpatrickSkinType="HKFitzpatrickSkinTypeNotSet"/>
+	# Single Entry Record: <Record type="HKQuantityTypeIdentifierDietaryWater" sourceName="Sync Solver" sourceVersion="24" unit="mL" creationDate="2015-10-09 14:20:38 +0800" startDate="2013-11-21 00:00:00 +0800" endDate="2013-11-21 23:59:59 +0800" value="1500"/>
+	# Multiple Entry Record:  <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Clock" sourceVersion="50" device="&lt;&lt;HKDevice: 0x17429a090&gt;, name:iPhone, manufacturer:Apple, model:iPhone, hardware:iPhone7,1, software:10.2&gt;" creationDate="2017-01-13 08:00:28 +0800" startDate="2017-01-13 01:01:00 +0800" endDate="2017-01-13 08:00:28 +0800" value="HKCategoryValueSleepAnalysisInBed">
+	#  <MetadataEntry key="_HKPrivateSleepAlarmUserWakeTime" value="2017-01-14 00:00:00 +0000"/>
+	#  <MetadataEntry key="_HKPrivateSleepAlarmUserSetBedtime" value="2017-01-12 16:00:00 +0000"/>
+	#  <MetadataEntry key="HKTimeZone" value="Asia/Hong_Kong"/>
+	# </Record>
+    # Workout: <Workout workoutActivityType="HKWorkoutActivityTypeWalking" duration="1.12163333495458" durationUnit="min" totalDistance="0" totalDistanceUnit="km" totalEnergyBurned="6" totalEnergyBurnedUnit="kcal" sourceName="Human" sourceVersion="4709" creationDate="2016-11-26 12:49:43 +0800" startDate="2016-11-26 09:58:33 +0800" endDate="2016-11-26 09:59:40 +0800">
+	#  <MetadataEntry key="id" value="ea32e9d9-cd47-41bb-8e38-9c21244d65a6"/>
+	#  <MetadataEntry key="mode" value="walking"/>
+	# </Workout>
+	# Last Line: </HealthData>
+	my $parser = XML::Rules->new(
+    	stripspaces => 7,
+		rules => {
+			substrate => sub { 'substrate' => $_[1]->{id}},
+			product => sub { '@products' => $_[1]->{id}},
+			reaction => sub {
+				my %reactions;
+				foreach (split / /, $_[1]->{name}) {
+					$reactions{$_} = { substrate => $_[1]->{substrate}, products => $_[1]->{products}};
+				}
+				return '%reactions' => \%reactions;
+			},
+			graphics => '',
+			entry => sub {
+				my @reactions = split ' ', (delete $_[1]->{reaction});
+				$_[1]->{reactions} = \@reactions if @reactions;
+				return '%entries' => {$_[1]->{id} => $_[1]}
+			},
+			pathway => 'pass'
+		});
+
+
+    print Dumper ($parser->parsefile('ko00010.xml'));
 
     # The table name comes from the file name, lowercased and underscored.
-    my $tablename = "apple_qs_" . lc($filename);
+    my $tablename = "HK_" . lc($filename);
     $tablename =~ s/\s+/_/g;
-    $tablename =~ s/\.csv//g;
 
     # read in the first line and parse it for the type def
 	my $headerline = <$fh>;
@@ -118,6 +143,63 @@ sub build_tables_from_file {
     close $fh;
 }
 
+# The Handlers
+sub hdl_start{
+	my ($p, $elt, %atts) = @_;
+	return unless $elt eq 'Record';  # Only bother with Messages
+	$atts{'_str'} = '';
+	$message = \%atts;
+}
+
+sub hdl_end{
+	my ($p, $elt) = @_;
+	format_message($message) if $elt eq 'message' && $message && $message->{'_str'} =~ /\S/;
+}
+
+sub hdl_char {
+	my ($p, $str) = @_;
+	$message->{'_str'} .= $str;
+}
+
+sub hdl_def { }  # We just throw everything else
+
+sub format_message { # Helper sub to nicely format what we got from the XML
+	my $atts = shift;
+	$atts->{'_str'} =~ s/\n//g;
+
+	my ($y,$m,$d,$h,$n,$s) = $atts->{'time'} =~ m/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/;
+
+	# Handles the /me
+	$atts->{'_str'} = $atts->{'_str'} =~ s/^\/me// ?
+	"$atts->{'author'} $atts->{'_str'}"   :
+	"<$atts->{'author'}>: $atts->{'_str'}";
+	$atts->{'_str'} = "$h:$n " . $atts->{'_str'};
+	print "$atts->{'_str'}\n";
+	undef $message;
+}
+
+sub drop_all_tables {
+    # get a list of table names from $db and drop them all
+    my $db = shift;
+    my $prefix = shift;
+    print "Clearing the database because \$firstrun == $firstrun\n";
+    my @tables;
+    my $query = querydb( $db,
+        "select name from sqlite_master where type='table' and name like '$prefix%' order by name", 1 );
+
+    # we need to extract the list of tables first - sqlite doesn't like
+    # multiple queries at the same time.
+    while ( my @row = $query->fetchrow_array ) {
+        push @tables, $row[0];
+    }
+    dbdo( $db, "BEGIN", 1 );
+    foreach my $table (@tables) {
+        dbdo( $db, "DROP TABLE if Exists [$table]", 1 );
+    }
+    dbdo( $db, "COMMIT", 1 );
+    return 1;
+
+}
 sub dbdo {
     my $db      = shift;
     my $command = shift;
@@ -156,7 +238,7 @@ sub sanitise_line_for_input {
            #print "\t\t$line\n" if $verbose;
     $line =~ s/\"//g;
 
-    print "\t\t$line\n" if $verbose;
+    #print "\t\t$line\n" if $verbose;
     my @fields = split /,/, $line;
     foreach my $field (@fields) {
         my $type = type_from_data($field);
@@ -268,6 +350,6 @@ sub timestamp_from_date {
     my ($day, $month, $year, $hours, $minutes) = split "[- :]", $date;
     print "$date -> $year.$month.$day.$hours.$minutes\n" if $verbose;
     my $mnum = $months{$month};
-    my $timestamp = sprintf("%04d", $year).$mnum.sprintf("%02d",$day);#.sprintf("%02d",$hours).sprintf("%02d",$minutes);
+    my $timestamp = sprintf("%04d", $year).$mnum.sprintf("%02d",$day).sprintf("%02d",$hours).sprintf("%02d",$minutes);
     return $timestamp;
 }

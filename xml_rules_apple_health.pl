@@ -17,7 +17,7 @@ if ($firstrun) {
 	$result = make_db($db);
 }
 
-my $xml = "../apple_health_export/export.xml";
+my $xml = "../health_data/apple_health_export/export.xml";
 my %dataTypes;
 my %sourceNames;
 my %units;
@@ -28,7 +28,6 @@ my %activitySummaries;
 my %metadata_keys;
 my $verbose = 0;
 
-
 # Setup and run the parser
 my @rules = define_xml_rules();
 my $parser = XML::Rules->new(rules => \@rules);
@@ -36,12 +35,12 @@ dbdo ($db, "BEGIN", $verbose);
 $parser->parsefile( $xml);
 dbdo ($db, "COMMIT", $verbose);
 
-
 #foreach my $device (%devices) {
 #	if (exists($devices{$device})) {
 #		print "Device: $device ($devices{$device})\n";
 #	}
 #}
+
 foreach my $unit (%units) {
 	if (exists($units{$unit})) {
 		print "Unit: $unit ($units{$unit})\n";
@@ -53,11 +52,13 @@ foreach my $dataType (%dataTypes) {
 		print "dataTypes: $dataType ($dataTypes{$dataType})\n";
 	}
 }
+
 foreach my $sourceName (%sourceNames) {
 	if (exists($sourceNames{$sourceName})) {
 		print "sourceNames: $sourceName ($sourceNames{$sourceName})\n";
 	}
 }
+
 foreach my $workoutActivityType (%workoutActivityTypes) {
 	if (exists($workoutActivityTypes{$workoutActivityType})) {
 		print "Workouts: $workoutActivityType ($workoutActivityTypes{$workoutActivityType})\n";

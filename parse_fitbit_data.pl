@@ -17,7 +17,7 @@ if ($system eq "Darwin") {
 } else {
     die "What system is this? |$system|\n";
 }
-my $outfilename = "../fitbit_data/fitbit_data.csv";
+my $outfilename = "../health_data/fitbit_data/fitbit_data.csv";
 # script to parse the fitbit_export file and make a database
 my $db = DBI->connect("dbi:SQLite:dbname=health_data.sqlite","","") or die DBI::errstr;
 

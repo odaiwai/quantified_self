@@ -4,7 +4,7 @@ use warnings;
 use Data::Dumper;
 
 my $verbose = 1;
-my $inputFile = "weightData.dat";
+my $inputFile = "../health_data/misc_data/weightData.dat";
 
 # read in the input file
 # make a table of weights/calories per day
