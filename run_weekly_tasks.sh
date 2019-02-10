@@ -79,6 +79,10 @@ then
     ./parse_apple_health_data.pl
     print_elapsed_time
 
+	# Parse the Spreadsheet data
+	./parse_spreadsheet.py
+    print_elapsed_time
+
     # Parse the Apple Health Data from XML
     # This isn't exporting properly so use the QS data above
 	# Also, this takes a lot of time (like 5+ hours!)
