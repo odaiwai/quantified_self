@@ -18,6 +18,14 @@ my $reporturl = "$siteurl/reports/printable_diary/$username";
 #\?from=$startdate\&to=$enddate";
 my $verbose = 1;
 my $getall = 0;
+my $spec_date = "";
+
+# parse the command line options
+while (my $option = shift(@ARGV)) {
+    if ( $option =~ /date/) {
+        $spec_date = shift;
+    }
+}
 
 my $agent =  WWW::Mechanize->new( autocheck => 1);
 #$agent->get($loginurl);
@@ -59,8 +67,15 @@ if ( $getall) {
         }
     }
 } else {
-    my $this_year = $tyear + 1900;
-    my $this_month = sprintf("%02d", $tmon + 1);
+    my $this_year;
+    my $this_month;
+
+    if ( $spec_date eq "" ) {
+        $this_year = $tyear + 1900;
+        $this_month = sprintf("%02d", $tmon + 1);
+    } else {
+        ($this_year, $this_month) =  split "-", $spec_date;
+    }
     
     print "Month: $this_year-$this_month\n";
     my $startdate = "$this_year-$this_month-01";
