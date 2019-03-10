@@ -18,9 +18,9 @@ weightData$date <- as.POSIXct(weightData$timestamp, tz="", format='%Y-%m-%d %H:%
 #str(weightData)
 
 # make a plot object
-weightPlot <- ggplot(weightData, aes(x = date,y = weight, color=bmi)) +
-  geom_point() +  
-  geom_smooth(method = "loess") +
+weightPlot <- ggplot(data = weightData) +
+  geom_point(mapping = aes(x = date,y = weight)) +
+  geom_smooth(mapping = aes(x = date, y = weight)) +
   labs(x="date", y="Weight (kg)") +
   ggtitle("Body Weight Over Time")
 
