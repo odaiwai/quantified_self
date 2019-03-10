@@ -27,7 +27,8 @@ $db->disconnect;
 ## subs
 sub build_tables_from_files {
     my $db = shift;
-    my (@files) = `ls ../health_data/myFitnessPal_data/mfp_report_??????.txt`;
+    # There are a mix of daily, monthly and annual reports here, but we can just parse them all
+    my @files = `ls ../health_data/myFitnessPal_data/mfp_report_*.txt`;
     foreach my $file (@files) {
         chomp $file;
         print "Processing file: $file\n";

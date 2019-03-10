@@ -18,12 +18,16 @@ my $reporturl = "$siteurl/reports/printable_diary/$username";
 #\?from=$startdate\&to=$enddate";
 my $verbose = 1;
 my $getall = 0;
+my $getall_by_day = 0;
 my $spec_date = "";
 
 # parse the command line options
 while (my $option = shift(@ARGV)) {
-    if ( $option =~ /date/) {
+    if ( $option =~ /date/ ) {
         $spec_date = shift;
+    }
+    if (  $option =~ /daily/ ) {
+        $getall_by_day = 1;
     }
 }
 
@@ -58,12 +62,7 @@ if ( $getall) {
     # go to monthly reporting
     for my $year ($start_year..$end_year) {
         for my $month (qw/01 02 03 04 05 06 07 08 09 10 11 12/) {
-            print "Month: $year-$month\n";
-            my $startdate = "$year-$month-01";
-            my $lastday = last_day_of_month($year, $month);
-            my $enddate = "$year-$month-$lastday";
-            my $outfile = "../health_data/myFitnessPal_data/mfp_report_$year$month";
-            get_printable_report($agent, $reporturl, $startdate, $enddate, $outfile);
+            my $result = get_mfp_report_for_date($year, $month);
         }
     }
 } else {
@@ -76,14 +75,30 @@ if ( $getall) {
     } else {
         ($this_year, $this_month) =  split "-", $spec_date;
     }
-    
-    print "Month: $this_year-$this_month\n";
-    my $startdate = "$this_year-$this_month-01";
-    my $lastday = last_day_of_month($this_year, $this_month);
-    my $enddate = "$this_year-$this_month-$lastday";
-    my $outfile = "../health_data/myFitnessPal_data/mfp_report_$this_year$this_month";
-    get_printable_report($agent, $reporturl, $startdate, $enddate, $outfile);
+    my $result = get_mfp_report_for_date($this_year, $this_month);
 }
+
+sub get_mfp_report_for_date{
+    my $year = shift;
+    my $month = shift;
+    print "Month: $year-$month\n";
+    my $startdate = "$year-$month-01";
+    my $lastday = last_day_of_month($year, $month);
+    if ( $getall_by_day) {
+        for my $day (1..$lastday) {
+            my $enddate = "$year-$month-$day";
+            my $outfile = "../health_data/myFitnessPal_data/mfp_report_$year$month$day";
+            get_printable_report($agent, $reporturl, $startdate, $enddate, $outfile);
+        }
+    } else {
+        my $enddate = "$year-$month-$lastday";
+        my $outfile = "../health_data/myFitnessPal_data/mfp_report_$year$month";
+        get_printable_report($agent, $reporturl, $startdate, $enddate, $outfile);
+    }
+    
+    return 1;
+}
+        
 
 sub last_day_of_month {
     # Return the last day of the month
