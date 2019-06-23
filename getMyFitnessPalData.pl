@@ -25,6 +25,7 @@ my $spec_date = "";
 while (my $option = shift(@ARGV)) {
     if ( $option =~ /date/ ) {
         $spec_date = shift;
+		print "Specified Date: $spec_date should be in yyyy-mm\n";
     }
     if (  $option =~ /daily/ ) {
         $getall_by_day = 1;
@@ -75,7 +76,15 @@ if ( $getall) {
     } else {
         ($this_year, $this_month) =  split "-", $spec_date;
     }
-    my $result = get_mfp_report_for_date($this_year, $this_month);
+    if ( $mday < 7 ) {
+		if ( $this_month > 2 ) {
+			# Get last month's data too, if we're within the first week
+			my $result = get_mfp_report_for_date($this_year, $this_month - 1);
+		} else {
+			my $result = get_mfp_report_for_date($this_year - 1, 12);
+		}
+	} 
+	my $result = get_mfp_report_for_date($this_year, $this_month);
 }
 
 sub get_mfp_report_for_date{

@@ -35,3 +35,5 @@ calibrate_modal_split.rscr
 *.out
 
 *.sqlite-journal
+
+excel_import\.csv
