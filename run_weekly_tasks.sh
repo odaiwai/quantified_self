@@ -44,13 +44,17 @@ do
 done
 if [[ $DOWNLOAD -gt 0 ]]
 then
+	
+	# Data Sources
+	SOURCE="~/Dropbox/apple_health"
+	#SOURCE="~/Library/Mobile\ Documents/com~apple~CloudDocs/Health\ Data"
+
 	# Download this years myfitnesspal report
 	./getMyFitnessPalData.pl
     print_elapsed_time
     
     # Get the updated Apple HEalth Export
-    cp -p ~/Dropbox/apple_health/*.csv ../health_data/apple_health_export/
-    #cp ~/Library/Mobile\ Documents/com~apple~CloudDocs/*.csv ../health_data/apple_health_export/
+    cp -p $SOURCE/*.csv ../health_data/apple_health_export/
     
     # get the Fitbit Data - not doing this anymore
     # ./get_fitbit_data.pl
@@ -86,7 +90,7 @@ then
     # Parse the Apple Health Data from XML
     # This isn't exporting properly so use the QS data above
 	# Also, this takes a lot of time (like 5+ hours!)
-	# unzip -o ~/Dropbox/apple_health/export.zip -d ../health_data/apple_health_export
+	unzip -o $SOURCE/export.zip -d ../health_data/apple_health_export
     #./xml_rules_apple_health.pl
     print_elapsed_time
 fi
