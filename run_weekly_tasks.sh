@@ -46,15 +46,16 @@ if [[ $DOWNLOAD -gt 0 ]]
 then
 	
 	# Data Sources
-	SOURCE="~/Dropbox/apple_health"
-	#SOURCE="~/Library/Mobile\ Documents/com~apple~CloudDocs/Health\ Data"
+	#SOURCE="~/Dropbox/apple_health"
+	SOURCE="~/Library/Mobile Documents/com~apple~CloudDocs/Health_Data"
 
 	# Download this years myfitnesspal report
 	./getMyFitnessPalData.pl
     print_elapsed_time
     
-    # Get the updated Apple HEalth Export
-    cp -p $SOURCE/*.csv ../health_data/apple_health_export/
+    # Get the updated Apple Health Export
+	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Health\ Data.csv ../health_data/apple_health_export/
+	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Sleep\ Analysis.csv ../health_data/apple_health_export/
     
     # get the Fitbit Data - not doing this anymore
     # ./get_fitbit_data.pl
@@ -90,7 +91,7 @@ then
     # Parse the Apple Health Data from XML
     # This isn't exporting properly so use the QS data above
 	# Also, this takes a lot of time (like 5+ hours!)
-	unzip -o $SOURCE/export.zip -d ../health_data/apple_health_export
+	#unzip -o ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/export.zip -d ../health_data
     #./xml_rules_apple_health.pl
     print_elapsed_time
 fi
@@ -99,7 +100,7 @@ fi
 ## FIXME: Need to make this show the last 30 days, not the current month
 MONTH=`date +"%B"`
 YEAR=`date +"%Y"`
-#Get a timestamp for 1 month ago
+#Get a timestamp for $MONTH months ago
 OS=`uname -s`
 if [[ $OS = "Linux" ]]
 then
@@ -114,15 +115,34 @@ echo "mfp_daily_summary         : `$sqlite health_data.sqlite "select timestamp 
 echo "apple_qs_health_data      : `$sqlite health_data.sqlite "select timestamp from apple_qs_health_data order by timestamp DESC limit 1;"`"
 echo "apple_qs_sleep_analysis   : `$sqlite health_data.sqlite "select timestamp from apple_qs_sleep_analysis order by timestamp DESC limit 1;"`"
 echo ""
+print_elapsed_time
+# Currently, there is a problem with the Apple QS Health Data (Write an App?)
 
 echo "MyFitnessPal Data for this month: ($OS, $TIMESTAMP)"
 #$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories, fitbit_data.calories_burned from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) JOIN fitbit_data using (timestamp) where mfp_daily_summary.timestamp > $TIMESTAMP;"
 #$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) where mfp_daily_summary.timestamp > $TIMESTAMP;"
 #$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories, 0, apple_xml_activity_summary.activeCalories, basalEnergyBurnedAdj from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) JOIN apple_xml_activity_summary using (timestamp) JOIN apple_xml_BasalEnergyBurnedAdj using (timestamp) where mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"
-$sqlite health_data.sqlite "vacuum"
-$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, mfp_daily_summary.Protein, mfp_daily_summary.Cholesterol, mfp_daily_summary.Sodium, Sugars, mfp_daily_summary.Fiber, 0, 0, apple_qs_health_data.Active_Calories, apple_qs_health_data.Resting_Calories from [mfp_daily_summary] JOIN apple_qs_health_data using (timestamp) where mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"
-$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, mfp_daily_summary.Protein, mfp_daily_summary.Cholesterol, mfp_daily_summary.Sodium, Sugars, mfp_daily_summary.Fiber, 0, 0, apple_qs_health_data.Active_Calories, apple_qs_health_data.Resting_Calories from [mfp_daily_summary] JOIN apple_qs_health_data using (timestamp) group by timestamp;" > excel_import.csv
 
+# Vacuum the database (Saves and compacts space)
+echo "Vacuum the Database"
+$sqlite health_data.sqlite "vacuum"
+print_elapsed_time
+
+# Dump out the standard Report
+echo "Standard Report"
+SQLCOMMAND="SELECT
+	mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, mfp_daily_summary.Protein, 
+	mfp_daily_summary.Cholesterol, mfp_daily_summary.Sodium, Sugars, mfp_daily_summary.Fiber, 
+	0, 0, apple_qs_health_data.Active_Calories, apple_qs_health_data.Resting_Calories 
+	FROM [mfp_daily_summary] 
+	JOIN apple_qs_health_data using (timestamp) 
+	WHERE mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"
+echo "    #SQLCOMMAND"
+$sqlite health_data.sqlite -csv -header "$SQLCOMMAND"
+$sqlite health_data.sqlite -csv -header "$SQLCOMMAND" > excel_import.csv
+
+print_elapsed_time
+## Older ccommands
 #$sqlite health_data.sqlite -csv -header "select timestamp, activeCalories, sum(value) from apple_activity_summary JOIN apple_BasalEnergyBurned using (timestamp) where timestamp > $TIMESTAMP and sourceName not like 'Sync Solver' group by timestamp;"
 
 #echo "Fitbit Calories_burned for this month:"
