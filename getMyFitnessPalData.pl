@@ -77,9 +77,9 @@ if ( $getall) {
         ($this_year, $this_month) =  split "-", $spec_date;
     }
     if ( $mday < 7 ) {
-		if ( $this_month > 2 ) {
+		if ( $this_month >= 2 ) {
 			# Get last month's data too, if we're within the first week
-			my $result = get_mfp_report_for_date($this_year, $this_month - 1);
+			my $result = get_mfp_report_for_date($this_year, sprintf("%02d", $this_month - 1));
 		} else {
 			my $result = get_mfp_report_for_date($this_year - 1, 12);
 		}
