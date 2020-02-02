@@ -8,7 +8,7 @@ library(DBI) # ref: https://db.rstudio.com/databases/sqlite/
 # connnect to the database and get the data
 con <- dbConnect(RSQLite::SQLite(), "~/Documents/health/analyse_health_data/health_data.sqlite")
 #weightData <- dbReadTable(con, "ss_physical")
-weightData <- dbGetQuery(con, "select * from ss_physical where timestamp > \'2008™%\'")
+weightData <- dbGetQuery(con, "select * from ss_physical where timestamp > \'2010™%\'")
 # fix the dates
 weightData$date <- as.POSIXct(weightData$timestamp, tz="", format='%Y-%m-%d %H:%M:%S')
 #nutritionData$newDate <- as.Date(nutritionData$Date, format='%d-%b-%y')
