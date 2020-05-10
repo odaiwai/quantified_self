@@ -1,6 +1,11 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
+# specifying the version of perl (#!/usr/bin/perl) uses the system perl, but
+# the above uses the homebrew installed perl (/usr/local/bin/perl), and 
+# that works with the various modules below, some of which were installed with 
+# homebrew and CPAN.
 use strict;
 use warnings;
+use Carp;
 use Data::Dumper;
 use WWW::Mechanize;
 
@@ -8,6 +13,7 @@ use WWW::Mechanize;
 # will need to login, or have cookies
 # 20160317: fixed login and retrieval procedures - dob
 # 20170114: got the password out of this file!
+
 my $credentials = `cat ../health_data/credentials.txt | grep mfp`;
 chomp $credentials;
 my ($service, $username, $password) = split(":", $credentials);
@@ -158,7 +164,7 @@ sub get_printable_report {# Go get the report URL
         #$agent->tick('show_food_notes', undef, 'false');
         #$agent->tick('show_food_diary', undef, 'false');
         #$agent->tick('Food Diary', undef, 'false');
-        $agent->submit() or die "Can't Open $!";
+        $agent->submit() or croak "Can't Open $!";
         print "\tSubmitted changes\n";
         #my @forms = $agent->forms();
         #printall(@forms);
