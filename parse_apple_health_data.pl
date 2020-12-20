@@ -9,7 +9,7 @@ use Data::Dumper;
 # 20170415 dave o'brien
 #
 
-my $verbose  = 0;
+my $verbose  = 1;
 my $firstrun = 1;
 my $basedir  = "../health_data/apple_health_export";
 
@@ -233,7 +233,6 @@ sub tabledef_from_headerline {
 }
 
 sub type_from_data {
-
     # take a field and sample data and determine the type
     my $field = shift;
     my $type;
