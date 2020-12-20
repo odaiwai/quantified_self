@@ -16,6 +16,7 @@ sqlite='/usr/bin/sqlite3'
 DOWNLOAD=0
 VERBOSE=0
 PARSE=1
+MONTH=1
 # Parse the Command line options
 for arg in "$@"
 do
@@ -23,20 +24,30 @@ do
 	case $arg in
 		-d|--download)
 			DOWNLOAD=1
-			echo "Downloading On"
+			echo "Downloading On."
 			shift
 			;;
 		-p|--noparse)
 			PARSE=0
-			echo "Don't Parse the Data"
+			echo "Don't Parse the Data."
+			shift
 			;;
 		-v|--verbose)
 			VERBOSE=1
 			echo "Verbose On"
+			shift
+			;;
+		-m|--months)
+			MONTH=$(( MONTH + 1 ))
+			echo "Showing $MONTH months of data."
+			shift
 			;;
 		-h|--help|*)
 			echo "Usage:"
 			echo "-d, --download: get MyFitnessPal data"
+			echo "-p, --parse: Don't parse the data, just run the query"
+			echo "-v, --verbose: be more verbose"
+			echo "-m, --months : show one more months data. -m -m = show two more"
 			echo "-h, --help: show this help"
 			shift
 			;;
@@ -54,9 +65,14 @@ then
     print_elapsed_time
     
     # Get the updated Apple Health Export
-	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Health\ Data.csv ../health_data/apple_health_export/
-	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Sleep\ Analysis.csv ../health_data/apple_health_export/
-    
+	cd ../health_data/apple_health_export
+	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Health\ Data.csv ./
+	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Sleep\ Analysis.csv ./
+	git add Health\ Data.csv Sleep\ Analysis.csv
+	git commit -m "updated QS exported data"
+    # Go back to the main dir
+	cd ../../analyse_health_data
+
     # get the Fitbit Data - not doing this anymore
     # ./get_fitbit_data.pl
 fi
@@ -97,16 +113,15 @@ then
 fi
 
 # Print out the data collected
-## FIXME: Need to make this show the last 30 days, not the current month
-MONTH=`date +"%B"`
 YEAR=`date +"%Y"`
+echo "$MONTH"
 #Get a timestamp for $MONTH months ago
 OS=`uname -s`
 if [[ $OS = "Linux" ]]
 then
-	TIMESTAMP=`date -d '-1 month' +%Y%m%d ` # for Linux
+	TIMESTAMP=`date -d '-${MONTH} month' +%Y%m%d ` # for Linux
 else
-	TIMESTAMP=`date -j -v-1m +%Y%m%d` # MacOS
+	TIMESTAMP=`date -j -v-${MONTH}m +%Y%m%d` # MacOS
 fi
 
 # Show the last dates for each of the databases just to make sure the retrieval process worked.
@@ -137,7 +152,7 @@ SQLCOMMAND="SELECT
 	FROM [mfp_daily_summary] 
 	JOIN apple_qs_health_data using (timestamp) 
 	WHERE mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"
-echo "    #SQLCOMMAND"
+echo "    $SQLCOMMAND"
 $sqlite health_data.sqlite -csv -header "$SQLCOMMAND"
 $sqlite health_data.sqlite -csv -header "$SQLCOMMAND" > excel_import.csv
 
