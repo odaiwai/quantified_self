@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+""" Parses the data stored in the spreadsheet and makes tables for upload to 
+    Apple Health using an uploader
+"""
+
 import openpyxl # uses openpyxl - https://openpyxl.readthedocs.io/en/stable/
 import sqlite3  # uses sqlite   - https://docs.python.org/2/library/sqlite3.html
 import types
