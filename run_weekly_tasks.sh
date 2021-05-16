@@ -68,8 +68,10 @@ then
 	cd ../health_data/apple_health_export
 	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Health\ Data.csv ./
 	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Sleep\ Analysis.csv ./
+	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/moodpath_exported_data*.zip ./
 	git add Health\ Data.csv Sleep\ Analysis.csv
-	git commit -m "updated QS exported data"
+	git commit -m "updated QS exported data" Health\ Data.csv Sleep\ Analysis.csv
+
     # Go back to the main dir
 	cd ../../analyse_health_data
 
