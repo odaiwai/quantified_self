@@ -7,7 +7,7 @@ use strict;
 use warnings;
 use Carp;
 use Data::Dumper;
-use WWW::Mechanize;
+use WWW::Mechanize; # Also needs LWP::Mechanize::https
 
 # script to retrieve MyFitnessPal Data from the website
 # will need to login, or have cookies
@@ -31,7 +31,7 @@ my $spec_date = "";
 while (my $option = shift(@ARGV)) {
     if ( $option =~ /date/ ) {
         $spec_date = shift;
-		print "Specified Date: $spec_date should be in yyyy-mm\n";
+            print "Specified Date: $spec_date should be in yyyy-mm\n";
     }
     if (  $option =~ /daily/ ) {
         $getall_by_day = 1;
