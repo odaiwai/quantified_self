@@ -1,14 +1,15 @@
 #!/bin/bash
 
 # Script to prepare the ss_whatever files
-sqlite3 -header -csv health_data.sqlite "select timestamp, systolic, Diastolic, Pulse from [ss_physical] order by timestamp" > ss_blood_pressure.csv
+sqlite3 -header -csv health_data.sqlite "select timestamp, height, weight, bodyfat, bodyfat_pct, bmi, systolic, Diastolic, Pulse from [ss_physical] order by timestamp" > ss_main_import.csv
 
-sqlite3 -header -csv health_data.sqlite "select timestamp, bmi from [ss_physical] order by timestamp" > ss_height_bmi.csv
+#sqlite3 -header -csv health_data.sqlite "select timestamp, bmi from [ss_physical] order by timestamp" > ss_height_bmi.csv
 
-sqlite3 -header -csv health_data.sqlite "select timestamp, height, weight from [ss_physical] order by timestamp" > ss_height_weight.csv
+#sqlite3 -header -csv health_data.sqlite "select timestamp, height, weight from [ss_physical] order by timestamp" > ss_height_weight.csv
 
-sqlite3 -header -csv health_data.sqlite "select timestamp, height, weight, bodyfat, bodyfat_pct, bodyh2o_pct, bonemass_pct from [ss_physical] order by timestamp" > ss_height_weight_other.csv
-
+#sqlite3 -header -csv health_data.sqlite "select timestamp, height, weight, bodyfat, bodyfat_pct, bodyh2o_pct, bonemass_pct from [ss_physical] order by timestamp" > ss_height_weight_other.csv
+ 
+cp ss_*.csv ~/Library/Mobile\ Documents/com~apple~CloudDocs/Health_Data/
 # Definitions of files
 #==> ss_blood_pressure.csv <==
 #timestamp,systolic,Diastolic,Pulse
