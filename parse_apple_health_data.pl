@@ -74,47 +74,47 @@ sub build_tables_from_file {
     $tablename =~ s/\.csv//g;
 
     # read in the first line and parse it for the type def
-	my $headerline = <$fh>;
-	chomp $headerline;
-	my $startpos  = tell($fh);    #Get the position of the second line
-	my $firstline = <$fh>;
-	chomp $firstline;
+    my $headerline = <$fh>;
+    chomp $headerline;
+    my $startpos  = tell($fh);    #Get the position of the second line
+    my $firstline = <$fh>;
+    chomp $firstline;
 
-	my ( $tabledef, $fieldnames ) = tabledef_from_headerline( $headerline, $firstline);
-	my @fields = split " ", $fieldnames;
-	my $command = "Create Table if not exists [$tablename] ($tabledef)";
-	my $result = dbdo( $db, $command, $verbose );
-	dbdo( $db, "BEGIN", $verbose ); # wrap the inserts in a Begin//Commit
-	seek( $fh, $startpos, 0 );
-	# parse the records and build the database
-	my $numrecords       = 0;
-	my $section_finished = 0;
-	until ($section_finished) {
-		my $line = <$fh>;
-		if ( !$line) {
-			$section_finished = 1;
-		} else {
-			chomp $line;
-			#$line =~ s/\"//g;
-			my $values = sanitise_line_for_input($line);
-			my @values = split ",", $values;
-			my $timestamp = timestamp_from_date($values[0]);
-			my $these_fields;
-			my $num_values = $#values + 1; # Need to include the timestamp
-			print "$#fields, $num_values\n" if $verbose;
-			foreach my $fieldnum (0..$num_values) {
-				if ($fieldnum > 0) {$these_fields .= ", ";}
-				$these_fields .= "$fields[$fieldnum]";
-			}
-			$these_fields =~ s/,,/,/g;
-			$these_fields =~ s/,$//g;
-			print "These Fields: $these_fields\n" if $verbose;
-			$command = "Insert or Replace into [$tablename] ($these_fields) Values ($timestamp, $values)";
-			my $result = dbdo( $db, $command, $verbose );
-			if ($result) { $numrecords++; }
-		}
-	}
-	dbdo( $db, "COMMIT", $verbose ); # wrap the inserts in a Begin//Commit
+    my ( $tabledef, $fieldnames ) = tabledef_from_headerline( $headerline, $firstline);
+    my @fields = split " ", $fieldnames;
+    my $command = "Create Table if not exists [$tablename] ($tabledef)";
+    my $result = dbdo( $db, $command, $verbose );
+    dbdo( $db, "BEGIN", $verbose ); # wrap the inserts in a Begin//Commit
+    seek( $fh, $startpos, 0 );
+    # parse the records and build the database
+    my $numrecords       = 0;
+    my $section_finished = 0;
+    until ($section_finished) {
+        my $line = <$fh>;
+        if ( !$line) {
+            $section_finished = 1;
+        } else {
+            chomp $line;
+            #$line =~ s/\"//g;
+            my $values = sanitise_line_for_input($line);
+            my @values = split ",", $values;
+            my $timestamp = timestamp_from_date($values[0]);
+            my $these_fields;
+            my $num_values = $#values + 1; # Need to include the timestamp
+            print "$#fields, $num_values\n" if $verbose;
+            foreach my $fieldnum (0..$num_values) {
+                if ($fieldnum > 0) {$these_fields .= ", ";}
+                $these_fields .= "$fields[$fieldnum]";
+            }
+            $these_fields =~ s/,,/,/g;
+            $these_fields =~ s/,$//g;
+            print "These Fields: $these_fields\n" if $verbose;
+            $command = "Insert or Replace into [$tablename] ($these_fields) Values ($timestamp, $values)";
+            my $result = dbdo( $db, $command, $verbose );
+            if ($result) { $numrecords++; }
+        }
+    }
+    dbdo( $db, "COMMIT", $verbose ); # wrap the inserts in a Begin//Commit
     close $fh;
 }
 
@@ -188,20 +188,20 @@ sub tabledef_from_headerline {
     my @new_headers;
     my @units;
     foreach my $header_unit (@headers) {
-    	$header_unit =~ s/\(Systolic\)/Systolic/g;
-    	$header_unit =~ s/\(Diastolic\)/Diastolic/g;
-    	my ($header, $units);
-    	if ($header_unit =~ /\(.*\)/) {
-			($header, $units)= split "[\(]", $header_unit;
-			$header =~ s/_$//g;
-			$units =~ s/[\)]//g;
-		} else {
-	    	($header, $units) = ($header_unit, "");
-	    }
-		$header =~ s/ /_/g;
-		$header =~ s/_$//g;
-		push @new_headers, $header;
-		push @units, $units;
+        $header_unit =~ s/\(Systolic\)/Systolic/g;
+        $header_unit =~ s/\(Diastolic\)/Diastolic/g;
+        my ($header, $units);
+        if ($header_unit =~ /\(.*\)/) {
+            ($header, $units)= split "[\(]", $header_unit;
+            $header =~ s/_$//g;
+            $units =~ s/[\)]//g;
+        } else {
+            ($header, $units) = ($header_unit, "");
+        }
+        $header =~ s/ /_/g;
+        $header =~ s/_$//g;
+        push @new_headers, $header;
+        push @units, $units;
     }
     print "@new_headers\n@units\n@values\n" if $verbose;
     # Need to add in the timestamp field
@@ -261,9 +261,9 @@ sub timestamp_from_date {
     # sub to return yyyymmdd from "dd-mmm-yyyy hh:mm"
     my $date = shift;
     $date =~ s/\"//g;
-	my %months=("Jan"=>"01", "Feb"=>"02", "Mar"=>"03", "Apr"=>"04", "May"=>"05", "Jun"=>"06",
-				"Jul"=>"07", "Aug"=>"08", "Sep"=>"09", "Oct"=>"10", "Nov"=>"11", "Dec"=>"12");
-	#my $date1 = split " ", $date;
+    my %months=("Jan"=>"01", "Feb"=>"02", "Mar"=>"03", "Apr"=>"04", "May"=>"05", "Jun"=>"06",
+                "Jul"=>"07", "Aug"=>"08", "Sep"=>"09", "Oct"=>"10", "Nov"=>"11", "Dec"=>"12");
+    #my $date1 = split " ", $date;
     my ($day, $month, $year, $hours, $minutes) = split "[- :]", $date;
     print "$date -> $year.$month.$day.$hours.$minutes\n" if $verbose;
     my $mnum = $months{$month};
