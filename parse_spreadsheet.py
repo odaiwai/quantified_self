@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-""" Parses the data stored in the spreadsheet and makes tables for upload to 
+""" Parses the data stored in the spreadsheet and makes tables for upload to
     Apple Health using an uploader
 """
 
-import openpyxl # uses openpyxl - https://openpyxl.readthedocs.io/en/stable/
 import sqlite3  # uses sqlite   - https://docs.python.org/2/library/sqlite3.html
-import types
+# import types
+import openpyxl # uses openpyxl - https://openpyxl.readthedocs.io/en/stable/
 
-def make_tables(dbc, verbose):
+def make_tables(dbc):
     """Define the database Tables, dropping and making them"""
     tabledef = {}  # type: Dict[str, str]
     tabledef["ss_physical"] = "timestamp TEXT Primary Key, age REAL, height REAL, " \
@@ -18,14 +18,14 @@ def make_tables(dbc, verbose):
     tabledef["ss_resting_hr"] = "timestamp TEXT Primary Key, RHR Int, comment Text, " \
                                 "notes TEXT, location TEXT"
 
-    for table in tabledef.keys():
+    for table in tabledef:
         # This is not the recommended way, but it's hard to loop this otherwise
         cmd = 'DROP TABLE IF EXISTS [%s]' % table
-        if verbose: 
+        if verbose:
             print(cmd)
         dbc.execute(cmd)
         cmd = 'CREATE TABLE [%s] (%s)' % (table, tabledef[table])
-        if verbose: 
+        if verbose:
             print(cmd)
         dbc.execute(cmd)
 
@@ -34,7 +34,7 @@ def main():
     print('Making the Tables...')
     db = sqlite3.connect('health_data.sqlite')
     dbc = db.cursor()
-    make_tables(dbc, verbose)
+    make_tables(dbc)
     db.commit()
 
     # read in the sheet as read_only with the results of Formulas computed
@@ -68,11 +68,11 @@ def main():
         record_is_valid = 0
         if rows > 10:
             record_is_valid = 1
-        
+
         for value in (timestamp, height, weight, age):
             if value is None:
                 record_is_valid = 0
-        print(rows, type(timestamp))
+                # print(rows, type(timestamp))
         #if type(timestamp) is types.UnicodeType:
         #    record_is_valid = 0
 
@@ -80,7 +80,7 @@ def main():
             height = float(height)
             weight = float(weight)
             age = float(age)
-            
+
             # Calculate some additional fields
             # Mifflin StJohn BMR
             bmr_miffl = int((10 * weight) + (625 * height) - (5 * age) + 5)
@@ -96,7 +96,7 @@ def main():
                     bonemass_pct, systolic, diastolic, pulse, bmr_katch, bmr_miffl,
                     bmi, ponderal)
             cmd = "Insert or UPDATE into [ss_physical] (", fields, ") VALUES (", data, ")"
-            if verbose: 
+            if verbose:
                 print(cmd)
             dbc.execute('INSERT or REPLACE into [ss_physical] '
                         '(timestamp, age, height, weight, bodyfat, bodyfat_pct, '
@@ -105,7 +105,7 @@ def main():
                         'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', data)
 
     db.commit()
-    print('Rows", rows, "added to Physical')
+    print('{} rows added to HR'.format(rows))
 
     # Parse the Resting Heart Rate Data
     datasheet = workbook['Resting Heart Rate']
@@ -114,7 +114,7 @@ def main():
     rows = 0
     for row in datasheet.rows:
         rows += 1
-        if verbose: 
+        if verbose:
             print(row)
         timestamp = row[1].value
         RHR       = row[2].value
@@ -135,7 +135,7 @@ def main():
         if record_is_valid:
             data = (timestamp, RHR, comment, notes,  location)
             cmd = "Insert or UPDATE into [ss_resting_hr] (", fields, ") VALUES (", data, ")"
-            if verbose: 
+            if verbose:
                 print(cmd)
             dbc.execute('INSERT or REPLACE into [ss_resting_hr] '
                         '(timestamp, RHR, comment, notes, location) '
@@ -144,7 +144,7 @@ def main():
     db.commit()
     print('Finishing Up')
     db.close()
-    print('Rows", rows, "added to HR')
+    print('{} rows added to HR'.format(rows))
     return None
 
 # Script to parse some data from the main health spreadsheet
