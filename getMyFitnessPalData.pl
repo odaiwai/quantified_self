@@ -16,7 +16,7 @@ use WWW::Mechanize; # Also needs LWP::Mechanize::https
 
 my $credentials = `cat ../health_data/credentials.txt | grep mfp`;
 chomp $credentials;
-my ($service, $username, $password) = split(":", $credentials);
+my ($service, $username, $email, $password) = split(":", $credentials);
 my $siteurl = "https://www.myfitnesspal.com";
 my $realm = "MyFitnessPal";
 my $loginurl = "$siteurl/account/login";
@@ -40,22 +40,33 @@ while (my $option = shift(@ARGV)) {
 
 my $agent =  WWW::Mechanize->new( autocheck => 1);
 #$agent->get($loginurl);
-$agent->credentials($siteurl, $realm, $username, $password);
+$agent->credentials($siteurl, $realm, $email, $password);
 
 # Go get the login URL
 print "Open the Login Page...\n";
 $agent -> get($loginurl);
 if ($agent->success) {
-    #my @forms = $agent->forms() if $verbose;
-    #printall(@forms) if $verbose;
-    my @submits = $agent->find_all_submits();
-    $agent -> form_id("fancy_login");
-    #printall(@submits) if $verbose;
-    $agent->set_fields (
-        username => $username,
-        password => $password);
-    #$agent->tick('remember_me', undef, 'true');
+    my @forms = $agent->forms() if $verbose;
+    for my $form (@forms) {
+        printall(\$form);
+        my @inputfields = $form->param;
+        printall(\@inputfields);
+        $agent->submit_form( 
+            with_fields => {
+                email => $email,
+                password => $password},);
+        printall(\$agent->status);
+        printall(\$agent->redirected_uri);
+    }
 
+    my @submits = $agent->find_all_submits();
+    printall(@submits) if $verbose;
+    $agent->form_number(1);
+    $agent->set_fields (
+        email => $email,
+        password => $password);
+
+    # $agent->tick('remember_me', undef, 'true');
     $agent->submit(input => $submits[0]);
 
 }
