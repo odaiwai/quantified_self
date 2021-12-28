@@ -59,7 +59,7 @@ done
 if [[ $DOWNLOAD -gt 0 ]]
 then
 	# Download this years myfitnesspal report
-	./getMyFitnessPalData.pl
+	./getMyFitnessPalData.py
     print_elapsed_time
     
     # Get the updated Apple Health Export

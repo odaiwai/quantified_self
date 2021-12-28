@@ -39,3 +39,5 @@ calibrate_modal_split.rscr
 excel_import\.csv
 ss_*.csv
 
+*.png
+*.log

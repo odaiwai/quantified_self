@@ -47,20 +47,21 @@ print "Open the Login Page...\n";
 $agent -> get($loginurl);
 if ($agent->success) {
     my @forms = $agent->forms() if $verbose;
+    # print("Checking Forms...\n");
+    # printall(\@forms);
     for my $form (@forms) {
-        printall(\$form);
+        # printall(\$form);
         my @inputfields = $form->param;
-        printall(\@inputfields);
-        $agent->submit_form( 
-            with_fields => {
-                email => $email,
-                password => $password},);
-        printall(\$agent->status);
-        printall(\$agent->redirected_uri);
+        # printall(\@inputfields);
+        # $agent->submit_form( 
+        #     with_fields => {
+        #         email => $email,
+        #         password => $password},);
     }
 
     my @submits = $agent->find_all_submits();
-    printall(@submits) if $verbose;
+    # print("Submits...\n");
+    # printall(@submits) if $verbose;
     $agent->form_number(1);
     $agent->set_fields (
         email => $email,
@@ -68,7 +69,8 @@ if ($agent->success) {
 
     # $agent->tick('remember_me', undef, 'true');
     $agent->submit(input => $submits[0]);
-
+    print("Results...\n");
+    printall(\$agent->success);
 }
 
 # Get the  current time - faster than running `date`
@@ -162,8 +164,9 @@ sub get_printable_report {# Go get the report URL
     print "\tGo to the report URL: $reporturl\n";
     $agent->get($reporturl);
     if ($agent->success) {
-        #my @forms = $agent->forms();
-        #printall(@forms) if $verbose;
+        print("Forms...\n");
+        my @forms = $agent->forms();
+        printall(@forms) if $verbose;
         my @submits = $agent->find_all_submits();
         #printall (@submits) if $verbose;
         $agent->set_fields (
@@ -197,6 +200,7 @@ sub get_printable_report {# Go get the report URL
 }
 sub printall {
     # sub to print all of an array
+    $Data::Dumper::Indent = 1; 
     while (my $entry = shift) {
         print "$entry\n";
         print Dumper($entry);
