@@ -4,10 +4,16 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
+By	getMyFitnessPalData.py	/^from selenium.webdriver.common.by import By$/;"	i
 ConfigParser	upload-weight-data-to-fitbit.py	/^import ConfigParser$/;"	i
 ET	parse_apple_health_export.py	/^import xml.etree.ElementTree as ET$/;"	i
 Fitbit	fitbit.rb	/^class Fitbit$/;"	c
+Keys	getMyFitnessPalData.py	/^from selenium.webdriver.common.keys import Keys$/;"	i
+Options	getMyFitnessPalData.py	/^from selenium.webdriver.firefox.options import Options$/;"	i
+VERBOSE	getMyFitnessPalData.py	/^    VERBOSE = True$/;"	v
 VERBOSE	parse_apple_health_export.py	/^    VERBOSE = 1$/;"	v
+WebDriverWait	getMyFitnessPalData.py	/^from selenium.webdriver.support.ui import WebDriverWait$/;"	i
+agent	getMyFitnessPalData.py	/^    agent = webdriver.Firefox(firefox_options=options)$/;"	v
 authd_client	upload-weight-data-to-fitbit.py	/^authd_client = fitbit.Fitbit($/;"	v
 b	upload-weight-data-to-fitbit.py	/^        b = res.get(u'body')$/;"	v
 build_fb_tables_from_file	parse_all_data.pl	/^sub build_fb_tables_from_file {$/;"	s
@@ -21,11 +27,14 @@ build_tables_from_files	parse_myfitnesspaldata.pl	/^sub build_tables_from_files 
 calculate_alpha	parseWeightData.pl	/^sub calculate_alpha {$/;"	s
 clean_wide_char	xml_rules_apple_health.pl	/^sub clean_wide_char {$/;"	s
 config	upload-weight-data-to-fitbit.py	/^config = ConfigParser.SafeConfigParser()$/;"	v
+credentials	getMyFitnessPalData.py	/^    credentials =  get_credentials()$/;"	v
 csv	upload-weight-data-to-fitbit.py	/^import csv$/;"	i
 csvreader	upload-weight-data-to-fitbit.py	/^    csvreader = csv.reader(csvfile)$/;"	v
 data	fitbit.rb	/^  def data(date = Time.now)$/;"	f	class:Fitbit
+datadir	getMyFitnessPalData.py	/^    datadir = '..\/health_data\/myFitnessPal_data\/'$/;"	v
 datatype_from_healthkit	xml_rules_apple_health.pl	/^sub datatype_from_healthkit {$/;"	s
 date	upload-weight-data-to-fitbit.py	/^        date = datetime.datetime.strptime(row[0], '%Y-%m-%d')$/;"	v
+dates	getMyFitnessPalData.py	/^    dates = []$/;"	v
 datetime	upload-weight-data-to-fitbit.py	/^import datetime$/;"	i
 dbdo	parse_all_data.pl	/^sub dbdo {$/;"	s
 dbdo	parse_apple_health_data.pl	/^sub dbdo {$/;"	s
@@ -52,10 +61,12 @@ en	parse_spreadsheet.py	/^import openpyxl # uses openpyxl - https:\/\/openpyxl.r
 etree	parse_apple_health_export.py	/^import xml.etree.ElementTree as ET$/;"	i
 fitbit	upload-weight-data-to-fitbit.py	/^import fitbit$/;"	i
 format_message	parse_apple_health_export.pl	/^sub format_message { # Helper sub to nicely format what we got from the XML$/;"	s
+get_credentials	getMyFitnessPalData.py	/^def get_credentials():$/;"	f
 get_mfp_report_for_date	getMyFitnessPalData.pl	/^sub get_mfp_report_for_date{$/;"	s
 get_mfp_report_for_date	getMyFitnessPalData.pl~	/^sub get_mfp_report_for_date{$/;"	s
 get_printable_report	getMyFitnessPalData.pl	/^sub get_printable_report {# Go get the report URL$/;"	s
 get_printable_report	getMyFitnessPalData.pl~	/^sub get_printable_report {# Go get the report URL$/;"	s
+get_printable_report	getMyFitnessPalData.py	/^def get_printable_report(year, month):$/;"	f
 hdl_char	parse_apple_health_export.pl	/^sub hdl_char {$/;"	s
 hdl_def	parse_apple_health_export.pl	/^sub hdl_def { }  # We just throw everything else$/;"	s
 hdl_end	parse_apple_health_export.pl	/^sub hdl_end{$/;"	s
@@ -65,13 +76,17 @@ https	parse_spreadsheet.py	/^import openpyxl # uses openpyxl - https:\/\/openpyx
 https	parse_spreadsheet.py	/^import sqlite3  # uses sqlite   - https:\/\/docs.python.org\/2\/library\/sqlite3.html$/;"	i
 initialize	fitbit.rb	/^  def initialize(email, pass)$/;"	f	class:Fitbit
 io	parse_spreadsheet.py	/^import openpyxl # uses openpyxl - https:\/\/openpyxl.readthedocs.io\/en\/stable\/$/;"	i
+is_it_a_leap_year	getMyFitnessPalData.py	/^def is_it_a_leap_year(year):    $/;"	f
 is_leap_year	getMyFitnessPalData.pl	/^sub is_leap_year {$/;"	s
 is_leap_year	getMyFitnessPalData.pl~	/^sub is_leap_year {$/;"	s
 last_day_of_month	getMyFitnessPalData.pl	/^sub last_day_of_month {$/;"	s
 last_day_of_month	getMyFitnessPalData.pl~	/^sub last_day_of_month {$/;"	s
+last_day_of_month	getMyFitnessPalData.py	/^def last_day_of_month(year, month):$/;"	f
 library	parse_spreadsheet.py	/^import sqlite3  # uses sqlite   - https:\/\/docs.python.org\/2\/library\/sqlite3.html$/;"	i
 logging	upload-weight-data-to-fitbit.py	/^import logging$/;"	i
 login	fitbit.rb	/^  def login$/;"	f	class:Fitbit
+login_url	getMyFitnessPalData.py	/^    login_url = '{}\/account\/login'.format(site_url)$/;"	v
+main	getMyFitnessPalData.py	/^def main():$/;"	f
 main	parse_apple_health_export.py	/^def main():$/;"	f
 main	parse_spreadsheet.py	/^def main():$/;"	f
 make_db	parse_all_data.pl	/^sub make_db {$/;"	s
@@ -83,16 +98,20 @@ make_db	parse_fitbit_export.pl	/^sub make_db {$/;"	s
 make_db	parse_myfitnesspaldata.pl	/^sub make_db {$/;"	s
 make_db	xml_rules_apple_health.pl	/^sub make_db {$/;"	s
 make_tables	parse_spreadsheet.py	/^def make_tables(dbc):$/;"	f
+month	getMyFitnessPalData.py	/^    month = int(time.strftime('%m'))$/;"	v
 new	parseWeightData.pl	/^sub new {$/;"	s
 normalise_key	parse_all_data.pl	/^sub normalise_key {$/;"	s
 normalise_key	parse_fitbit_data.pl	/^sub normalise_key {$/;"	s
 normalise_value	parse_all_data.pl	/^sub normalise_value {$/;"	s
 normalise_value	parse_fitbit_data.pl	/^sub normalise_value {$/;"	s
 openpyxl	parse_spreadsheet.py	/^import openpyxl # uses openpyxl - https:\/\/openpyxl.readthedocs.io\/en\/stable\/$/;"	i
+options	getMyFitnessPalData.py	/^    options = Options()$/;"	v
 org	parse_spreadsheet.py	/^import sqlite3  # uses sqlite   - https:\/\/docs.python.org\/2\/library\/sqlite3.html$/;"	i
+os	getMyFitnessPalData.py	/^import os$/;"	i
 os	upload-weight-data-to-fitbit.py	/^import os$/;"	i
 print_elapsed_time	run_weekly_tasks.sh	/^function print_elapsed_time {$/;"	f
 print_elapsed_time	run_weekly_tasks.sh~	/^function print_elapsed_time {$/;"	f
+print_elapsed_time	temp.sh	/^function print_elapsed_time {$/;"	f
 printall	getMyFitnessPalData.pl	/^sub printall {$/;"	s
 printall	getMyFitnessPalData.pl~	/^sub printall {$/;"	s
 printall	get_fitbit_data.pl	/^sub printall {$/;"	s
@@ -106,7 +125,9 @@ querydb	parse_fitbit_data.pl	/^sub querydb {$/;"	s
 querydb	parse_fitbit_export.pl	/^sub querydb {$/;"	s
 querydb	parse_myfitnesspaldata.pl	/^sub querydb {$/;"	s
 querydb	xml_rules_apple_health.pl	/^sub querydb {$/;"	s
+re	getMyFitnessPalData.py	/^import re$/;"	i
 readthedocs	parse_spreadsheet.py	/^import openpyxl # uses openpyxl - https:\/\/openpyxl.readthedocs.io\/en\/stable\/$/;"	i
+report_url	getMyFitnessPalData.py	/^    report_url = '{}\/reports\/printable_diary\/{}'.format(site_url,$/;"	v
 res	upload-weight-data-to-fitbit.py	/^            res = upload_weight(date, weight)$/;"	v
 resource_owner_key	upload-weight-data-to-fitbit.py	/^    resource_owner_key=config.get('fitbit', 'oauth_token'),$/;"	v
 resource_owner_secret	upload-weight-data-to-fitbit.py	/^    resource_owner_secret=config.get('fitbit', 'oauth_token_secret'))$/;"	v
@@ -119,6 +140,7 @@ sanitise_line_for_input	parse_apple_health_data.pl~	/^sub sanitise_line_for_inpu
 sanitise_line_for_input	parse_apple_health_export.pl	/^sub sanitise_line_for_input {$/;"	s
 sanitise_line_for_input	parse_fitbit_data.pl	/^sub sanitise_line_for_input {$/;"	s
 sanitise_line_for_input	parse_fitbit_export.pl	/^sub sanitise_line_for_input {$/;"	s
+site_url	getMyFitnessPalData.py	/^    site_url = 'https:\/\/www.myfitnesspal.com'$/;"	v
 spreadsheet	parse_spreadsheet.py	/^    spreadsheet = "..\/daves_weight_v3.xlsx"$/;"	v
 sqlite	parse_spreadsheet.py	/^import sqlite3  # uses sqlite   - https:\/\/docs.python.org\/2\/library\/sqlite3.html$/;"	i
 sqlite3	parse_spreadsheet.py	/^import sqlite3  # uses sqlite   - https:\/\/docs.python.org\/2\/library\/sqlite3.html$/;"	i
@@ -126,6 +148,8 @@ stable	parse_spreadsheet.py	/^import openpyxl # uses openpyxl - https:\/\/openpy
 start_at_date	upload-weight-data-to-fitbit.py	/^            start_at_date = date$/;"	v
 start_at_date	upload-weight-data-to-fitbit.py	/^start_at_date = datetime.datetime.strptime(start_at_str, '%Y-%m-%d')$/;"	v
 start_at_str	upload-weight-data-to-fitbit.py	/^    start_at_str = sys.argv[2]$/;"	v
+subprocess	getMyFitnessPalData.py	/^import subprocess$/;"	i
+sys	getMyFitnessPalData.py	/^import sys$/;"	i
 sys	upload-weight-data-to-fitbit.py	/^import sys$/;"	i
 tabledef_from_headerline	parse_all_data.pl	/^sub tabledef_from_headerline {$/;"	s
 tabledef_from_headerline	parse_apple_health_data.pl	/^sub tabledef_from_headerline {$/;"	s
@@ -133,6 +157,7 @@ tabledef_from_headerline	parse_apple_health_data.pl~	/^sub tabledef_from_headerl
 tabledef_from_headerline	parse_apple_health_export.pl	/^sub tabledef_from_headerline {$/;"	s
 tabledef_from_headerline	parse_fitbit_data.pl	/^sub tabledef_from_headerline {$/;"	s
 tabledef_from_headerline	parse_fitbit_export.pl	/^sub tabledef_from_headerline {$/;"	s
+time	getMyFitnessPalData.py	/^import time$/;"	i
 timestamp	getMyFitnessPalData.pl	/^sub timestamp {$/;"	s
 timestamp	getMyFitnessPalData.pl~	/^sub timestamp {$/;"	s
 timestamp_from_date	parse_apple_health_data.pl	/^sub timestamp_from_date {$/;"	s
@@ -154,6 +179,8 @@ uses	parse_spreadsheet.py	/^import openpyxl # uses openpyxl - https:\/\/openpyxl
 uses	parse_spreadsheet.py	/^import sqlite3  # uses sqlite   - https:\/\/docs.python.org\/2\/library\/sqlite3.html$/;"	i
 verbose	parse_spreadsheet.py	/^    verbose = 0$/;"	v
 w	upload-weight-data-to-fitbit.py	/^        w = b.get(u'weight')$/;"	v
+webdriver	getMyFitnessPalData.py	/^from selenium import webdriver$/;"	i
 weight	upload-weight-data-to-fitbit.py	/^        weight = row[1].replace('.0', '')$/;"	v
 weightData	parseWeightData.pl	/^package weightData;$/;"	p
 xml	parse_apple_health_export.py	/^import xml.etree.ElementTree as ET$/;"	i
+year	getMyFitnessPalData.py	/^    year = int(time.strftime('%Y'))$/;"	v

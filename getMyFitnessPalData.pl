@@ -133,7 +133,7 @@ sub last_day_of_month {
     my $year  = shift;
     my $month = shift;
     my @months   = qw/01 02 03 04 05 06 07 08 09 10 11 12/;
-    my @lastdays = qw/31 28 31 30 31 30 31 31 30 31 30 31/;
+    my @lastdays = qw/x/;
     if ( is_leap_year($year) ) {
         $lastdays[1] = 29;
     }

@@ -53,6 +53,7 @@ def get_printable_report(year, month):
         month in mm format, 1 or 2 digits
         year in yyyy format
     """
+    print('Getting report for {:04d}-{:02d}'.format(year, month))
     lastday = last_day_of_month(year, month)
     dates = {'from': '{:04d}-{:02d}-01'.format(year, month), 
              'to': '{:04d}-{:02d}-{:02d}'.format(year, month, lastday)}
@@ -67,11 +68,11 @@ def get_printable_report(year, month):
     # agent.get_screenshot_as_file('screen6.png')
     submits = agent.find_elements(By.CLASS_NAME, 'submit')
     for submit in submits:
-        print(submit, submit.text, dir(submit))
+        # print(submit, submit.text, dir(submit))
         submit.click()
     # submit_field = agent.find_element_by_partial_link_text('change report')
     # submit_field.click()
-    agent.get_screenshot_as_file('screen7.png')
+    # agent.get_screenshot_as_file('screen7.png')
     # print(agent.page_source)
     with open('{}.html'.format(outfile), 'w') as outfh:
         outfh.write(agent.page_source)
@@ -87,7 +88,7 @@ def get_printable_report(year, month):
     
     return None    
 
-def main():
+def main(dates):
     """
         Algorithm:
             Open the URL
@@ -119,7 +120,9 @@ def main():
         time.sleep(1)
     print('Logged in')
     # agent.get_screenshot_as_file('screen4.png')
-    get_printable_report(year, month)
+    for date in dates:
+        year, month = date.split('-')
+        get_printable_report(int(year), int(month))
     
 
 
@@ -135,13 +138,19 @@ if __name__ == '__main__':
                                                         credentials['username'])
     datadir = '../health_data/myFitnessPal_data/'
     dates = []
-    year = int(time.strftime('%Y'))
-    month = int(time.strftime('%m'))
-
+    # always have the current month
+    dates.append('{:04d}-{:02d}'.format(int(time.strftime('%Y')), int(time.strftime('%m'))))
+    for arg in sys.argv:
+        is_date = re.search(r'^([0-9]{4})\-*([0-9]{2})', arg)
+        print(is_date)
+        if is_date:
+            dates.append('{}-{}'.format(is_date[1], is_date[2]))
+    print(dates)
+    
     options = Options()
     options.set_headless()
     assert options.headless
     agent = webdriver.Firefox(firefox_options=options)
 
-    main()
+    main(dates)
     agent.close()
