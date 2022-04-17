@@ -74,6 +74,7 @@ then
 		cp -pv ~/OneDrive/Health_Data/Health\ Data.csv ./
 		cp -pv ~/OneDrive/Health_Data/Sleep\ Analysis.csv ./
 		cp -pv ~/OneDrive/Health_Data/moodpath_exported_data*.zip ./
+		cp -pv ~/OneDrive/Spreadsheets/daves_weight_v4.xlsx ../
 	fi
 	# Add these files to the repository and commit
 	git add Health\ Data.csv Sleep\ Analysis.csv

@@ -76,6 +76,7 @@ https	parse_spreadsheet.py	/^import openpyxl # uses openpyxl - https:\/\/openpyx
 https	parse_spreadsheet.py	/^import sqlite3  # uses sqlite   - https:\/\/docs.python.org\/2\/library\/sqlite3.html$/;"	i
 initialize	fitbit.rb	/^  def initialize(email, pass)$/;"	f	class:Fitbit
 io	parse_spreadsheet.py	/^import openpyxl # uses openpyxl - https:\/\/openpyxl.readthedocs.io\/en\/stable\/$/;"	i
+is_date	getMyFitnessPalData.py	/^        is_date = re.search(r'^([0-9]{4})\\-*([0-9]{2})', arg)$/;"	v
 is_it_a_leap_year	getMyFitnessPalData.py	/^def is_it_a_leap_year(year):    $/;"	f
 is_leap_year	getMyFitnessPalData.pl	/^sub is_leap_year {$/;"	s
 is_leap_year	getMyFitnessPalData.pl~	/^sub is_leap_year {$/;"	s
@@ -86,7 +87,7 @@ library	parse_spreadsheet.py	/^import sqlite3  # uses sqlite   - https:\/\/docs.
 logging	upload-weight-data-to-fitbit.py	/^import logging$/;"	i
 login	fitbit.rb	/^  def login$/;"	f	class:Fitbit
 login_url	getMyFitnessPalData.py	/^    login_url = '{}\/account\/login'.format(site_url)$/;"	v
-main	getMyFitnessPalData.py	/^def main():$/;"	f
+main	getMyFitnessPalData.py	/^def main(dates):$/;"	f
 main	parse_apple_health_export.py	/^def main():$/;"	f
 main	parse_spreadsheet.py	/^def main():$/;"	f
 make_db	parse_all_data.pl	/^sub make_db {$/;"	s
@@ -98,7 +99,6 @@ make_db	parse_fitbit_export.pl	/^sub make_db {$/;"	s
 make_db	parse_myfitnesspaldata.pl	/^sub make_db {$/;"	s
 make_db	xml_rules_apple_health.pl	/^sub make_db {$/;"	s
 make_tables	parse_spreadsheet.py	/^def make_tables(dbc):$/;"	f
-month	getMyFitnessPalData.py	/^    month = int(time.strftime('%m'))$/;"	v
 new	parseWeightData.pl	/^sub new {$/;"	s
 normalise_key	parse_all_data.pl	/^sub normalise_key {$/;"	s
 normalise_key	parse_fitbit_data.pl	/^sub normalise_key {$/;"	s
@@ -183,4 +183,3 @@ webdriver	getMyFitnessPalData.py	/^from selenium import webdriver$/;"	i
 weight	upload-weight-data-to-fitbit.py	/^        weight = row[1].replace('.0', '')$/;"	v
 weightData	parseWeightData.pl	/^package weightData;$/;"	p
 xml	parse_apple_health_export.py	/^import xml.etree.ElementTree as ET$/;"	i
-year	getMyFitnessPalData.py	/^    year = int(time.strftime('%Y'))$/;"	v
