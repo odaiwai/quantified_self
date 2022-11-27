@@ -4,31 +4,36 @@
 
 """
 
-import os
+# import os
 import sys
 import re
 import time
 import subprocess
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.common.keys import Keys
+# from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 
 
 def get_credentials():
-    credentials = {}
+    """ Get the credential s from the external file.
+    """
+    creds = {}
     with open('../health_data/credentials.txt', 'r') as infh:
         lines = list(infh)
         for line in lines:
             parts = line.strip('\n').split(':')
             if parts[0] == 'mfp':
-                credentials['username'] = parts[1]
-                credentials['email'] = parts[2]
-                credentials['password'] = parts[3]
-    return credentials
+                creds['username'] = parts[1]
+                creds['email'] = parts[2]
+                creds['password'] = parts[3]
+    return creds
 
-def is_it_a_leap_year(year):    
+
+def is_it_a_leap_year(year):
+    """ Check if the supplied year is a leap year.
+    """
     leap_year = False
     if year % 4 == 0:
         leap_year = True
@@ -37,6 +42,7 @@ def is_it_a_leap_year(year):
     if year % 400 == 0:
         leap_year = True
     return leap_year
+
 
 def last_day_of_month(year, month):
     """ return the last day of the month for a given month/year
@@ -55,7 +61,7 @@ def get_printable_report(year, month):
     """
     print('Getting report for {:04d}-{:02d}'.format(year, month))
     lastday = last_day_of_month(year, month)
-    dates = {'from': '{:04d}-{:02d}-01'.format(year, month), 
+    dates = {'from': '{:04d}-{:02d}-01'.format(year, month),
              'to': '{:04d}-{:02d}-{:02d}'.format(year, month, lastday)}
     outfile = '{}/mfp_report_{:04d}{:02d}'.format(datadir, year, month)
     agent.get(report_url)
@@ -76,17 +82,17 @@ def get_printable_report(year, month):
     # print(agent.page_source)
     with open('{}.html'.format(outfile), 'w') as outfh:
         outfh.write(agent.page_source)
-    
+
     cmd = 'lynx -dump {O}.html'.format(O=outfile).split(' ')
     print(cmd)
     results = subprocess.run(cmd, stdout = subprocess.PIPE, text = True)
     with open('{}.txt'.format(outfile), 'w') as outfh:
         outfh.write(results.stdout)
-    
+
     # convert to text using lynx
     # print(dir(agent))
-    
-    return None    
+
+    return None
 
 def main(dates):
     """
@@ -109,12 +115,12 @@ def main(dates):
     for button in buttons:
         if button.text == 'GOT IT':
             button.click()
-            
+
     # agent.get_screenshot_as_file('screen2.png')
     forms = agent.find_elements(By.TAG_NAME, 'form')
     forms[0].submit()
     # agent.get_screenshot_as_file('screen3.png')
-        
+
     # Wait for the page to refresh to the logged in state
     while agent.current_url == login_url:
         time.sleep(1)
@@ -123,7 +129,7 @@ def main(dates):
     for date in dates:
         year, month = date.split('-')
         get_printable_report(int(year), int(month))
-    
+
 
 
 
@@ -140,17 +146,22 @@ if __name__ == '__main__':
     dates = []
     # always have the current month
     dates.append('{:04d}-{:02d}'.format(int(time.strftime('%Y')), int(time.strftime('%m'))))
+
+    # If in the first week of the month, get last month's too
+    if int(time.strftime('%d')) < 8:
+        dates.append('{:04d}-{:02d}'.format(int(time.strftime('%Y')), int(time.strftime('%m'))-1))
+
     for arg in sys.argv:
         is_date = re.search(r'^([0-9]{4})\-*([0-9]{2})', arg)
         print(is_date)
         if is_date:
             dates.append('{}-{}'.format(is_date[1], is_date[2]))
     print(dates)
-    
+
     options = Options()
-    options.set_headless()
+    options.headless = True
     assert options.headless
-    agent = webdriver.Firefox(firefox_options=options)
+    agent = webdriver.Firefox(options=options)
 
     main(dates)
     agent.close()
