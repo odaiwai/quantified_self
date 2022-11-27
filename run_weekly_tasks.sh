@@ -59,9 +59,11 @@ done
 if [[ $DOWNLOAD -gt 0 ]]
 then
 	# Download this years myfitnesspal report
-	./getMyFitnessPalData.py
+	# ./getMyFitnessPalData.py
+	# Download thie cronometer Data
+	./get_cronometer_data.py
     print_elapsed_time
-    
+
     # Get the updated Apple Health Export
 	cd ../health_data/apple_health_export
     if [[ "$OS" = "Darwin" ]]
@@ -91,10 +93,16 @@ fi
 if [[ $PARSE -gt 0 ]]
 then
 	# Parse this years myfitnesspal report into a database
-	./parse_myfitnesspaldata.pl
+    # Don't need to do this any more!
+	#./parse_myfitnesspaldata.pl
     print_elapsed_time
 
-	# The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be
+	# Parse thCronometer Data once that's setup
+    # Don't need to do this any more!
+	#./parse_cro ometer_data.py
+    print_elapsed_time
+
+# The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be
 	# done automatically at the moment. At least, not by me.
 	#./parse_fitbit_export.pl
     print_elapsed_time
@@ -153,7 +161,6 @@ $sqlite health_data.sqlite "vacuum"
 print_elapsed_time
 
 # Dump out the standard Report
-echo "Standard Report"
 SQLCOMMAND="SELECT
 	mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, mfp_daily_summary.Protein, 
 	mfp_daily_summary.Cholesterol, mfp_daily_summary.Sodium, Sugars, mfp_daily_summary.Fiber, 
@@ -161,6 +168,16 @@ SQLCOMMAND="SELECT
 	FROM [mfp_daily_summary] 
 	JOIN apple_qs_health_data using (timestamp) 
 	WHERE mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"
+echo "Standard Report"
+SQLCOMMAND="SELECT
+    mfp_nutrition.date, sum(mfp_nutrition.Calories), sum(Carbohydrates)/1000, sum(Fat_g), 
+    sum(mfp_nutrition.Protein_g), sum(mfp_nutrition.Cholesterol), sum(mfp_nutrition.Sodium_mg), 
+    sum(mfp_nutrition.Sugar), sum(mfp_nutrition.Fiber), sum(mfp_exercise.Exercise_calories), 
+    0, apple_qs_health_data.Active_Calories, apple_qs_health_data.Resting_Calories 
+    FROM [mfp_nutrition] 
+	JOIN apple_qs_health_data using (timestamp) 
+    JOIN mfp_exercise using (timestamp) 
+	WHERE mfp_nutrition.timestamp > $TIMESTAMP group by timestamp;"
 echo "    $SQLCOMMAND"
 $sqlite health_data.sqlite -csv -header "$SQLCOMMAND"
 $sqlite health_data.sqlite -csv -header "$SQLCOMMAND" > excel_import.csv
