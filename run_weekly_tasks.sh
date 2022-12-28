@@ -56,12 +56,13 @@ do
 			;;
 	esac
 done
+
 if [[ $DOWNLOAD -gt 0 ]]
 then
 	# Download this years myfitnesspal report
 	# ./getMyFitnessPalData.py
-	# Download thie cronometer Data
-	./get_cronometer_data.py
+	# Download thie cronometer Data - Currently manually exported
+	# ./get_cronometer_data.py
     print_elapsed_time
 
     # Get the updated Apple Health Export
@@ -76,11 +77,22 @@ then
 		cp -pv ~/OneDrive/Health_Data/Health\ Data.csv ./
 		cp -pv ~/OneDrive/Health_Data/Sleep\ Analysis.csv ./
 		cp -pv ~/OneDrive/Health_Data/moodpath_exported_data*.zip ./
-		cp -pv ~/OneDrive/Spreadsheets/daves_weight_v4.xlsx ../
+		# cp -pv ~/OneDrive/Spreadsheets/daves_weight_v4.xlsx ../
+		# Cronometer Data 
+	    cd ../cronometer_data
+        for file in notes biometrics exercises servings dailySummary; do
+            cp -pv ~/OneDrive/Health_Data/${file}.csv ./
+        done
 	fi
 	# Add these files to the repository and commit
 	git add Health\ Data.csv Sleep\ Analysis.csv
 	git commit -m "updated QS exported data" Health\ Data.csv Sleep\ Analysis.csv
+
+    for file in notes biometrics exercises servings dailySummary; do
+        git add ${file}.csv
+    done
+    git commit -m "Updated the Cronometer data"
+
 
     # Go back to the main dir
 	cd ../../analyse_health_data
@@ -95,11 +107,40 @@ then
 	# Parse this years myfitnesspal report into a database
     # Don't need to do this any more!
 	#./parse_myfitnesspaldata.pl
-    print_elapsed_time
+    DECLARE -A table_specs
+    table_specs[Measurement]="Date, Fitbit_body_fatpct, sum(Fitbit_steps), sum(Fitbit_tracked_sleep_minutes), Hips, Neck, Waist, Weight"
+    table_specs[Exercise]="Date, sum(Exercise_Calories), sum(Exercise_Minutes), sum(Sets), sum(Reps_Per_Set), sum(Kilograms), sum(Steps)"
+    table_specs[Nutrition]="Date, sum(Calories),sum(Fat_g), sum(Saturated_Fat), sum(Polyunsaturated_Fat), sum(Monounsaturated_Fat), sum(Trans_Fat), sum(Cholesterol), sum(Sodium_mg), sum(Potassium), sum(Carbohydrates_g), sum(Fiber), sum(Sugar), sum(Protein_g), sum(Vitamin_A), sum(Vitamin_C), sum(Calcium), sum(Iron)"
 
-	# Parse thCronometer Data once that's setup
-    # Don't need to do this any more!
-	#./parse_cro ometer_data.py
+    for table in Measurement Nutrition Exercise; do
+        lc_table=`echo $table | tr [A-Z] [a-z]`
+        dates="2014-08-18-to-2022-11-27"
+        basedir="../health_data/myFitnessPal_data"
+        SQLCMD="DROP TABLE IF EXISTS mfp_${lc_table}_import;
+                DROP TABLE IF EXISTS mfp_${lc_table}_daily;
+    .import --csv -v ${basedir}/File-Export-${dates}/${table}-Summary-${dates}.csv mfp_${lc_table}_import
+    CREATE TABLE mfp_${lc_table}_daily as
+        SELECT CAST(Timestamp as Integer), ${tables_specs[$table]}
+        from mfp_${lc_table}_input GROUP BY Timestamp;"
+        $sqlite health_data.sqlite -csv -header $SQLCMD
+    done
+    print_elapsed_time
+    exit
+
+	# Parse the cronometer Data once that's setup
+	# ./parse_cronometer_data.py
+    for file in dailySummary servings notes biometrics exercises; do 
+        SQLCMD="DROP TABLE IF EXISTS cronometer_${file};
+            .import --csv -v ../health_data/cronometer_data/${file}.csv temp
+            CREATE TABLE cronometer_${file} as 
+                select *, CAST(substr(Date, 1, 4) || 
+                               substr(Date, 6, 2) || 
+                               substr(Date,9,2) AS INTEGER) as "Timestamp" 
+                        from temp;
+            DROP TABLE temp;"
+        $sqlite health_data.sqlite $SQLCMD
+    done
+
     print_elapsed_time
 
 # The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be
@@ -160,25 +201,55 @@ echo "Vacuum the Database"
 $sqlite health_data.sqlite "vacuum"
 print_elapsed_time
 
+# Make a unified timestamp table
+SQL_COMMAND="DROP Table Timestamp;
+    CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);
+    INSERT INTO Timestamp (Date, Timestamp) SELECT
+        substr(timestamp, 1, 4) || '-' || 
+        substr(timestamp, 5, 2) || '-' || 
+        substr(timestamp, 7, 2) ,  timestamp
+    from mfp_daily_summary;
+    INSERT or IGNORE INTO Timestamp (Date, Timestamp) SELECT
+        substr(timestamp, 1,4) || '-' || 
+        substr(timestamp, 5, 2) || '-' || 
+        substr(timestamp, 7, 2), timestamp 
+        from apple_qs_health_data;"
+$sqlite health_data.sqlite -csv -header "$SQLCOMMAND"
+
 # Dump out the standard Report
 SQLCOMMAND="SELECT
-	mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, mfp_daily_summary.Protein, 
-	mfp_daily_summary.Cholesterol, mfp_daily_summary.Sodium, Sugars, mfp_daily_summary.Fiber, 
-	0, 0, apple_qs_health_data.Active_Calories, apple_qs_health_data.Resting_Calories 
-	FROM [mfp_daily_summary] 
-	JOIN apple_qs_health_data using (timestamp) 
+	mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, mfp_daily_summary.Protein,
+	mfp_daily_summary.Cholesterol, mfp_daily_summary.Sodium, Sugars, mfp_daily_summary.Fiber,
+	0, 0, apple_qs_health_data.Active_Calories, apple_qs_health_data.Resting_Calories
+	FROM [mfp_daily_summary]
+	JOIN apple_qs_health_data using (timestamp)
 	WHERE mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"
 echo "Standard Report"
 SQLCOMMAND="SELECT
-    mfp_nutrition.date, sum(mfp_nutrition.Calories), sum(Carbohydrates)/1000, sum(Fat_g), 
-    sum(mfp_nutrition.Protein_g), sum(mfp_nutrition.Cholesterol), sum(mfp_nutrition.Sodium_mg), 
-    sum(mfp_nutrition.Sugar), sum(mfp_nutrition.Fiber), sum(mfp_exercise.Exercise_calories), 
-    0, apple_qs_health_data.Active_Calories, apple_qs_health_data.Resting_Calories 
-    FROM [mfp_nutrition] 
-	JOIN apple_qs_health_data using (timestamp) 
-    JOIN mfp_exercise using (timestamp) 
+    mfp_nutrition.date, sum(mfp_nutrition.Calories), sum(Carbohydrates)/1000, sum(Fat_g),
+    sum(mfp_nutrition.Protein_g), sum(mfp_nutrition.Cholesterol), sum(mfp_nutrition.Sodium_mg),
+    sum(mfp_nutrition.Sugar), sum(mfp_nutrition.Fiber), sum(mfp_exercise.Exercise_calories),
+    0, apple_qs_health_data.Active_Calories, apple_qs_health_data.Resting_Calories
+    FROM [mfp_nutrition]
+    JOIN apple_qs_health_data using (timestamp) 
+    JOIN mfp_exercise using (timestamp)
 	WHERE mfp_nutrition.timestamp > $TIMESTAMP group by timestamp;"
-echo "    $SQLCOMMAND"
+SQLCOMMAND="SELECT Date, 
+    IFNULL(MFP.Calories, CDS.'Energy (kcal)'),
+    IFNULL(MFP.Carbs, CDS.'Carbs (g)'),
+    IFNULL(MFP.Fat, CDS.'Fat (g)'),
+    IFNULL(MFP.Fat.Protein, CDS.'Protein (g)'),
+    IFNULL(MFP.Cholesterol, CDS.'Cholesterol (g)'),
+    IFNULL(MFP.Sodium, CDS.'Sodium (mg)'),
+    IFNULL(MFP.Sugars, CDS.'Sugars (g)'),
+    IFNULL(MFP.Fiber, CDS.'Fiber (g)')
+    FROM [Timestamp]
+    FULL OUTER JOIN mfp_daily_summary as MFP using (Timestamp)
+    FULL OUTER JOIN apple_qs_health_data as AQH using (Timestamp)
+    FULL OUTER JOIN cronometer_dailySummary as CDS using (Timestamp);
+    Where Timestamp > $TIMESTAMP;"
+echo "$SQLCOMMAND"
+
 $sqlite health_data.sqlite -csv -header "$SQLCOMMAND"
 $sqlite health_data.sqlite -csv -header "$SQLCOMMAND" > excel_import.csv
 
