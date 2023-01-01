@@ -57,6 +57,7 @@ for arg in "$@"; do
 	esac
 done
 
+echo "Download Phase..."
 if [[ $DOWNLOAD -gt 0 ]]; then
 	# Download this years myfitnesspal report
 	# ./getMyFitnessPalData.py
@@ -99,7 +100,7 @@ if [[ $DOWNLOAD -gt 0 ]]; then
     # ./get_fitbit_data.pl
 fi
 
-
+echo "Download Phase..."
 if [[ $PARSE -gt 0 ]]; then
 	# Parse this years myfitnesspal report into a database
     # Don't need to do this any more!
@@ -174,6 +175,21 @@ if [[ $PARSE -gt 0 ]]; then
     print_elapsed_time
 fi
 
+echo "Reporting Phase..."
+# Make a unified timestamp table
+databases="timestamp mfp_daily_summary apple_qs_health_data apple_qs_sleep_analysis cronometer_dailySummary"
+echo "DROP Table Timestamp;" > temp.sql
+echo "CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);" >> temp.sql
+for database in $databases; do
+    echo "INSERT INTO Timestamp (Date, Timestamp) SELECT" >> temp.sql
+    echo "    substr(timestamp, 1, 4) || '-' || " >> temp.sql
+    echo "    substr(timestamp, 5, 2) || '-' || " >> temp.sql
+    echo "    substr(timestamp, 7, 2) ,  timestamp" >> temp.sql
+    echo "from $database; " >> temp.sql
+done
+$sqlite health_data.sqlite < temp.sql
+
+
 # Print out the data collected
 YEAR=`date +"%Y"`
 echo "$MONTH"
@@ -187,11 +203,12 @@ fi
 
 # Show the last dates for each of the databases just to make sure the retrieval process worked.
 echo "Last Dates:"
-echo "mfp_daily_summary         : `$sqlite health_data.sqlite "select timestamp from mfp_daily_summary order by timestamp DESC limit 1;"`"
-echo "apple_qs_health_data      : `$sqlite health_data.sqlite "select timestamp from apple_qs_health_data order by timestamp DESC limit 1;"`"
-echo "apple_qs_sleep_analysis   : `$sqlite health_data.sqlite "select timestamp from apple_qs_sleep_analysis order by timestamp DESC limit 1;"`"
+for database in $databases; do
+	echo -e "$database\t\t: `$sqlite health_data.sqlite "select timestamp from $database order by timestamp DESC limit 1;"`"
+done
 echo ""
 print_elapsed_time
+
 # Currently, there is a problem with the Apple QS Health Data (Write an App?)
 
 echo "MyFitnessPal Data for this month: ($OS, $TIMESTAMP)"
@@ -203,21 +220,6 @@ echo "MyFitnessPal Data for this month: ($OS, $TIMESTAMP)"
 echo "Vacuum the Database"
 $sqlite health_data.sqlite "vacuum"
 print_elapsed_time
-
-# Make a unified timestamp table
-SQL_COMMAND="DROP Table Timestamp;
-    CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);
-    INSERT INTO Timestamp (Date, Timestamp) SELECT
-        substr(timestamp, 1, 4) || '-' || 
-        substr(timestamp, 5, 2) || '-' || 
-        substr(timestamp, 7, 2) ,  timestamp
-    from mfp_daily_summary;
-    INSERT or IGNORE INTO Timestamp (Date, Timestamp) SELECT
-        substr(timestamp, 1,4) || '-' || 
-        substr(timestamp, 5, 2) || '-' || 
-        substr(timestamp, 7, 2), timestamp 
-        from apple_qs_health_data;"
-$sqlite health_data.sqlite -csv -header "$SQLCOMMAND"
 
 # Dump out the standard Report
 echo "Standard Report"
