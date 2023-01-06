@@ -9,9 +9,12 @@
 !_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
 !_TAG_PROGRAM_URL	https://ctags.io/	/official site/
 !_TAG_PROGRAM_VERSION	5.9.0	//
+Date	temp.sql	/^CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);$/;"	E	table:Timestamp
 ET	parse_apple_health_export.py	/^import xml.etree.ElementTree as ET$/;"	I	nameref:module:xml.etree.ElementTree
 Fitbit	fitbit.rb	/^class Fitbit$/;"	c
 Things to add to this project	TODO.md	/^# Things to add to this project$/;"	c
+Timestamp	temp.sql	/^CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);$/;"	E	table:Timestamp
+Timestamp	temp.sql	/^CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);$/;"	t
 VERBOSE	getMyFitnessPalData.py	/^    VERBOSE = True$/;"	v
 VERBOSE	get_cronometer_data.py	/^    VERBOSE = True$/;"	v
 VERBOSE	parse_apple_health_export.py	/^    VERBOSE = 1$/;"	v
@@ -164,7 +167,6 @@ tabledef_from_headerline	parse_apple_health_data.pl	/^sub tabledef_from_headerli
 tabledef_from_headerline	parse_apple_health_export.pl	/^sub tabledef_from_headerline {$/;"	s
 tabledef_from_headerline	parse_fitbit_data.pl	/^sub tabledef_from_headerline {$/;"	s
 tabledef_from_headerline	parse_fitbit_export.pl	/^sub tabledef_from_headerline {$/;"	s
-temp	temp.sql	/^.schema temp$/;"	S
 time	get_fitbit_data.R	/^hr_data = list(time = c(), hrate = c())$/;"	n	list:hr_data	constructor:c
 timestamp	getMyFitnessPalData.pl	/^sub timestamp {$/;"	s
 timestamp_from_date	parse_apple_health_data.pl	/^sub timestamp_from_date {$/;"	s

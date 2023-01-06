@@ -41,3 +41,4 @@ ss_*.csv
 
 *.png
 *.log
+.vscode\
