@@ -6,7 +6,7 @@ use DBI;
 use Time::Piece;
 use DateTime;
 
-# script to parse the Apple Health Export XML file and populate a database
+# script to parse the Apple Health Export XML file and populatle a database
 # Dave O'Brien 2017/05
 
 my $firstrun = 1;
