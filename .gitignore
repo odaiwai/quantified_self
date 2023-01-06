@@ -42,3 +42,8 @@ ss_*.csv
 *.png
 *.log
 .vscode\
+temp.sh
+temp.sql
+temp.sql
+query.sql
+health_data.sqlite.old

@@ -131,7 +131,6 @@ pct.complete.of.local.day	get_fitbit_data2.R	/^    pct.complete.of.local.day = m
 pct.complete.of.server.day	get_fitbit_data2.R	/^    pct.complete.of.server.day = mean(df$hrate[yday(df$time) == yday(s[i])] > 0)$/;"	g
 perl-toolbox.syntax.path	.vscode/settings.json	/^    "perl-toolbox.syntax.path": "\/usr\/local\/bin\/perl"$/;"	s
 print_elapsed_time	run_weekly_tasks.sh	/^function print_elapsed_time {$/;"	f
-print_elapsed_time	temp.sh	/^function print_elapsed_time {$/;"	f
 printall	getMyFitnessPalData.pl	/^sub printall {$/;"	s
 printall	get_fitbit_data.pl	/^sub printall {$/;"	s
 process_weight_data	parseWeightData.pl	/^sub process_weight_data  {$/;"	s

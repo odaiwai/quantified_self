@@ -9,7 +9,7 @@ use Data::Dumper;
 # 20170415 dave o'brien
 #
 
-my $verbose  = 1;
+my $verbose  = 0;
 my $firstrun = 1;
 my $basedir  = "../health_data/apple_health_export";
 
