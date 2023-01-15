@@ -9,16 +9,19 @@
 !_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
 !_TAG_PROGRAM_URL	https://ctags.io/	/official site/
 !_TAG_PROGRAM_VERSION	5.9.0	//
+ACCOUNTURL	get_cronometer_data.py	/^    ACCOUNTURL = f'{SITEURL}\/#account\/'$/;"	v
+DATADIR	get_cronometer_data.py	/^    DATADIR = '..\/health_data\/cronometer_data\/'$/;"	v
 Date	temp.sql	/^CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);$/;"	E	table:Timestamp
 ET	parse_apple_health_export.py	/^import xml.etree.ElementTree as ET$/;"	I	nameref:module:xml.etree.ElementTree
 Fitbit	fitbit.rb	/^class Fitbit$/;"	c
+LOGINURL	get_cronometer_data.py	/^    LOGINURL = f'{SITEURL}\/login\/'$/;"	v
+SITEURL	get_cronometer_data.py	/^    SITEURL = 'https:\/\/www.cronometer.com'$/;"	v
 Things to add to this project	TODO.md	/^# Things to add to this project$/;"	c
 Timestamp	temp.sql	/^CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);$/;"	E	table:Timestamp
 Timestamp	temp.sql	/^CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);$/;"	t
 VERBOSE	getMyFitnessPalData.py	/^    VERBOSE = True$/;"	v
 VERBOSE	get_cronometer_data.py	/^    VERBOSE = True$/;"	v
 VERBOSE	parse_apple_health_export.py	/^    VERBOSE = 1$/;"	v
-account_url	get_cronometer_data.py	/^    account_url = '{}\/#account\/'.format(site_url)$/;"	v
 agent	getMyFitnessPalData.py	/^    agent = webdriver.Firefox(options=options)$/;"	v
 agent	get_cronometer_data.py	/^    agent = webdriver.Firefox(options=options)$/;"	v
 authd_client	upload-weight-data-to-fitbit.py	/^authd_client = fitbit.Fitbit($/;"	v
@@ -40,15 +43,14 @@ cookie	fitbitScraper.R	/^cookie <- login(email="odaiwai@gmail.com", password="sc
 cookie	get_fitbit_data.R	/^cookie = login("odaiwai@gmail.com", "ceG4Ayb1nAf5hEk", rememberMe = TRUE)$/;"	g
 cookie	get_fitbit_data2.R	/^cookie = login("odaiwai@gmail.com", "ceG4Ayb1nAf5hEk", rememberMe = TRUE)$/;"	g
 credentials	getMyFitnessPalData.py	/^    credentials =  get_credentials()$/;"	v
-credentials	get_cronometer_data.py	/^    credentials =  get_credentials()$/;"	v
+credentials	get_cronometer_data.py	/^    credentials = get_credentials()$/;"	v
 csvreader	upload-weight-data-to-fitbit.py	/^    csvreader = csv.reader(csvfile)$/;"	v
 data	fitbit.rb	/^  def data(date = Time.now)$/;"	f	class:Fitbit
 datadir	getMyFitnessPalData.py	/^    datadir = '..\/health_data\/myFitnessPal_data\/'$/;"	v
-datadir	get_cronometer_data.py	/^    datadir = '..\/health_data\/cronometer_data\/'$/;"	v
 datatype_from_healthkit	xml_rules_apple_health.pl	/^sub datatype_from_healthkit {$/;"	s
 date	upload-weight-data-to-fitbit.py	/^        date = datetime.datetime.strptime(row[0], '%Y-%m-%d')$/;"	v
 dates	getMyFitnessPalData.py	/^    dates = []$/;"	v
-dates	get_cronometer_data.py	/^    dates = []$/;"	v
+dates	get_cronometer_data.py	/^    dates = [f'{this_year:04d}-{this_month:02d}']$/;"	v
 days.to.process	get_fitbit_data2.R	/^days.to.process = c(incomp.days, missing.days)$/;"	c
 dbdo	parse_all_data.pl	/^sub dbdo {$/;"	s
 dbdo	parse_apple_health_data.pl	/^sub dbdo {$/;"	s
@@ -103,11 +105,13 @@ is_leap_year	getMyFitnessPalData.pl	/^sub is_leap_year {$/;"	s
 last_day_of_month	getMyFitnessPalData.pl	/^sub last_day_of_month {$/;"	s
 last_day_of_month	getMyFitnessPalData.py	/^def last_day_of_month(year, month):$/;"	f
 last_day_of_month	get_cronometer_data.py	/^def last_day_of_month(year, month):$/;"	f
+last_month	get_cronometer_data.py	/^        last_month = this_month - 1$/;"	v
+last_year	get_cronometer_data.py	/^            last_year = this_year - 1$/;"	v
+last_year	get_cronometer_data.py	/^        last_year = this_year$/;"	v
 login	fitbit.rb	/^  def login$/;"	f	class:Fitbit
 login_url	getMyFitnessPalData.py	/^    login_url = '{}\/account\/login'.format(site_url)$/;"	v
-login_url	get_cronometer_data.py	/^    login_url = '{}\/login'.format(site_url)$/;"	v
 main	getMyFitnessPalData.py	/^def main(dates):$/;"	f
-main	get_cronometer_data.py	/^def main(dates):$/;"	f
+main	get_cronometer_data.py	/^def main(agent, dates):$/;"	f
 main	parse_apple_health_export.py	/^def main():$/;"	f
 main	parse_spreadsheet.py	/^def main():$/;"	f
 make_db	parse_all_data.pl	/^sub make_db {$/;"	s
@@ -154,7 +158,6 @@ sanitise_line_for_input	parse_apple_health_export.pl	/^sub sanitise_line_for_inp
 sanitise_line_for_input	parse_fitbit_data.pl	/^sub sanitise_line_for_input {$/;"	s
 sanitise_line_for_input	parse_fitbit_export.pl	/^sub sanitise_line_for_input {$/;"	s
 site_url	getMyFitnessPalData.py	/^    site_url = 'https:\/\/www.myfitnesspal.com'$/;"	v
-site_url	get_cronometer_data.py	/^    site_url = 'https:\/\/www.cronometer.com'$/;"	v
 spreadsheet	parse_spreadsheet.py	/^    spreadsheet = "..\/daves_weight_v3.xlsx"$/;"	v
 start_at_date	upload-weight-data-to-fitbit.py	/^            start_at_date = date$/;"	v
 start_at_date	upload-weight-data-to-fitbit.py	/^start_at_date = datetime.datetime.strptime(start_at_str, '%Y-%m-%d')$/;"	v
@@ -166,6 +169,8 @@ tabledef_from_headerline	parse_apple_health_data.pl	/^sub tabledef_from_headerli
 tabledef_from_headerline	parse_apple_health_export.pl	/^sub tabledef_from_headerline {$/;"	s
 tabledef_from_headerline	parse_fitbit_data.pl	/^sub tabledef_from_headerline {$/;"	s
 tabledef_from_headerline	parse_fitbit_export.pl	/^sub tabledef_from_headerline {$/;"	s
+this_month	get_cronometer_data.py	/^    this_month = int(time.strftime('%m'))$/;"	v
+this_year	get_cronometer_data.py	/^    this_year = int(time.strftime('%Y'))$/;"	v
 time	get_fitbit_data.R	/^hr_data = list(time = c(), hrate = c())$/;"	n	list:hr_data	constructor:c
 timestamp	getMyFitnessPalData.pl	/^sub timestamp {$/;"	s
 timestamp_from_date	parse_apple_health_data.pl	/^sub timestamp_from_date {$/;"	s
