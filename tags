@@ -10,20 +10,36 @@
 !_TAG_PROGRAM_URL	https://ctags.io/	/official site/
 !_TAG_PROGRAM_VERSION	5.9.0	//
 ACCOUNTURL	get_cronometer_data.py	/^    ACCOUNTURL = f'{SITEURL}\/#account\/'$/;"	v
+Cronometer	cronometer.html	/^    <title>Cronometer<\/title>$/;"	j
 DATADIR	get_cronometer_data.py	/^    DATADIR = '..\/health_data\/cronometer_data\/'$/;"	v
 Date	temp.sql	/^CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);$/;"	E	table:Timestamp
 ET	parse_apple_health_export.py	/^import xml.etree.ElementTree as ET$/;"	I	nameref:module:xml.etree.ElementTree
 Fitbit	fitbit.rb	/^class Fitbit$/;"	c
 LOGINURL	get_cronometer_data.py	/^    LOGINURL = f'{SITEURL}\/login\/'$/;"	v
 SITEURL	get_cronometer_data.py	/^    SITEURL = 'https:\/\/www.cronometer.com'$/;"	v
+SVGID_00000080204824835490186340000006555313623737321646_	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+SVGID_00000087390528724759027540000005542216573224640647_	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+SVGID_00000139268200340147045010000013043347714195695259_	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+SVGID_1_	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
 Things to add to this project	TODO.md	/^# Things to add to this project$/;"	c
 Timestamp	temp.sql	/^CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);$/;"	E	table:Timestamp
 Timestamp	temp.sql	/^CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);$/;"	t
 VERBOSE	getMyFitnessPalData.py	/^    VERBOSE = True$/;"	v
 VERBOSE	get_cronometer_data.py	/^    VERBOSE = True$/;"	v
 VERBOSE	parse_apple_health_export.py	/^    VERBOSE = 1$/;"	v
+_Group_	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+_Group_2	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+_Group_3	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+_Group_4	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+_Path_	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+_Path_2	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+__gwt_historyFrame	cronometer.html	/^<iframe src="javascript:''" id="__gwt_historyFrame" style="position: absolute; width: 0; height:/;"	I
+ab-iam-css-definitions-4-0-5	cronometer.html	/^<script src="https:\/\/cronometer.com\/cronometer\/92AF3FA860308904965B9BAB86B511CF.cache.js"><\//;"	I
+about-collapse	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+aboutLink	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
 agent	getMyFitnessPalData.py	/^    agent = webdriver.Firefox(options=options)$/;"	v
 agent	get_cronometer_data.py	/^    agent = webdriver.Firefox(options=options)$/;"	v
+artwork	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
 authd_client	upload-weight-data-to-fitbit.py	/^authd_client = fitbit.Fitbit($/;"	v
 b	upload-weight-data-to-fitbit.py	/^        b = res.get(u'body')$/;"	v
 build_fb_tables_from_file	parse_all_data.pl	/^sub build_fb_tables_from_file {$/;"	s
@@ -34,16 +50,60 @@ build_tables_from_file	parse_fitbit_data.pl	/^sub build_tables_from_file {$/;"	s
 build_tables_from_file	parse_fitbit_export.pl	/^sub build_tables_from_file {$/;"	s
 build_tables_from_files	parse_myfitnesspaldata.pl	/^sub build_tables_from_files {$/;"	s
 calculate_alpha	parseWeightData.pl	/^sub calculate_alpha {$/;"	s
+calendar-date-100	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-101	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-102	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-103	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-104	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-105	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-106	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-107	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-108	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-109	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-110	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-111	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-112	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-113	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-114	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-115	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-116	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-117	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-118	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-119	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-120	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-121	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-122	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-123	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-124	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-125	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-126	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-127	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-128	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-129	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-130	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-131	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-132	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-133	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-134	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-135	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-136	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-137	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-138	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-139	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-140	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+calendar-date-141	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
 clean_wide_char	xml_rules_apple_health.pl	/^sub clean_wide_char {$/;"	s
 completeness	get_fitbit_data2.R	/^completeness = hr_data %>% group_by(dte = as.Date(time)) %>% summarise(comp = mean(hrate > 0))$/;"	g
 con	process_health_data.R	/^con <- dbConnect(RSQLite::SQLite(), "~\/Documents\/health\/analyse_health_data\/health_data.sqli/;"	g
 config	upload-weight-data-to-fitbit.py	/^config = ConfigParser.SafeConfigParser()$/;"	v
+contentWrapper	cronometer.html	/^    <div id="contentWrapper" class="content-wrapper">$/;"	I
 cookie	fitbitScraper.R	/^cookie <- login(email="odaiwai@gmail.com", password="ceG4Ayb1nAf5hEk")$/;"	g
 cookie	fitbitScraper.R	/^cookie <- login(email="odaiwai@gmail.com", password="scylj7ok3div4del")  $/;"	g
 cookie	get_fitbit_data.R	/^cookie = login("odaiwai@gmail.com", "ceG4Ayb1nAf5hEk", rememberMe = TRUE)$/;"	g
 cookie	get_fitbit_data2.R	/^cookie = login("odaiwai@gmail.com", "ceG4Ayb1nAf5hEk", rememberMe = TRUE)$/;"	g
 credentials	getMyFitnessPalData.py	/^    credentials =  get_credentials()$/;"	v
 credentials	get_cronometer_data.py	/^    credentials = get_credentials()$/;"	v
+cronometerApp	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
 csvreader	upload-weight-data-to-fitbit.py	/^    csvreader = csv.reader(csvfile)$/;"	v
 data	fitbit.rb	/^  def data(date = Time.now)$/;"	f	class:Fitbit
 datadir	getMyFitnessPalData.py	/^    datadir = '..\/health_data\/myFitnessPal_data\/'$/;"	v
@@ -78,17 +138,33 @@ drop_all_tables	parse_myfitnesspaldata.pl	/^sub drop_all_tables {$/;"	s
 drop_all_tables	xml_rules_apple_health.pl	/^sub drop_all_tables {$/;"	s
 enddate	get_fitbit_data.R	/^enddate = today()$/;"	g
 enddate	get_fitbit_data2.R	/^enddate = today()$/;"	g
+foods-collapse	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+foodsLink	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
 format_message	parse_apple_health_export.pl	/^sub format_message { # Helper sub to nicely format what we got from the XML$/;"	s
 get_credentials	getMyFitnessPalData.py	/^def get_credentials():$/;"	f
 get_credentials	get_cronometer_data.py	/^def get_credentials():$/;"	f
+get_credentials	get_files_from_icloud_drive.py	/^def get_credentials():$/;"	f
 get_mfp_report_for_date	getMyFitnessPalData.pl	/^sub get_mfp_report_for_date{$/;"	s
 get_printable_report	getMyFitnessPalData.pl	/^sub get_printable_report {# Go get the report URL$/;"	s
 get_printable_report	getMyFitnessPalData.py	/^def get_printable_report(year, month):$/;"	f
 get_printable_report	get_cronometer_data.py	/^def get_printable_report(year, month):$/;"	f
+gwt-uid-339	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+gwt-uid-340	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+gwt-uid-341	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+gwt-uid-353	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+gwt-uid-355	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+gwt-uid-356	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+gwt-uid-357	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
 hdl_char	parse_apple_health_export.pl	/^sub hdl_char {$/;"	s
 hdl_def	parse_apple_health_export.pl	/^sub hdl_def { }  # We just throw everything else$/;"	s
 hdl_end	parse_apple_health_export.pl	/^sub hdl_end{$/;"	s
 hdl_start	parse_apple_health_export.pl	/^sub hdl_start{$/;"	s
+highcharts-wjiqu74-0	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+highcharts-wjiqu74-1-	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+highcharts-wjiqu74-2-	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+highcharts-wjiqu74-3	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+highcharts-wjiqu74-4-	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+highcharts-wjiqu74-5-	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
 hr_data	get_fitbit_data.R	/^  hr_data = rbind(hr_data, df)$/;"	g
 hr_data	get_fitbit_data.R	/^hr_data = list(time = c(), hrate = c())$/;"	L
 hr_data	get_fitbit_data2.R	/^    hr_data = rbind(hr_data, df)$/;"	g
@@ -109,9 +185,11 @@ last_month	get_cronometer_data.py	/^        last_month = this_month - 1$/;"	v
 last_year	get_cronometer_data.py	/^            last_year = this_year - 1$/;"	v
 last_year	get_cronometer_data.py	/^        last_year = this_year$/;"	v
 login	fitbit.rb	/^  def login$/;"	f	class:Fitbit
+login	get_files_from_icloud_drive.py	/^def login():$/;"	f
 login_url	getMyFitnessPalData.py	/^    login_url = '{}\/account\/login'.format(site_url)$/;"	v
 main	getMyFitnessPalData.py	/^def main(dates):$/;"	f
 main	get_cronometer_data.py	/^def main(agent, dates):$/;"	f
+main	get_files_from_icloud_drive.py	/^def main():$/;"	f
 main	parse_apple_health_export.py	/^def main():$/;"	f
 main	parse_spreadsheet.py	/^def main():$/;"	f
 make_db	parse_all_data.pl	/^sub make_db {$/;"	s
@@ -122,9 +200,18 @@ make_db	parse_fitbit_export.pl	/^sub make_db {$/;"	s
 make_db	parse_myfitnesspaldata.pl	/^sub make_db {$/;"	s
 make_db	xml_rules_apple_health.pl	/^sub make_db {$/;"	s
 make_tables	parse_spreadsheet.py	/^def make_tables(dbc):$/;"	f
+message-container	cronometer.html	/^        <div id="message-container" class="container"><\/div>$/;"	I
 mfpData	fitnessData.R	/^mfpData <- read.csv("weightData.dat", sep="\\t", header = TRUE)$/;"	g
 missing.days	get_fitbit_data2.R	/^missing.days = which(s %in% completeness$dte == FALSE)$/;"	g
+navbarDropdown	cronometer.html	/^        <div id="navigation"><div class="no-print"><nav class="navbar navbar-expand"> <div class/;"	I
+navigation	cronometer.html	/^        <div id="navigation"><div class="no-print"><nav class="navbar navbar-expand"> <div class/;"	I
 new	parseWeightData.pl	/^sub new {$/;"	s
+nitro_cron_dashboard	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+nitro_cron_diary_banner	cronometer.html	/^        <main id="cronometerApp"><div class="container" style=""><div class="row justify-content/;"	I
+nitro_cron_diary_btm_right	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+nitro_cron_diary_top_left	cronometer.html	/^<\/span><\/div> <div class="divider mx-2"><\/div> <i class="icon-chevron-down cursor-pointer jun/;"	I
+nitroads-bt	cronometer.html	/^<script src="https:\/\/cronometer.com\/cronometer\/92AF3FA860308904965B9BAB86B511CF.cache.js"><\//;"	I
+nitroads-gpt	cronometer.html	/^<script src="https:\/\/cronometer.com\/cronometer\/92AF3FA860308904965B9BAB86B511CF.cache.js"><\//;"	I
 normalise_key	parse_all_data.pl	/^sub normalise_key {$/;"	s
 normalise_key	parse_fitbit_data.pl	/^sub normalise_key {$/;"	s
 normalise_value	parse_all_data.pl	/^sub normalise_value {$/;"	s
@@ -157,6 +244,9 @@ sanitise_line_for_input	parse_apple_health_data.pl	/^sub sanitise_line_for_input
 sanitise_line_for_input	parse_apple_health_export.pl	/^sub sanitise_line_for_input {$/;"	s
 sanitise_line_for_input	parse_fitbit_data.pl	/^sub sanitise_line_for_input {$/;"	s
 sanitise_line_for_input	parse_fitbit_export.pl	/^sub sanitise_line_for_input {$/;"	s
+settings-collapse	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+settingsLink	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+sidebar	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
 site_url	getMyFitnessPalData.py	/^    site_url = 'https:\/\/www.myfitnesspal.com'$/;"	v
 spreadsheet	parse_spreadsheet.py	/^    spreadsheet = "..\/daves_weight_v3.xlsx"$/;"	v
 start_at_date	upload-weight-data-to-fitbit.py	/^            start_at_date = date$/;"	v
@@ -177,6 +267,8 @@ timestamp_from_date	parse_apple_health_data.pl	/^sub timestamp_from_date {$/;"	s
 timestamp_from_date	parse_apple_health_export.pl	/^sub timestamp_from_date {$/;"	s
 timestamp_from_date	parse_fitbit_data.pl	/^sub timestamp_from_date {$/;"	s
 timestamp_from_date	parse_fitbit_export.pl	/^sub timestamp_from_date {$/;"	s
+trends-collapse	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
+trendsLink	cronometer.html	/^    <nav id="sidebar" class="sidebar no-print" style=""><div class="sidebar-content sidebar-full/;"	I
 trim	analyse_healthdb.pl	/^sub trim {$/;"	s
 trim	parse_all_data.pl	/^sub trim {$/;"	s
 trim	parse_myfitnesspaldata.pl	/^sub trim {$/;"	s

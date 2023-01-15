@@ -66,16 +66,17 @@ if [[ $DOWNLOAD -gt 0 ]]; then
     print_elapsed_time
 
     # Get the updated Apple Health Export
+    ./get_files_from_icloud_drive.py
 	cd ../health_data/apple_health_export
     if [[ "$OS" = "Darwin" ]]; then
-		cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Health\ Data.csv ./
-		cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Sleep\ Analysis.csv ./
-		cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/moodpath_exported_data*.zip ./
+		# cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Health\ Data.csv ./
+		# cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Sleep\ Analysis.csv ./
+		# cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/moodpath_exported_data*.zip ./
 	else
 		onedrive --synchronize
-		cp -pv ~/OneDrive/Health_Data/Health\ Data.csv ./
-		cp -pv ~/OneDrive/Health_Data/Sleep\ Analysis.csv ./
-		cp -pv ~/OneDrive/Health_Data/moodpath_exported_data*.zip ./
+		# cp -pv ~/OneDrive/Health_Data/Health\ Data.csv ./
+		# cp -pv ~/OneDrive/Health_Data/Sleep\ Analysis.csv ./
+		# cp -pv ~/OneDrive/Health_Data/moodpath_exported_data*.zip ./
 		# cp -pv ~/OneDrive/Spreadsheets/daves_weight_v4.xlsx ../
 		# Cronometer Data 
 	    cd ../cronometer_data
