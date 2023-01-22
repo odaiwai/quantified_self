@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
     Script to do stuff in Python.
+    Notes:
+        Post iOS 8, the api.files functionality points to the
+        Ubiquity service, not iCloud drive:
+        https://developer.apple.com/library/archive/technotes/tn2348/_index.html#//apple_ref/doc/uid/DTS40014955-CH1-TNTAG5
 
 """
 
@@ -28,7 +32,7 @@ def get_credentials():
 
 def login():
     """
-        Get the credentials and login to the Applie iCloud service
+        Get the credentials and login to the Apple iCloud service
     """
     creds = get_credentials()
     icloud = PyiCloudService(creds['email'], creds['password'])
