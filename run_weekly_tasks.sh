@@ -66,23 +66,25 @@ if [[ $DOWNLOAD -gt 0 ]]; then
     print_elapsed_time
 
     # Get the updated Apple Health Export
+    # This now gets the Cronometer files too.
     ./get_files_from_icloud_drive.py
-	cd ../health_data/apple_health_export
-    if [[ "$OS" = "Darwin" ]]; then
-		# cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Health\ Data.csv ./
-		# cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Sleep\ Analysis.csv ./
-		# cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/moodpath_exported_data*.zip ./
-	else
-		onedrive --synchronize
-		# cp -pv ~/OneDrive/Health_Data/Health\ Data.csv ./
-		# cp -pv ~/OneDrive/Health_Data/Sleep\ Analysis.csv ./
-		# cp -pv ~/OneDrive/Health_Data/moodpath_exported_data*.zip ./
-		# cp -pv ~/OneDrive/Spreadsheets/daves_weight_v4.xlsx ../
-		# Cronometer Data 
-	    cd ../cronometer_data
-        for file in notes biometrics exercises servings dailySummary; do
-            cp -pv ~/OneDrive/Health_Data/${file}.csv ./
-        done
+	# cd ../health_data/apple_health_export
+    # if [[ "$OS" = "Darwin" ]]; then
+    #    # Don't really need to do this anymore
+	#	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Health\ Data.csv ./
+	#	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Sleep\ Analysis.csv ./
+	#	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/moodpath_exported_data*.zip ./
+	# else
+	#	onedrive --synchronize
+	#	# cp -pv ~/OneDrive/Health_Data/Health\ Data.csv ./
+	#	# cp -pv ~/OneDrive/Health_Data/Sleep\ Analysis.csv ./
+	#	# cp -pv ~/OneDrive/Health_Data/moodpath_exported_data*.zip ./
+	#	# cp -pv ~/OneDrive/Spreadsheets/daves_weight_v4.xlsx ../
+	#	# Cronometer Data 
+	#   cd ../cronometer_data
+    #    for file in notes biometrics exercises servings dailySummary; do
+    #        cp -pv ~/OneDrive/Health_Data/${file}.csv ./
+    #    done
 	fi
 	# Add these files to the repository and commit
 	git add Health\ Data.csv Sleep\ Analysis.csv
