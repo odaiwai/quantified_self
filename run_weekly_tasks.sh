@@ -68,7 +68,6 @@ if [[ $DOWNLOAD -gt 0 ]]; then
     # Get the updated Apple Health Export
     # This now gets the Cronometer files too.
     ./get_files_from_icloud_drive.py
-	# cd ../health_data/apple_health_export
     # if [[ "$OS" = "Darwin" ]]; then
     #    # Don't really need to do this anymore
 	#	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Health\ Data.csv ./
@@ -85,8 +84,9 @@ if [[ $DOWNLOAD -gt 0 ]]; then
     #    for file in notes biometrics exercises servings dailySummary; do
     #        cp -pv ~/OneDrive/Health_Data/${file}.csv ./
     #    done
-	fi
+	# fi
 	# Add these files to the repository and commit
+	cd ../health_data/apple_health_export
 	git add Health\ Data.csv Sleep\ Analysis.csv
 	git commit -m "updated QS exported data" Health\ Data.csv Sleep\ Analysis.csv
 
@@ -103,7 +103,7 @@ if [[ $DOWNLOAD -gt 0 ]]; then
     # ./get_fitbit_data.pl
 fi
 
-echo "Download Phase..."
+echo "Parsing Phase..."
 if [[ $PARSE -gt 0 ]]; then
 	# Parse this years myfitnesspal report into a database
     # Don't need to do this any more!
