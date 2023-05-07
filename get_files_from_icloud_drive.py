@@ -82,7 +82,7 @@ def main():
     files_to_copy = {'apple_health_export': ['Health Data.csv',
                                              'Sleep Analysis.csv'],
                      'cronometer_data': ['biometrics.csv',
-                                         'dailySummary.csv',
+                                         'dailysummary.csv',
                                          'exercises.csv',
                                          'notes.csv',
                                          'servings.csv']

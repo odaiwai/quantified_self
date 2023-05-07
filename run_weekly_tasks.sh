@@ -81,7 +81,7 @@ if [[ $DOWNLOAD -gt 0 ]]; then
 	#	# cp -pv ~/OneDrive/Spreadsheets/daves_weight_v4.xlsx ../
 	#	# Cronometer Data 
 	#   cd ../cronometer_data
-    #    for file in notes biometrics exercises servings dailySummary; do
+    #    for file in notes biometrics exercises servings dailysummary; do
     #        cp -pv ~/OneDrive/Health_Data/${file}.csv ./
     #    done
 	# fi
@@ -90,7 +90,7 @@ if [[ $DOWNLOAD -gt 0 ]]; then
 	git add Health\ Data.csv Sleep\ Analysis.csv
 	git commit -m "updated QS exported data" Health\ Data.csv Sleep\ Analysis.csv
 
-    for file in notes biometrics exercises servings dailySummary; do
+    for file in notes biometrics exercises servings dailysummary; do
         git add ${file}.csv
     done
     git commit -m "Updated the Cronometer data"
@@ -130,9 +130,10 @@ if [[ $PARSE -gt 0 ]]; then
 
 	# Parse the cronometer Data once that's setup
 	# ./parse_cronometer_data.py
-    for file in dailySummary servings notes biometrics exercises; do
+    echo "---- Processing Cronomater Data ----"
+    for file in dailysummary servings notes biometrics exercises; do
         DAY="Day"
-        if [[ "${file}" = "dailySummary" ]]; then
+        if [[ "${file}" = "dailysummary" ]]; then
             DAY="Date"
         fi
         echo "${file}"
@@ -142,7 +143,7 @@ if [[ $PARSE -gt 0 ]]; then
         echo "CREATE TABLE 'cronometer_${file}' as 
             select CAST(substr(${DAY}, 1, 4) || 
                         substr(${DAY}, 6, 2) || 
-                        substr(${DAY}, 9,2) AS INTEGER) as 'Timestamp', * 
+                        substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp', * 
                    from temp;" >> temp.sql
         echo "DROP TABLE temp;" >> temp.sql
         cat temp.sql
@@ -163,7 +164,41 @@ if [[ $PARSE -gt 0 ]]; then
     # print_elapsed_time
 
     # Parse the Apple Health Data from QS
-    ./parse_apple_health_data.pl
+    # TODO: population these tables directly into the database
+    # using the built-in CSV importer in SQLITE
+    echo "---- Processing Apple QS Export Data ----"
+    declare -A files=( [0]="Health Data" [1]="Sleep Analysis" )
+    declare -A table=( [0]="health_data" [1]="sleep_analysis" )
+    declare -A tdate=( [0]="Start" [1]="In bed Finish" )
+    basedir="../health_data/apple_health_export"
+    for num in 0 1; do
+        echo "DROP TABLE IF EXISTS apple_qs_${table[$num]};"> temp.sql
+        echo ".import --csv \"$basedir/${files[$num]}.csv\" temp" >> temp.sql
+        echo ".schema temp" >> temp.sql
+        echo "CREATE TABLE 'apple_qs_${table[$num]}' as 
+            SELECT CAST(substr([${tdate[$num]}], 8, 4) || 
+                        CASE substr([${tdate[$num]}], 4, 3) 
+                            WHEN 'Jan' THEN '01' 
+                            WHEN 'Feb' THEN '02' 
+                            WHEN 'Mar' THEN '03' 
+                            WHEN 'Apr' THEN '04' 
+                            WHEN 'May' THEN '05' 
+                            WHEN 'Jun' THEN '06' 
+                            WHEN 'Jul' THEN '07' 
+                            WHEN 'Aug' THEN '08' 
+                            WHEN 'Sep' THEN '09' 
+                            WHEN 'Oct' THEN '10' 
+                            WHEN 'Nov' THEN '11' 
+                            WHEN 'Dec' THEN '12' 
+                        END || 
+                            substr([${tdate[$num]}], 1, 2) AS Integer) as 'Timestamp', * 
+                    from temp;" >> temp.sql
+        echo "DROP TABLE temp;" >> temp.sql
+        #echo "SELECT * from apple_qs_${table[$num]} LIMIT 10;" >> temp.sql
+        cat temp.sql
+        $sqlite health_data.sqlite < temp.sql
+    done
+    # ./parse_apple_health_data.pl
     print_elapsed_time
 
 	# Parse the Spreadsheet data
@@ -180,7 +215,7 @@ fi
 
 echo "Reporting Phase..."
 # Make a unified timestamp table
-databases="timestamp mfp_daily_summary apple_qs_health_data apple_qs_sleep_analysis cronometer_dailySummary"
+databases="timestamp mfp_daily_summary apple_qs_health_data apple_qs_sleep_analysis cronometer_dailysummary"
 echo "DROP Table Timestamp;" > temp.sql
 echo "CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);" >> temp.sql
 for database in $databases; do
@@ -237,13 +272,13 @@ SQLCOMMAND="SELECT Timestamp.``Date,
     IFNULL(MFPN.Fiber, CDS.'Fiber (g)'),
     IFNULL(MFPE.Exercise_Calories, 0), 
     0, 
-    IFNULL(AQH.Active_Calories, 0),
-    IFNULL(AQH.Resting_Calories, 0)
+    IFNULL(AQH.'Active Calories (kcal)', 0),
+    IFNULL(AQH.'Resting Calories (kcal)', 0)
     FROM [Timestamp]
     FULL OUTER JOIN mfp_nutrition_daily as MFPN using (Timestamp)
     FULL OUTER JOIN mfp_exercise_daily as MFPE using (Timestamp)
     FULL OUTER JOIN apple_qs_health_data as AQH using (Timestamp)
-    FULL OUTER JOIN cronometer_dailySummary as CDS using (Timestamp)
+    FULL OUTER JOIN cronometer_dailysummary as CDS using (Timestamp)
     Where Timestamp > $TIMESTAMP;"
 echo "$SQLCOMMAND"
 
