@@ -1,0 +1,101 @@
+{
+    "title": "Export dailyServings",
+    "steps": [
+        {
+            "type": "setViewport",
+            "width": 1086,
+            "height": 971,
+            "deviceScaleFactor": 1,
+            "isMobile": false,
+            "hasTouch": false,
+            "isLandscape": false
+        },
+        {
+            "type": "navigate",
+            "url": "https://cronometer.com/#account",
+            "assertedEvents": [
+                {
+                    "type": "navigation",
+                    "url": "https://cronometer.com/#account",
+                    "title": "Cronometer"
+                }
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/EXPORT DATA"
+                ],
+                [
+                    "#cronometerApp > div:nth-child(11) > div > div.container-raised.my-4 > div:nth-child(2) > div.col > button"
+                ],
+                [
+                    "xpath///*[@id=\"cronometerApp\"]/div[11]/div/div[6]/div[2]/div[2]/button"
+                ]
+            ],
+            "offsetY": 32,
+            "offsetX": 90.671875
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Last 7 days[role=\"button\"]"
+                ],
+                [
+                    "#gwt-uid-964"
+                ],
+                [
+                    "xpath///*[@id=\"gwt-uid-964\"]"
+                ]
+            ],
+            "offsetY": 23,
+            "offsetX": 233
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/All Time"
+                ],
+                [
+                    "body > div.pretty-dialog > div > div > table.mt-4 > tbody > tr:nth-child(1) > td > div > div > div:nth-child(2) > div > div > a:nth-child(10)"
+                ],
+                [
+                    "xpath//html/body/div[5]/div/div/table[2]/tbody/tr[1]/td/div/div/div[2]/div/div/a[10]"
+                ]
+            ],
+            "offsetY": 25,
+            "offsetX": 32
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/EXPORT DAILY NUTRITION[role=\"button\"]"
+                ],
+                [
+                    "body > div.pretty-dialog > div > div > table.mt-4 > tbody > tr:nth-child(3) > td > button"
+                ],
+                [
+                    "xpath//html/body/div[5]/div/div/table[2]/tbody/tr[3]/td/button"
+                ],
+                [
+                    "text/Export Daily"
+                ]
+            ],
+            "offsetY": 19,
+            "offsetX": 167,
+            "assertedEvents": [
+                {
+                    "type": "navigation"
+                }
+            ]
+        }
+    ]
+}
