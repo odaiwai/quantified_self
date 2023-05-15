@@ -9,13 +9,13 @@ import re
 import sys
 import time
 import subprocess
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-i#  from selenium.webdriver.support.ui import Select
+#  from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 # from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-
 
 def get_credentials():
     """ Get the credential s from the external file.
