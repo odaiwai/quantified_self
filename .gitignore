@@ -47,6 +47,7 @@ temp.sql
 temp.sql
 query.sql
 health_data.sqlite.old
-.tags
 cronometer.html
 tags
+.vscode
+.vstags
