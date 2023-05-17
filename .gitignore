@@ -51,3 +51,5 @@ cronometer.html
 tags
 .vscode
 .vstags
+node_modules/
+package*
