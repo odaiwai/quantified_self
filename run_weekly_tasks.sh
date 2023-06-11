@@ -59,37 +59,18 @@ done
 
 echo "Download Phase..."
 if [[ $DOWNLOAD -gt 0 ]]; then
-	# Download this years myfitnesspal report
-	# ./getMyFitnessPalData.py
-	# Download thie cronometer Data - Currently manually exported
-	# ./get_cronometer_data.py
     print_elapsed_time
 
     # Get the updated Apple Health Export
     # This now gets the Cronometer files too.
     ./get_files_from_icloud_drive.py
-    # if [[ "$OS" = "Darwin" ]]; then
-    #    # Don't really need to do this anymore
-	#	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Health\ Data.csv ./
-	#	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Sleep\ Analysis.csv ./
-	#	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/moodpath_exported_data*.zip ./
-	# else
-	#	onedrive --synchronize
-	#	# cp -pv ~/OneDrive/Health_Data/Health\ Data.csv ./
-	#	# cp -pv ~/OneDrive/Health_Data/Sleep\ Analysis.csv ./
-	#	# cp -pv ~/OneDrive/Health_Data/moodpath_exported_data*.zip ./
-	#	# cp -pv ~/OneDrive/Spreadsheets/daves_weight_v4.xlsx ../
-	#	# Cronometer Data 
-	#   cd ../cronometer_data
-    #    for file in notes biometrics exercises servings dailysummary; do
-    #        cp -pv ~/OneDrive/Health_Data/${file}.csv ./
-    #    done
-	# fi
+
 	# Add these files to the repository and commit
 	cd ../health_data/apple_health_export
 	git add Health\ Data.csv Sleep\ Analysis.csv
 	git commit -m "updated QS exported data" Health\ Data.csv Sleep\ Analysis.csv
 
+    cd ../cronometer_data
     for file in notes biometrics exercises servings dailysummary; do
         git add ${file}.csv
     done
@@ -99,8 +80,6 @@ if [[ $DOWNLOAD -gt 0 ]]; then
     # Go back to the main dir
 	cd ../../analyse_health_data
 
-    # get the Fitbit Data - not doing this anymore
-    # ./get_fitbit_data.pl
 fi
 
 echo "Parsing Phase..."
@@ -150,18 +129,6 @@ if [[ $PARSE -gt 0 ]]; then
         $sqlite health_data.sqlite < temp.sql
     done
     print_elapsed_time
-
-# The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be
-	# done automatically at the moment. At least, not by me.
-	#./parse_fitbit_export.pl
-    # print_elapsed_time
-
-	# Fitbit Data is automatically downloaded to the Dropbox folder
-	# This is just the daily report in a single line, and only includes a certain subset of data
-	# This needs to be run after the other one, as all the fitbit_* tables get deleted in that step
-	# while this step only deletes it's own table
-	#./parse_fitbit_data.pl
-    # print_elapsed_time
 
     # Parse the Apple Health Data from QS
     # TODO: population these tables directly into the database
