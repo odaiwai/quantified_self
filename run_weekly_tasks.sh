@@ -1,15 +1,21 @@
 #!/bin/bash
-
 # Script to run the various weekly tasks
 # Dave O'Brien
 
-declare -i starttime=`date +%s`
-
+# Error Handling
+set -e
+handle_error () {
+    echo "ERROR! Check last file run."
+    exit 1
+}
 function print_elapsed_time {
     declare -i now=`date +%s`
     declare -i elapsed=$(( now - starttime ))
     echo "Operation took $elapsed seconds"
 }
+
+trap handle_error ERR
+declare -i starttime=`date +%s`
 
 # Use this one, not the one that got installed with Anaconda
 sqlite='/usr/bin/sqlite3'
@@ -67,15 +73,15 @@ if [[ $DOWNLOAD -gt 0 ]]; then
 
 	# Add these files to the repository and commit
 	cd ../health_data/apple_health_export
-	git add Health\ Data.csv Sleep\ Analysis.csv
-	git commit -m "updated QS exported data" Health\ Data.csv Sleep\ Analysis.csv
+	git add 'Health Data.csv' 'Sleep Analysis.csv'
+	git commit -m "updated QS exported data" Health\ Data.csv Sleep\ Analysis.csv || \
+        echo "No QS changes to commit."
 
     cd ../cronometer_data
-    for file in notes biometrics exercises servings dailysummary; do
-        git add ${file}.csv
-    done
-    git commit -m "Updated the Cronometer data"
-
+    git add notes.csv biometrics.csv exercises.csv servings.csv dailysummary.csv
+    git commit -m "Updated the Cronometer data" \
+        notes.csv biometrics.csv exercises.csv servings.csv dailysummary.csv || \
+        echo "No Cronometer Changes to commit."
 
     # Go back to the main dir
 	cd ../../analyse_health_data
@@ -163,7 +169,7 @@ if [[ $PARSE -gt 0 ]]; then
         echo "DROP TABLE temp;" >> temp.sql
         #echo "SELECT * from apple_qs_${table[$num]} LIMIT 10;" >> temp.sql
         cat temp.sql
-        $sqlite health_data.sqlite < temp.sql
+        $sqlite health_data.sqlite < temp.sql 2> /dev/null
     done
     # ./parse_apple_health_data.pl
     print_elapsed_time
@@ -186,7 +192,7 @@ databases="timestamp mfp_daily_summary apple_qs_health_data apple_qs_sleep_analy
 echo "DROP Table Timestamp;" > temp.sql
 echo "CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);" >> temp.sql
 for database in $databases; do
-    echo "INSERT INTO Timestamp (Date, Timestamp) SELECT" >> temp.sql
+    echo "INSERT OR IGNORE INTO Timestamp (Date, Timestamp) SELECT" >> temp.sql
     echo "    substr(timestamp, 1, 4) || '-' || " >> temp.sql
     echo "    substr(timestamp, 5, 2) || '-' || " >> temp.sql
     echo "    substr(timestamp, 7, 2) ,  timestamp" >> temp.sql

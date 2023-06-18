@@ -10,8 +10,8 @@
 
 # import os
 from shutil import copyfileobj  # https://docs.python.org/3/library/shutil.html
-import click                            # https://click.palletsprojects.com/
 import sys
+import click                            # https://click.palletsprojects.com/
 from pyicloud import PyiCloudService    # https://pypi.org/project/pyicloud/
 
 
@@ -87,13 +87,14 @@ def main():
                                          'notes.csv',
                                          'servings.csv']
                      }
-    for local_dir in files_to_copy.keys():
-        for file in files_to_copy[local_dir]:
+    for local_dir, files in files_to_copy.items():
+        for file in files:
             drive_file = icloud.drive['Health_Data'][file]
             local_copy = f'../health_data/{local_dir}/{file}'
-            print(f'Copying file from iCloud to {local_copy}')
             # copy it to the local copy of the file
             with drive_file.open(stream=True) as contents:
+                print((f'Copying file from iCloud to {local_copy}: '
+                       f'{contents.status_code}'))
                 with open(local_copy, 'wb') as outfh:
                     copyfileobj(contents.raw, outfh)
                     # we could also parse the text in contents.text
