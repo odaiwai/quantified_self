@@ -25,6 +25,7 @@ VERBOSE=0
 PARSE=1
 MONTH=1
 OS=`uname -s` # Which system are we on? Mac or Linux?
+today=`date +%Y%m%d `
 echo "Running on $OS"
 
 # Parse the Command line options
@@ -78,9 +79,17 @@ if [[ $DOWNLOAD -gt 0 ]]; then
         echo "No QS changes to commit."
 
     cd ../cronometer_data
-    git add notes.csv biometrics.csv exercises.csv servings.csv dailysummary.csv
+    git add notes_${today}.csv \
+        biometrics_${today}.csv \
+        exercises_${today}.csv \
+        servings_${today}.csv \
+        dailysummary_${today}.csv
     git commit -m "Updated the Cronometer data" \
-        notes.csv biometrics.csv exercises.csv servings.csv dailysummary.csv || \
+        notes_${today}.csv \
+        biometrics_${today}.csv \
+        exercises_${today}.csv \
+        servings_${today}.csv \
+        dailysummary_${today}.csv || \
         echo "No Cronometer Changes to commit."
 
     # Go back to the main dir
@@ -122,15 +131,16 @@ if [[ $PARSE -gt 0 ]]; then
             DAY="Date"
         fi
         echo "${file}"
-        echo "DROP TABLE IF EXISTS cronometer_${file};" > temp.sql
-        echo ".import --csv ../health_data/cronometer_data/${file}.csv temp" >> temp.sql
+        echo ".import --csv ../health_data/cronometer_data/${file}_${today}.csv temp" > temp.sql
         echo ".schema temp" >> temp.sql
-        echo "CREATE TABLE 'cronometer_${file}' as 
+        echo "CREATE TABLE 'temp2' as 
             select CAST(substr(${DAY}, 1, 4) || 
                         substr(${DAY}, 6, 2) || 
                         substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp', * 
                    from temp;" >> temp.sql
+        echo "INSERT OR IGNORE INTO cronometer_${file} SELECT * from temp2;" >> temp.sql
         echo "DROP TABLE temp;" >> temp.sql
+        echo "DROP TABLE temp2;" >> temp.sql
         cat temp.sql
         $sqlite health_data.sqlite < temp.sql
     done
@@ -234,7 +244,7 @@ print_elapsed_time
 
 # Dump out the standard Report
 echo "Standard Report"
-SQLCOMMAND="SELECT Timestamp.``Date, 
+SQLCOMMAND="SELECT DISTINCT Timestamp.date as Date, 
     IFNULL(MFPN.Calories, CDS.'Energy (kcal)'),
     IFNULL(MFPN.Carbohydrates_g, CDS.'Carbs (g)'),
     IFNULL(MFPN.Fat_g, CDS.'Fat (g)'),

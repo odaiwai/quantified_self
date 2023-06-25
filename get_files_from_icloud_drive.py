@@ -12,6 +12,7 @@
 from shutil import copyfileobj  # https://docs.python.org/3/library/shutil.html
 import sys
 import click                            # https://click.palletsprojects.com/
+from datetime import datetime
 from pyicloud import PyiCloudService    # https://pypi.org/project/pyicloud/
 
 
@@ -79,13 +80,14 @@ def main():
         Main routine.
     """
     icloud = login()
+    today = datetime.strftime(datetime.now(), '%Y%m%d')
     files_to_copy = {'apple_health_export': ['Health Data.csv',
                                              'Sleep Analysis.csv'],
-                     'cronometer_data': ['biometrics.csv',
-                                         'dailysummary.csv',
-                                         'exercises.csv',
-                                         'notes.csv',
-                                         'servings.csv']
+                     'cronometer_data': [f'biometrics_{today}.csv',
+                                         f'dailysummary_{today}.csv',
+                                         f'exercises_{today}.csv',
+                                         f'notes_{today}.csv',
+                                         f'servings_{today}.csv']
                      }
     for local_dir, files in files_to_copy.items():
         for file in files:
