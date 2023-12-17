@@ -81,12 +81,14 @@ if [[ $DOWNLOAD -gt 0 ]]; then
     cd ../cronometer_data
     git add notes_${today}.csv \
         biometrics_${today}.csv \
+        fasts_${today}.csv \
         exercises_${today}.csv \
         servings_${today}.csv \
         dailysummary_${today}.csv
     git commit -m "Updated the Cronometer data" \
         notes_${today}.csv \
         biometrics_${today}.csv \
+        fasts_${today}.csv \
         exercises_${today}.csv \
         servings_${today}.csv \
         dailysummary_${today}.csv || \
@@ -126,17 +128,19 @@ if [[ $PARSE -gt 0 ]]; then
 	# ./parse_cronometer_data.py
     echo "---- Processing Cronomater Data ----"
     for file in dailysummary servings notes biometrics exercises; do
+        # TODO: handle fasting in the Cronometer app - premium feature
         DAY="Day"
         if [[ "${file}" = "dailysummary" ]]; then
             DAY="Date"
         fi
         echo "${file}"
+        # TODO: need to handle a new table being added here...
         echo ".import --csv ../health_data/cronometer_data/${file}_${today}.csv temp" > temp.sql
         echo ".schema temp" >> temp.sql
-        echo "CREATE TABLE 'temp2' as 
-            select CAST(substr(${DAY}, 1, 4) || 
-                        substr(${DAY}, 6, 2) || 
-                        substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp', * 
+        echo "CREATE TABLE 'temp2' as
+            select CAST(substr(${DAY}, 1, 4) ||
+                        substr(${DAY}, 6, 2) ||
+                        substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp', *
                    from temp;" >> temp.sql
         echo "INSERT OR IGNORE INTO cronometer_${file} SELECT * from temp2;" >> temp.sql
         echo "DROP TABLE temp;" >> temp.sql
@@ -158,23 +162,23 @@ if [[ $PARSE -gt 0 ]]; then
         echo "DROP TABLE IF EXISTS apple_qs_${table[$num]};"> temp.sql
         echo ".import --csv \"$basedir/${files[$num]}.csv\" temp" >> temp.sql
         echo ".schema temp" >> temp.sql
-        echo "CREATE TABLE 'apple_qs_${table[$num]}' as 
-            SELECT CAST(substr([${tdate[$num]}], 8, 4) || 
-                        CASE substr([${tdate[$num]}], 4, 3) 
-                            WHEN 'Jan' THEN '01' 
-                            WHEN 'Feb' THEN '02' 
-                            WHEN 'Mar' THEN '03' 
-                            WHEN 'Apr' THEN '04' 
-                            WHEN 'May' THEN '05' 
-                            WHEN 'Jun' THEN '06' 
-                            WHEN 'Jul' THEN '07' 
-                            WHEN 'Aug' THEN '08' 
-                            WHEN 'Sep' THEN '09' 
-                            WHEN 'Oct' THEN '10' 
-                            WHEN 'Nov' THEN '11' 
-                            WHEN 'Dec' THEN '12' 
-                        END || 
-                            substr([${tdate[$num]}], 1, 2) AS Integer) as 'Timestamp', * 
+        echo "CREATE TABLE 'apple_qs_${table[$num]}' as
+            SELECT CAST(substr([${tdate[$num]}], 8, 4) ||
+                        CASE substr([${tdate[$num]}], 4, 3)
+                            WHEN 'Jan' THEN '01'
+                            WHEN 'Feb' THEN '02'
+                            WHEN 'Mar' THEN '03'
+                            WHEN 'Apr' THEN '04'
+                            WHEN 'May' THEN '05'
+                            WHEN 'Jun' THEN '06'
+                            WHEN 'Jul' THEN '07'
+                            WHEN 'Aug' THEN '08'
+                            WHEN 'Sep' THEN '09'
+                            WHEN 'Oct' THEN '10'
+                            WHEN 'Nov' THEN '11'
+                            WHEN 'Dec' THEN '12'
+                        END ||
+                            substr([${tdate[$num]}], 1, 2) AS Integer) as 'Timestamp', *
                     from temp;" >> temp.sql
         echo "DROP TABLE temp;" >> temp.sql
         #echo "SELECT * from apple_qs_${table[$num]} LIMIT 10;" >> temp.sql
@@ -244,7 +248,7 @@ print_elapsed_time
 
 # Dump out the standard Report
 echo "Standard Report"
-SQLCOMMAND="SELECT DISTINCT Timestamp.date as Date, 
+SQLCOMMAND="SELECT DISTINCT Timestamp.date as Date,
     IFNULL(MFPN.Calories, CDS.'Energy (kcal)'),
     IFNULL(MFPN.Carbohydrates_g, CDS.'Carbs (g)'),
     IFNULL(MFPN.Fat_g, CDS.'Fat (g)'),
@@ -253,8 +257,8 @@ SQLCOMMAND="SELECT DISTINCT Timestamp.date as Date,
     IFNULL(MFPN.Sodium_mg, CDS.'Sodium (mg)'),
     IFNULL(MFPN.Sugar, CDS.'Sugars (g)'),
     IFNULL(MFPN.Fiber, CDS.'Fiber (g)'),
-    IFNULL(MFPE.Exercise_Calories, 0), 
-    0, 
+    IFNULL(MFPE.Exercise_Calories, 0),
+    0,
     IFNULL(AQH.'Active Calories (kcal)', 0),
     IFNULL(AQH.'Resting Calories (kcal)', 0)
     FROM [Timestamp]
@@ -285,7 +289,7 @@ print_elapsed_time
 #  CAST(sum(mfp_nutrition.Sugar) AS NUMERIC) AS mfp_nutrition.Sugar, CAST(sum(mfp_nutrition.Fiber) AS NUMERIC) AS mfp_nutrition.Fiber, CAST(sum(mfp_exercise.Exercise_calories) AS NUMERIC) AS mfp_exercise.Exercise_calories,
 # 0, apple_qs_health_data.Active_Calories, apple_qs_health_data.Resting_Calories
 #     FROM [mfp_nutrition]
-#     JOIN apple_qs_health_data using (timestamp) 
+#     JOIN apple_qs_health_data using (timestamp)
 #     JOIN mfp_exercise using (timestamp)
 # 	WHERE mfp_nutrition.timestamp > $TIMESTAMP group by timestamp;"
 
@@ -296,4 +300,3 @@ print_elapsed_time
 # 	FROM [mfp_daily_summary]
 # 	JOIN apple_qs_health_data using (timestamp)
 # 	WHERE mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"
-

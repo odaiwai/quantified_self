@@ -86,6 +86,7 @@ def main():
                      'cronometer_data': [f'biometrics_{today}.csv',
                                          f'dailysummary_{today}.csv',
                                          f'exercises_{today}.csv',
+                                         f'fasts_{today}.csv',
                                          f'notes_{today}.csv',
                                          f'servings_{today}.csv']
                      }
