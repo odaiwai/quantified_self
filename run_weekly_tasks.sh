@@ -3,7 +3,7 @@
 # Dave O'Brien
 
 # Error Handling
-set -e
+# set -e
 handle_error () {
     echo "ERROR! Check last file run."
     exit 1

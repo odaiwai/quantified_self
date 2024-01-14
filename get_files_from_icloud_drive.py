@@ -92,7 +92,11 @@ def main():
                      }
     for local_dir, files in files_to_copy.items():
         for file in files:
-            drive_file = icloud.drive['Health_Data'][file]
+            try:
+                drive_file = icloud.drive['Health_Data'][file]
+            except KeyError as kerr:
+                print(f'Unable to find file {file} on iCloud...')
+                quit()
             local_copy = f'../health_data/{local_dir}/{file}'
             # copy it to the local copy of the file
             with drive_file.open(stream=True) as contents:
