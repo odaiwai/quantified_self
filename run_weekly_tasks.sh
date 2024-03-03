@@ -4,15 +4,29 @@
 
 # Error Handling
 # set -e
-handle_error () {
+handle_error() {
     echo "ERROR! Check last file run."
     exit 1
 }
-function print_elapsed_time {
+
+print_elapsed_time() {
     declare -i now
     now=$(date +%s)
     declare -i elapsed=$(( now - starttime ))
     echo "Operation took $elapsed seconds"
+}
+
+log_print() {
+    if [[ $VERBOSE -eq 1 ]]; then
+        echo "$*"
+    fi
+}
+
+log_cat() {
+    if [[ $VERBOSE -eq 1 ]]; then
+        echo "$VERBOSE"
+        cat "$*"
+    fi
 }
 
 trap handle_error ERR
@@ -130,7 +144,7 @@ if [[ $PARSE -gt 0 ]]; then
 
 	# Parse the cronometer Data once that's setup
 	# ./parse_cronometer_data.py
-    echo "---- Processing Cronomater Data ----"
+    echo "---- Processing Cronometer Data ----"
     for file in dailysummary servings notes biometrics exercises; do
         # TODO: handle fasting in the Cronometer app - premium feature
         DAY="Day"
@@ -151,8 +165,8 @@ if [[ $PARSE -gt 0 ]]; then
             echo "DROP TABLE temp;"
             echo "DROP TABLE temp2;"
         } > temp.sql
-        cat temp.sql
-        $sqlite health_data.sqlite < temp.sql
+        # log_cat temp.sql
+        $sqlite health_data.sqlite < temp.sql 2>/dev/null
     done
     print_elapsed_time
 
@@ -190,7 +204,7 @@ if [[ $PARSE -gt 0 ]]; then
             echo "DROP TABLE temp;"
             #echo "SELECT * from apple_qs_${table[$num]} LIMIT 10;"
         }
-        cat temp.sql
+        # log_cat temp.sql
         $sqlite health_data.sqlite < temp.sql 2> /dev/null
     done
     # ./parse_apple_health_data.pl
@@ -222,6 +236,7 @@ databases="timestamp mfp_daily_summary apple_qs_health_data apple_qs_sleep_analy
             echo "from $database; "
     done
 } > temp.sql
+log_cat temp.sql
 $sqlite health_data.sqlite < temp.sql
 
 
@@ -277,7 +292,7 @@ SQLCOMMAND="SELECT DISTINCT Timestamp.date as Date,
     FULL OUTER JOIN apple_qs_health_data as AQH using (Timestamp)
     FULL OUTER JOIN cronometer_dailysummary as CDS using (Timestamp)
     Where Timestamp > $TIMESTAMP;"
-echo "$SQLCOMMAND"
+log_print "$SQLCOMMAND"
 
 $sqlite health_data.sqlite -csv -header "$SQLCOMMAND"
 $sqlite health_data.sqlite -csv -header "$SQLCOMMAND" > excel_import.csv
