@@ -9,23 +9,25 @@ handle_error () {
     exit 1
 }
 function print_elapsed_time {
-    declare -i now=`date +%s`
+    declare -i now
+    now=$(date +%s)
     declare -i elapsed=$(( now - starttime ))
     echo "Operation took $elapsed seconds"
 }
 
 trap handle_error ERR
-declare -i starttime=`date +%s`
+declare -i starttime
+starttime=$(date +%s)
 
 # Use this one, not the one that got installed with Anaconda
 sqlite='/usr/bin/sqlite3'
-SQL="${sqlite} -csv -header health_data.sqlite"
+# SQL="${sqlite} -csv -header health_data.sqlite"
 DOWNLOAD=0
 VERBOSE=0
 PARSE=1
 MONTH=1
-OS=`uname -s` # Which system are we on? Mac or Linux?
-today=`date +%Y%m%d `
+OS=$(uname -s) # Which system are we on? Mac or Linux?
+today=$(date +%Y%m%d )
 echo "Running on $OS"
 
 # Parse the Command line options
@@ -73,29 +75,29 @@ if [[ $DOWNLOAD -gt 0 ]]; then
     ./get_files_from_icloud_drive.py
 
 	# Add these files to the repository and commit
-	cd ../health_data/apple_health_export
+	cd ../health_data/apple_health_export || exit
 	git add 'Health Data.csv' 'Sleep Analysis.csv'
 	git commit -m "updated QS exported data" Health\ Data.csv Sleep\ Analysis.csv || \
         echo "No QS changes to commit."
 
-    cd ../cronometer_data
-    git add notes_${today}.csv \
-        biometrics_${today}.csv \
-        fasts_${today}.csv \
-        exercises_${today}.csv \
-        servings_${today}.csv \
-        dailysummary_${today}.csv
+    cd ../cronometer_data || exit
+    git add "notes_${today}.csv" \
+        "biometrics_${today}.csv" \
+        "fasts_${today}.csv" \
+        "exercises_${today}.csv" \
+        "servings_${today}.csv" \
+        "dailysummary_${today}.csv"
     git commit -m "Updated the Cronometer data" \
-        notes_${today}.csv \
-        biometrics_${today}.csv \
-        fasts_${today}.csv \
-        exercises_${today}.csv \
-        servings_${today}.csv \
-        dailysummary_${today}.csv || \
+        "notes_${today}.csv" \
+        "biometrics_${today}.csv" \
+        "fasts_${today}.csv" \
+        "exercises_${today}.csv" \
+        "servings_${today}.csv" \
+        "dailysummary_${today}.csv" || \
         echo "No Cronometer Changes to commit."
 
     # Go back to the main dir
-	cd ../../analyse_health_data
+	cd ../../analyse_health_data || exit
 
 fi
 
@@ -110,16 +112,18 @@ if [[ $PARSE -gt 0 ]]; then
     table_specs[Exercise]="CAST(sum(Exercise_Calories) AS NUMERIC) AS 'Exercise_Calories', CAST(sum(Exercise_Minutes) AS NUMERIC) AS 'Exercise_Minutes', CAST(sum(Sets) AS NUMERIC) AS 'Sets', CAST(sum(Reps_Per_Set) AS NUMERIC) AS 'Reps_Per_Set', CAST(sum(Kilograms) AS NUMERIC) AS 'Kilograms', CAST(sum(Steps) AS NUMERIC) AS 'Steps'"
     table_specs[Nutrition]="CAST(sum(Calories) AS NUMERIC) AS 'Calories', CAST(sum(Fat_g) AS NUMERIC) AS 'Fat_g', CAST(sum(Saturated_Fat) AS NUMERIC) AS 'Saturated_Fat', CAST(sum(Polyunsaturated_Fat) AS NUMERIC) AS 'Polyunsaturated_Fat', CAST(sum(Monounsaturated_Fat) AS NUMERIC) AS 'Monounsaturated_Fat', CAST(sum(Trans_Fat) AS NUMERIC) AS 'Trans_Fat', CAST(sum(Cholesterol) AS NUMERIC) AS 'Cholesterol', CAST(sum(Sodium_mg) AS NUMERIC) AS 'Sodium_mg', CAST(sum(Potassium) AS NUMERIC) AS 'Potassium', CAST(sum(Carbohydrates_g) AS NUMERIC) AS 'Carbohydrates_g', CAST(sum(Fiber) AS NUMERIC) AS 'Fiber', CAST(sum(Sugar) AS NUMERIC) AS 'Sugar', CAST(sum(Protein_g) AS NUMERIC) AS 'Protein_g', CAST(sum(Vitamin_A) AS NUMERIC) AS 'Vitamin_A', CAST(sum(Vitamin_C) AS NUMERIC) AS 'Vitamin_C', CAST(sum(Calcium) AS NUMERIC) AS 'Calcium', CAST(sum(Iron) AS NUMERIC) AS 'Iron'"
     for table in Measurement Nutrition Exercise; do
-        lc_table=`echo $table | tr [A-Z] [a-z]`
+        lc_table=$(echo "$table" | tr "[:upper:]" "[:lower:]")
         dates="2014-08-18-to-2022-11-27"
         basedir="../health_data/myFitnessPal_data"
-        echo "--DROP $table" > temp.sql
-        echo "DROP TABLE IF EXISTS mfp_${lc_table}_input;" >> temp.sql
-        echo "DROP TABLE IF EXISTS mfp_${lc_table}_daily;" >> temp.sql
-        echo "-- IMPORT" >> temp.sql
-        echo ".import --csv  ${basedir}/File-Export-${dates}/${table}-Summary-${dates}.csv mfp_${lc_table}_input" >> temp.sql
-        echo "--Consolidate" >> temp.sql
-        echo "CREATE TABLE mfp_${lc_table}_daily as SELECT Date, CAST(Timestamp as Integer) AS 'Timestamp', ${table_specs[$table]} from mfp_${lc_table}_input GROUP BY Timestamp;" >> temp.sql
+        {
+            echo "--DROP $table"
+            echo "DROP TABLE IF EXISTS mfp_${lc_table}_input;"
+            echo "DROP TABLE IF EXISTS mfp_${lc_table}_daily;"
+            echo "-- IMPORT"
+            echo ".import --csv  ${basedir}/File-Export-${dates}/${table}-Summary-${dates}.csv mfp_${lc_table}_input"
+            echo "--Consolidate"
+            echo "CREATE TABLE mfp_${lc_table}_daily as SELECT Date, CAST(Timestamp as Integer) AS 'Timestamp', ${table_specs[$table]} from mfp_${lc_table}_input GROUP BY Timestamp;"
+        } > temp.sql
         $sqlite health_data.sqlite < temp.sql
     done
     print_elapsed_time
@@ -135,16 +139,18 @@ if [[ $PARSE -gt 0 ]]; then
         fi
         echo "${file}"
         # TODO: need to handle a new table being added here...
-        echo ".import --csv ../health_data/cronometer_data/${file}_${today}.csv temp" > temp.sql
-        echo ".schema temp" >> temp.sql
-        echo "CREATE TABLE 'temp2' as
-            select CAST(substr(${DAY}, 1, 4) ||
-                        substr(${DAY}, 6, 2) ||
-                        substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp', *
-                   from temp;" >> temp.sql
-        echo "INSERT OR IGNORE INTO cronometer_${file} SELECT * from temp2;" >> temp.sql
-        echo "DROP TABLE temp;" >> temp.sql
-        echo "DROP TABLE temp2;" >> temp.sql
+        {
+            echo ".import --csv ../health_data/cronometer_data/${file}_${today}.csv temp"
+            echo ".schema temp"
+            echo "CREATE TABLE 'temp2' as
+                select CAST(substr(${DAY}, 1, 4) ||
+                            substr(${DAY}, 6, 2) ||
+                            substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp', *
+                       from temp;"
+            echo "INSERT OR IGNORE INTO cronometer_${file} SELECT * from temp2;"
+            echo "DROP TABLE temp;"
+            echo "DROP TABLE temp2;"
+        } > temp.sql
         cat temp.sql
         $sqlite health_data.sqlite < temp.sql
     done
@@ -159,29 +165,31 @@ if [[ $PARSE -gt 0 ]]; then
     declare -A tdate=( [0]="Start" [1]="In bed Finish" )
     basedir="../health_data/apple_health_export"
     for num in 0 1; do
-        echo "DROP TABLE IF EXISTS apple_qs_${table[$num]};"> temp.sql
-        echo ".import --csv \"$basedir/${files[$num]}.csv\" temp" >> temp.sql
-        echo ".schema temp" >> temp.sql
-        echo "CREATE TABLE 'apple_qs_${table[$num]}' as
-            SELECT CAST(substr([${tdate[$num]}], 8, 4) ||
-                        CASE substr([${tdate[$num]}], 4, 3)
-                            WHEN 'Jan' THEN '01'
-                            WHEN 'Feb' THEN '02'
-                            WHEN 'Mar' THEN '03'
-                            WHEN 'Apr' THEN '04'
-                            WHEN 'May' THEN '05'
-                            WHEN 'Jun' THEN '06'
-                            WHEN 'Jul' THEN '07'
-                            WHEN 'Aug' THEN '08'
-                            WHEN 'Sep' THEN '09'
-                            WHEN 'Oct' THEN '10'
-                            WHEN 'Nov' THEN '11'
-                            WHEN 'Dec' THEN '12'
-                        END ||
-                            substr([${tdate[$num]}], 1, 2) AS Integer) as 'Timestamp', *
-                    from temp;" >> temp.sql
-        echo "DROP TABLE temp;" >> temp.sql
-        #echo "SELECT * from apple_qs_${table[$num]} LIMIT 10;" >> temp.sql
+        {
+            echo "DROP TABLE IF EXISTS apple_qs_${table[$num]};"
+            echo ".import --csv \"$basedir/${files[$num]}.csv\" temp"
+            echo ".schema temp"
+            echo "CREATE TABLE 'apple_qs_${table[$num]}' as
+                SELECT CAST(substr([${tdate[$num]}], 8, 4) ||
+                            CASE substr([${tdate[$num]}], 4, 3)
+                                WHEN 'Jan' THEN '01'
+                                WHEN 'Feb' THEN '02'
+                                WHEN 'Mar' THEN '03'
+                                WHEN 'Apr' THEN '04'
+                                WHEN 'May' THEN '05'
+                                WHEN 'Jun' THEN '06'
+                                WHEN 'Jul' THEN '07'
+                                WHEN 'Aug' THEN '08'
+                                WHEN 'Sep' THEN '09'
+                                WHEN 'Oct' THEN '10'
+                                WHEN 'Nov' THEN '11'
+                                WHEN 'Dec' THEN '12'
+                            END ||
+                                substr([${tdate[$num]}], 1, 2) AS Integer) as 'Timestamp', *
+                        from temp;"
+            echo "DROP TABLE temp;"
+            #echo "SELECT * from apple_qs_${table[$num]} LIMIT 10;"
+        }
         cat temp.sql
         $sqlite health_data.sqlite < temp.sql 2> /dev/null
     done
@@ -203,33 +211,35 @@ fi
 echo "Reporting Phase..."
 # Make a unified timestamp table
 databases="timestamp mfp_daily_summary apple_qs_health_data apple_qs_sleep_analysis cronometer_dailysummary"
-echo "DROP Table Timestamp;" > temp.sql
-echo "CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);" >> temp.sql
-for database in $databases; do
-    echo "INSERT OR IGNORE INTO Timestamp (Date, Timestamp) SELECT" >> temp.sql
-    echo "    substr(timestamp, 1, 4) || '-' || " >> temp.sql
-    echo "    substr(timestamp, 5, 2) || '-' || " >> temp.sql
-    echo "    substr(timestamp, 7, 2) ,  timestamp" >> temp.sql
-    echo "from $database; " >> temp.sql
-done
+{
+    echo "DROP Table Timestamp;"
+    echo "CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);"
+    for database in $databases; do
+            echo "INSERT OR IGNORE INTO Timestamp (Date, Timestamp) SELECT"
+            echo "    substr(timestamp, 1, 4) || '-' || "
+            echo "    substr(timestamp, 5, 2) || '-' || "
+            echo "    substr(timestamp, 7, 2) ,  timestamp"
+            echo "from $database; "
+    done
+} > temp.sql
 $sqlite health_data.sqlite < temp.sql
 
 
 # Print out the data collected
-YEAR=`date +"%Y"`
+# YEAR=$(date +"%Y")
 echo "$MONTH"
 #Get a timestamp for $MONTH months ago
 if [[ $OS = "Linux" ]]
 then
-	TIMESTAMP=`date -d "-${MONTH} month" +%Y%m%d ` # for Linux
+	TIMESTAMP=$(date -d "-${MONTH} month" +%Y%m%d ) # for Linux
 else
-	TIMESTAMP=`date -j -v-${MONTH}m +%Y%m%d` # MacOS
+	TIMESTAMP=$(date -j -v-${MONTH}m +%Y%m%d) # MacOS
 fi
 
 # Show the last dates for each of the databases just to make sure the retrieval process worked.
 echo "Last Dates:"
 for database in $databases; do
-	echo -e "$database\t\t: `$sqlite health_data.sqlite "select timestamp from $database order by timestamp DESC limit 1;"`"
+	echo -e "$database\t\t: $($sqlite health_data.sqlite "select timestamp from $database order by timestamp DESC limit 1;")"
 done
 echo ""
 print_elapsed_time
