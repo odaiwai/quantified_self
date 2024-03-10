@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
-"""
-    Script to do stuff in Python.
+""" Script to import files from iCloud Drive.
+
     Notes:
         Post iOS 8, the api.files functionality points to the
         Ubiquity service, not iCloud drive:
         https://developer.apple.com/library/archive/technotes/tn2348/_index.html#//apple_ref/doc/uid/DTS40014955-CH1-TNTAG5
-
 """
-
 # import os
-from shutil import copyfileobj  # https://docs.python.org/3/library/shutil.html
-import click                            # https://click.palletsprojects.com/
 import sys
+from datetime import datetime
+from shutil import copyfileobj  # https://docs.python.org/3/library/shutil.html
+
+import click                            # https://click.palletsprojects.com/
+
 from pyicloud import PyiCloudService    # https://pypi.org/project/pyicloud/
 
 
 def get_credentials():
-    """
-        Get the credential s from the external file.
-    """
+    """Get the credential s from the external file."""
     creds = {}
     with open('../health_data/credentials.txt', 'r', encoding='utf8') as infh:
         lines = list(infh)
@@ -32,9 +31,7 @@ def get_credentials():
 
 
 def login():
-    """
-        Get the credentials and login to the Apple iCloud service
-    """
+    """Get the credentials and login to the Apple iCloud service."""
     creds = get_credentials()
     icloud = PyiCloudService(creds['email'], creds['password'])
 
@@ -75,25 +72,30 @@ def login():
 
 
 def main():
-    """
-        Main routine.
-    """
+    """Main routine."""
     icloud = login()
+    today = datetime.strftime(datetime.now(), '%Y%m%d')
     files_to_copy = {'apple_health_export': ['Health Data.csv',
                                              'Sleep Analysis.csv'],
-                     'cronometer_data': ['biometrics.csv',
-                                         'dailysummary.csv',
-                                         'exercises.csv',
-                                         'notes.csv',
-                                         'servings.csv']
+                     'cronometer_data': [f'biometrics_{today}.csv',
+                                         f'dailysummary_{today}.csv',
+                                         f'exercises_{today}.csv',
+                                         f'fasts_{today}.csv',
+                                         f'notes_{today}.csv',
+                                         f'servings_{today}.csv']
                      }
-    for local_dir in files_to_copy.keys():
-        for file in files_to_copy[local_dir]:
-            drive_file = icloud.drive['Health_Data'][file]
+    for local_dir, files in files_to_copy.items():
+        for file in files:
+            try:
+                drive_file = icloud.drive['Health_Data'][file]
+            except KeyError as kerr:
+                print(f'Unable to find file {file} on iCloud:\n\t{kerr}')
+                quit()
             local_copy = f'../health_data/{local_dir}/{file}'
-            print(f'Copying file from iCloud to {local_copy}')
             # copy it to the local copy of the file
             with drive_file.open(stream=True) as contents:
+                print((f'Copying file from iCloud to {local_copy}: '
+                       f'{contents.status_code}'))
                 with open(local_copy, 'wb') as outfh:
                     copyfileobj(contents.raw, outfh)
                     # we could also parse the text in contents.text

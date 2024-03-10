@@ -53,3 +53,8 @@ tags
 .vstags
 node_modules/
 package*
+.*.swo
+*.json
+*.js
+tags.*
+Session.vim
