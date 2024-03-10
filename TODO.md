@@ -7,9 +7,9 @@
 - Use R to make a linear regression of weight gain/loss vs previous n days
   calorie deficit
 - amend the parsing scripts to use a common database so that a unified report
-  can be made.- 
+  can be made.-
 - Fix the different date formats used: ideally, there should be a common yyyy/mm/dd for all dates
-- 
+-
 
 # Puppeteer / Pyppeteer to automate Cronometer
 https://pypi.org/project/pyppeteer/
@@ -20,3 +20,5 @@ https://pptr.dev/
 
 Using the Puppeteer scripts in this folder build a pyppeteer script to automate data
 retrieval
+
+\## token change
