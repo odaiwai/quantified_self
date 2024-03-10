@@ -57,3 +57,4 @@ package*
 *.json
 *.js
 tags.*
+Session.vim
