@@ -1,4 +1,4 @@
-# Don't try to store Excel files or backups 
+# Don't try to store Excel files or backups
 *.xlsx
 *.xls
 *~
@@ -12,7 +12,7 @@
 .Rproj.user
 
 # Should we store the input data files?
-# Don't try to store Excel files or backups 
+# Don't try to store Excel files or backups
 *.xlsx
 *.xls
 *~
@@ -58,3 +58,8 @@ package*
 *.js
 tags.*
 Session.vim
+<<<<<<< Updated upstream
+||||||| Stash base
+=======
+health_data.sql
+>>>>>>> Stashed changes
