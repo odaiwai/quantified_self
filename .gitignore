@@ -53,3 +53,7 @@ tags
 .vstags
 node_modules/
 package*
+health_data.sql
+Session.vim
+login_credentials.js
+
