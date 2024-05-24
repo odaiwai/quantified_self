@@ -1,24 +1,47 @@
 #!/bin/bash
-
 # Script to run the various weekly tasks
 # Dave O'Brien
 
-declare -i starttime=`date +%s`
+# Error Handling
+# set -e
+handle_error() {
+    echo "ERROR! Check last file run."
+    exit 1
+}
 
-function print_elapsed_time {
-    declare -i now=`date +%s`
+print_elapsed_time() {
+    declare -i now
+    now=$(date +%s)
     declare -i elapsed=$(( now - starttime ))
     echo "Operation took $elapsed seconds"
 }
 
+log_print() {
+    if [[ $VERBOSE -eq 1 ]]; then
+        echo "$*"
+    fi
+}
+
+log_cat() {
+    if [[ $VERBOSE -eq 1 ]]; then
+        echo "$VERBOSE"
+        cat "$*"
+    fi
+}
+
+trap handle_error ERR
+declare -i starttime
+starttime=$(date +%s)
+
 # Use this one, not the one that got installed with Anaconda
 sqlite='/usr/bin/sqlite3'
-SQL="${sqlite} -csv -header health_data.sqlite"
+# SQL="${sqlite} -csv -header health_data.sqlite"
 DOWNLOAD=0
 VERBOSE=0
 PARSE=1
 MONTH=1
-OS=`uname -s` # Which system are we on? Mac or Linux?
+OS=$(uname -s) # Which system are we on? Mac or Linux?
+today=$(date +%Y%m%d )
 echo "Running on $OS"
 
 # Parse the Command line options
@@ -59,48 +82,37 @@ done
 
 echo "Download Phase..."
 if [[ $DOWNLOAD -gt 0 ]]; then
-	# Download this years myfitnesspal report
-	# ./getMyFitnessPalData.py
-	# Download thie cronometer Data - Currently manually exported
-	# ./get_cronometer_data.py
     print_elapsed_time
 
     # Get the updated Apple Health Export
     # This now gets the Cronometer files too.
     ./get_files_from_icloud_drive.py
-    # if [[ "$OS" = "Darwin" ]]; then
-    #    # Don't really need to do this anymore
-	#	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Health\ Data.csv ./
-	#	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/Sleep\ Analysis.csv ./
-	#	cp -pv ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/moodpath_exported_data*.zip ./
-	# else
-	#	onedrive --synchronize
-	#	# cp -pv ~/OneDrive/Health_Data/Health\ Data.csv ./
-	#	# cp -pv ~/OneDrive/Health_Data/Sleep\ Analysis.csv ./
-	#	# cp -pv ~/OneDrive/Health_Data/moodpath_exported_data*.zip ./
-	#	# cp -pv ~/OneDrive/Spreadsheets/daves_weight_v4.xlsx ../
-	#	# Cronometer Data 
-	#   cd ../cronometer_data
-    #    for file in notes biometrics exercises servings dailysummary; do
-    #        cp -pv ~/OneDrive/Health_Data/${file}.csv ./
-    #    done
-	# fi
+
 	# Add these files to the repository and commit
-	cd ../health_data/apple_health_export
-	git add Health\ Data.csv Sleep\ Analysis.csv
-	git commit -m "updated QS exported data" Health\ Data.csv Sleep\ Analysis.csv
+	cd ../health_data/apple_health_export || exit
+	git add 'Health Data.csv' 'Sleep Analysis.csv'
+	git commit -m "updated QS exported data" Health\ Data.csv Sleep\ Analysis.csv || \
+        echo "No QS changes to commit."
 
-    for file in notes biometrics exercises servings dailysummary; do
-        git add ${file}.csv
-    done
-    git commit -m "Updated the Cronometer data"
-
+    cd ../cronometer_data || exit
+    git add "notes_${today}.csv" \
+        "biometrics_${today}.csv" \
+        "fasts_${today}.csv" \
+        "exercises_${today}.csv" \
+        "servings_${today}.csv" \
+        "dailysummary_${today}.csv"
+    git commit -m "Updated the Cronometer data" \
+        "notes_${today}.csv" \
+        "biometrics_${today}.csv" \
+        "fasts_${today}.csv" \
+        "exercises_${today}.csv" \
+        "servings_${today}.csv" \
+        "dailysummary_${today}.csv" || \
+        echo "No Cronometer Changes to commit."
 
     # Go back to the main dir
-	cd ../../analyse_health_data
+	cd ../../analyse_health_data || exit
 
-    # get the Fitbit Data - not doing this anymore
-    # ./get_fitbit_data.pl
 fi
 
 echo "Parsing Phase..."
@@ -114,54 +126,49 @@ if [[ $PARSE -gt 0 ]]; then
     table_specs[Exercise]="CAST(sum(Exercise_Calories) AS NUMERIC) AS 'Exercise_Calories', CAST(sum(Exercise_Minutes) AS NUMERIC) AS 'Exercise_Minutes', CAST(sum(Sets) AS NUMERIC) AS 'Sets', CAST(sum(Reps_Per_Set) AS NUMERIC) AS 'Reps_Per_Set', CAST(sum(Kilograms) AS NUMERIC) AS 'Kilograms', CAST(sum(Steps) AS NUMERIC) AS 'Steps'"
     table_specs[Nutrition]="CAST(sum(Calories) AS NUMERIC) AS 'Calories', CAST(sum(Fat_g) AS NUMERIC) AS 'Fat_g', CAST(sum(Saturated_Fat) AS NUMERIC) AS 'Saturated_Fat', CAST(sum(Polyunsaturated_Fat) AS NUMERIC) AS 'Polyunsaturated_Fat', CAST(sum(Monounsaturated_Fat) AS NUMERIC) AS 'Monounsaturated_Fat', CAST(sum(Trans_Fat) AS NUMERIC) AS 'Trans_Fat', CAST(sum(Cholesterol) AS NUMERIC) AS 'Cholesterol', CAST(sum(Sodium_mg) AS NUMERIC) AS 'Sodium_mg', CAST(sum(Potassium) AS NUMERIC) AS 'Potassium', CAST(sum(Carbohydrates_g) AS NUMERIC) AS 'Carbohydrates_g', CAST(sum(Fiber) AS NUMERIC) AS 'Fiber', CAST(sum(Sugar) AS NUMERIC) AS 'Sugar', CAST(sum(Protein_g) AS NUMERIC) AS 'Protein_g', CAST(sum(Vitamin_A) AS NUMERIC) AS 'Vitamin_A', CAST(sum(Vitamin_C) AS NUMERIC) AS 'Vitamin_C', CAST(sum(Calcium) AS NUMERIC) AS 'Calcium', CAST(sum(Iron) AS NUMERIC) AS 'Iron'"
     for table in Measurement Nutrition Exercise; do
-        lc_table=`echo $table | tr [A-Z] [a-z]`
+        lc_table=$(echo "$table" | tr "[:upper:]" "[:lower:]")
         dates="2014-08-18-to-2022-11-27"
         basedir="../health_data/myFitnessPal_data"
-        echo "--DROP $table" > temp.sql
-        echo "DROP TABLE IF EXISTS mfp_${lc_table}_input;" >> temp.sql
-        echo "DROP TABLE IF EXISTS mfp_${lc_table}_daily;" >> temp.sql
-        echo "-- IMPORT" >> temp.sql
-        echo ".import --csv  ${basedir}/File-Export-${dates}/${table}-Summary-${dates}.csv mfp_${lc_table}_input" >> temp.sql
-        echo "--Consolidate" >> temp.sql
-        echo "CREATE TABLE mfp_${lc_table}_daily as SELECT Date, CAST(Timestamp as Integer) AS 'Timestamp', ${table_specs[$table]} from mfp_${lc_table}_input GROUP BY Timestamp;" >> temp.sql
+        {
+            echo "--DROP $table"
+            echo "DROP TABLE IF EXISTS mfp_${lc_table}_input;"
+            echo "DROP TABLE IF EXISTS mfp_${lc_table}_daily;"
+            echo "-- IMPORT"
+            echo ".import --csv  ${basedir}/File-Export-${dates}/${table}-Summary-${dates}.csv mfp_${lc_table}_input"
+            echo "--Consolidate"
+            echo "CREATE TABLE mfp_${lc_table}_daily as SELECT Date, CAST(Timestamp as Integer) AS 'Timestamp', ${table_specs[$table]} from mfp_${lc_table}_input GROUP BY Timestamp;"
+        } > temp.sql
         $sqlite health_data.sqlite < temp.sql
     done
     print_elapsed_time
 
 	# Parse the cronometer Data once that's setup
 	# ./parse_cronometer_data.py
-    echo "---- Processing Cronomater Data ----"
+    echo "---- Processing Cronometer Data ----"
     for file in dailysummary servings notes biometrics exercises; do
+        # TODO: handle fasting in the Cronometer app - premium feature
         DAY="Day"
         if [[ "${file}" = "dailysummary" ]]; then
             DAY="Date"
         fi
         echo "${file}"
-        echo "DROP TABLE IF EXISTS cronometer_${file};" > temp.sql
-        echo ".import --csv ../health_data/cronometer_data/${file}.csv temp" >> temp.sql
-        echo ".schema temp" >> temp.sql
-        echo "CREATE TABLE 'cronometer_${file}' as 
-            select CAST(substr(${DAY}, 1, 4) || 
-                        substr(${DAY}, 6, 2) || 
-                        substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp', * 
-                   from temp;" >> temp.sql
-        echo "DROP TABLE temp;" >> temp.sql
-        cat temp.sql
-        $sqlite health_data.sqlite < temp.sql
+        # TODO: need to handle a new table being added here...
+        {
+            echo ".import --csv ../health_data/cronometer_data/${file}_${today}.csv temp"
+            echo ".schema temp"
+            echo "CREATE TABLE 'temp2' as
+                select CAST(substr(${DAY}, 1, 4) ||
+                            substr(${DAY}, 6, 2) ||
+                            substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp', *
+                       from temp;"
+            echo "INSERT OR IGNORE INTO cronometer_${file} SELECT * from temp2;"
+            echo "DROP TABLE temp;"
+            echo "DROP TABLE temp2;"
+        } > temp.sql
+        # log_cat temp.sql
+        $sqlite health_data.sqlite < temp.sql 2>/dev/null
     done
     print_elapsed_time
-
-# The other FitBit data is exported from the FitBit site on a monthly basis, but that can't be
-	# done automatically at the moment. At least, not by me.
-	#./parse_fitbit_export.pl
-    # print_elapsed_time
-
-	# Fitbit Data is automatically downloaded to the Dropbox folder
-	# This is just the daily report in a single line, and only includes a certain subset of data
-	# This needs to be run after the other one, as all the fitbit_* tables get deleted in that step
-	# while this step only deletes it's own table
-	#./parse_fitbit_data.pl
-    # print_elapsed_time
 
     # Parse the Apple Health Data from QS
     # TODO: population these tables directly into the database
@@ -172,31 +179,33 @@ if [[ $PARSE -gt 0 ]]; then
     declare -A tdate=( [0]="Start" [1]="In bed Finish" )
     basedir="../health_data/apple_health_export"
     for num in 0 1; do
-        echo "DROP TABLE IF EXISTS apple_qs_${table[$num]};"> temp.sql
-        echo ".import --csv \"$basedir/${files[$num]}.csv\" temp" >> temp.sql
-        echo ".schema temp" >> temp.sql
-        echo "CREATE TABLE 'apple_qs_${table[$num]}' as 
-            SELECT CAST(substr([${tdate[$num]}], 8, 4) || 
-                        CASE substr([${tdate[$num]}], 4, 3) 
-                            WHEN 'Jan' THEN '01' 
-                            WHEN 'Feb' THEN '02' 
-                            WHEN 'Mar' THEN '03' 
-                            WHEN 'Apr' THEN '04' 
-                            WHEN 'May' THEN '05' 
-                            WHEN 'Jun' THEN '06' 
-                            WHEN 'Jul' THEN '07' 
-                            WHEN 'Aug' THEN '08' 
-                            WHEN 'Sep' THEN '09' 
-                            WHEN 'Oct' THEN '10' 
-                            WHEN 'Nov' THEN '11' 
-                            WHEN 'Dec' THEN '12' 
-                        END || 
-                            substr([${tdate[$num]}], 1, 2) AS Integer) as 'Timestamp', * 
-                    from temp;" >> temp.sql
-        echo "DROP TABLE temp;" >> temp.sql
-        #echo "SELECT * from apple_qs_${table[$num]} LIMIT 10;" >> temp.sql
-        cat temp.sql
-        $sqlite health_data.sqlite < temp.sql
+        {
+            echo "DROP TABLE IF EXISTS apple_qs_${table[$num]};"
+            echo ".import --csv \"$basedir/${files[$num]}.csv\" temp"
+            echo ".schema temp"
+            echo "CREATE TABLE 'apple_qs_${table[$num]}' as
+                SELECT CAST(substr([${tdate[$num]}], 8, 4) ||
+                            CASE substr([${tdate[$num]}], 4, 3)
+                                WHEN 'Jan' THEN '01'
+                                WHEN 'Feb' THEN '02'
+                                WHEN 'Mar' THEN '03'
+                                WHEN 'Apr' THEN '04'
+                                WHEN 'May' THEN '05'
+                                WHEN 'Jun' THEN '06'
+                                WHEN 'Jul' THEN '07'
+                                WHEN 'Aug' THEN '08'
+                                WHEN 'Sep' THEN '09'
+                                WHEN 'Oct' THEN '10'
+                                WHEN 'Nov' THEN '11'
+                                WHEN 'Dec' THEN '12'
+                            END ||
+                                substr([${tdate[$num]}], 1, 2) AS Integer) as 'Timestamp', *
+                        from temp;"
+            echo "DROP TABLE temp;"
+            #echo "SELECT * from apple_qs_${table[$num]} LIMIT 10;"
+        }
+        # log_cat temp.sql
+        $sqlite health_data.sqlite < temp.sql 2> /dev/null
     done
     # ./parse_apple_health_data.pl
     print_elapsed_time
@@ -216,33 +225,36 @@ fi
 echo "Reporting Phase..."
 # Make a unified timestamp table
 databases="timestamp mfp_daily_summary apple_qs_health_data apple_qs_sleep_analysis cronometer_dailysummary"
-echo "DROP Table Timestamp;" > temp.sql
-echo "CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);" >> temp.sql
-for database in $databases; do
-    echo "INSERT INTO Timestamp (Date, Timestamp) SELECT" >> temp.sql
-    echo "    substr(timestamp, 1, 4) || '-' || " >> temp.sql
-    echo "    substr(timestamp, 5, 2) || '-' || " >> temp.sql
-    echo "    substr(timestamp, 7, 2) ,  timestamp" >> temp.sql
-    echo "from $database; " >> temp.sql
-done
+{
+    echo "DROP Table Timestamp;"
+    echo "CREATE TABLE Timestamp (Date Text, Timestamp Integer Primary Key);"
+    for database in $databases; do
+            echo "INSERT OR IGNORE INTO Timestamp (Date, Timestamp) SELECT"
+            echo "    substr(timestamp, 1, 4) || '-' || "
+            echo "    substr(timestamp, 5, 2) || '-' || "
+            echo "    substr(timestamp, 7, 2) ,  timestamp"
+            echo "from $database; "
+    done
+} > temp.sql
+log_cat temp.sql
 $sqlite health_data.sqlite < temp.sql
 
 
 # Print out the data collected
-YEAR=`date +"%Y"`
+# YEAR=$(date +"%Y")
 echo "$MONTH"
 #Get a timestamp for $MONTH months ago
 if [[ $OS = "Linux" ]]
 then
-	TIMESTAMP=`date -d "-${MONTH} month" +%Y%m%d ` # for Linux
+	TIMESTAMP=$(date -d "-${MONTH} month" +%Y%m%d ) # for Linux
 else
-	TIMESTAMP=`date -j -v-${MONTH}m +%Y%m%d` # MacOS
+	TIMESTAMP=$(date -j -v-${MONTH}m +%Y%m%d) # MacOS
 fi
 
 # Show the last dates for each of the databases just to make sure the retrieval process worked.
 echo "Last Dates:"
 for database in $databases; do
-	echo -e "$database\t\t: `$sqlite health_data.sqlite "select timestamp from $database order by timestamp DESC limit 1;"`"
+	echo -e "$database\t\t: $($sqlite health_data.sqlite "select timestamp from $database order by timestamp DESC limit 1;")"
 done
 echo ""
 print_elapsed_time
@@ -261,7 +273,7 @@ print_elapsed_time
 
 # Dump out the standard Report
 echo "Standard Report"
-SQLCOMMAND="SELECT Timestamp.``Date, 
+SQLCOMMAND="SELECT DISTINCT Timestamp.date as Date,
     IFNULL(MFPN.Calories, CDS.'Energy (kcal)'),
     IFNULL(MFPN.Carbohydrates_g, CDS.'Carbs (g)'),
     IFNULL(MFPN.Fat_g, CDS.'Fat (g)'),
@@ -270,8 +282,8 @@ SQLCOMMAND="SELECT Timestamp.``Date,
     IFNULL(MFPN.Sodium_mg, CDS.'Sodium (mg)'),
     IFNULL(MFPN.Sugar, CDS.'Sugars (g)'),
     IFNULL(MFPN.Fiber, CDS.'Fiber (g)'),
-    IFNULL(MFPE.Exercise_Calories, 0), 
-    0, 
+    IFNULL(MFPE.Exercise_Calories, 0),
+    0,
     IFNULL(AQH.'Active Calories (kcal)', 0),
     IFNULL(AQH.'Resting Calories (kcal)', 0)
     FROM [Timestamp]
@@ -280,7 +292,7 @@ SQLCOMMAND="SELECT Timestamp.``Date,
     FULL OUTER JOIN apple_qs_health_data as AQH using (Timestamp)
     FULL OUTER JOIN cronometer_dailysummary as CDS using (Timestamp)
     Where Timestamp > $TIMESTAMP;"
-echo "$SQLCOMMAND"
+log_print "$SQLCOMMAND"
 
 $sqlite health_data.sqlite -csv -header "$SQLCOMMAND"
 $sqlite health_data.sqlite -csv -header "$SQLCOMMAND" > excel_import.csv
@@ -302,7 +314,7 @@ print_elapsed_time
 #  CAST(sum(mfp_nutrition.Sugar) AS NUMERIC) AS mfp_nutrition.Sugar, CAST(sum(mfp_nutrition.Fiber) AS NUMERIC) AS mfp_nutrition.Fiber, CAST(sum(mfp_exercise.Exercise_calories) AS NUMERIC) AS mfp_exercise.Exercise_calories,
 # 0, apple_qs_health_data.Active_Calories, apple_qs_health_data.Resting_Calories
 #     FROM [mfp_nutrition]
-#     JOIN apple_qs_health_data using (timestamp) 
+#     JOIN apple_qs_health_data using (timestamp)
 #     JOIN mfp_exercise using (timestamp)
 # 	WHERE mfp_nutrition.timestamp > $TIMESTAMP group by timestamp;"
 
@@ -313,4 +325,3 @@ print_elapsed_time
 # 	FROM [mfp_daily_summary]
 # 	JOIN apple_qs_health_data using (timestamp)
 # 	WHERE mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"
-

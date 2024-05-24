@@ -1,0 +1,13 @@
+-- Add group column to biometrics
+DROP TABLE TEMP;
+CREATE TABLE TEMP AS SELECT
+    Timestamp,
+    Day,
+    'None' as "Group",
+    Metric,
+    Unit,
+    Amount
+FROM CRONOMETER_BIOMETRICS;
+DROP TABLE CRONOMETER_BIOMETRICS;
+CREATE TABLE CRONOMETER_BIOMETRICS AS SELECT * FROM TEMP;
+DROP TABLE TEMP;

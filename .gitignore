@@ -1,4 +1,4 @@
-# Don't try to store Excel files or backups 
+# Don't try to store Excel files or backups
 *.xlsx
 *.xls
 *~
@@ -12,7 +12,7 @@
 .Rproj.user
 
 # Should we store the input data files?
-# Don't try to store Excel files or backups 
+# Don't try to store Excel files or backups
 *.xlsx
 *.xls
 *~
@@ -53,6 +53,11 @@ tags
 .vstags
 node_modules/
 package*
+.*.swo
+*.json
+*.js
+tags.*
+Session.vim
 health_data.sql
 Session.vim
 login_credentials.js
