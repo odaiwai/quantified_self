@@ -71,3 +71,6 @@ nuke_files_from_git.sh
 .Rhistory-base
 get_cronometer_data.py
 get_cronometer_data_with_playwright.py
+fitbitScraper.R
+fitnessData.R
+process_health_data.R
