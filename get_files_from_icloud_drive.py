@@ -30,16 +30,7 @@ def get_credentials():
     return creds
 
 
-<<<<<<< Updated upstream
-def login():
-||||||| Stash base
-def login():
-    """
-        Get the credentials and login to the Apple iCloud service
-    """
-=======
 def login() -> PyiCloudService:
->>>>>>> Stashed changes
     """Get the credentials and login to the Apple iCloud service."""
     creds = get_credentials()
     icloud = PyiCloudService(creds['email'], creds['password'])
@@ -99,14 +90,7 @@ def main():
             try:
                 drive_file = icloud.drive['Health_Data'][file]
             except KeyError as kerr:
-<<<<<<< Updated upstream
-||||||| Stash base
-    for local_dir in files_to_copy.keys():
-        for file in files_to_copy[local_dir]:
-            drive_file = icloud.drive['Health_Data'][file]
-=======
                 # TODO list all the recent files in the folder...
->>>>>>> Stashed changes
                 print(f'Unable to find file {file} on iCloud:\n\t{kerr}')
                 quit()
             local_copy = f'../health_data/{local_dir}/{file}'
