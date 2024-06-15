@@ -9,7 +9,7 @@
 - amend the parsing scripts to use a common database so that a unified report
   can be made.-
 - Fix the different date formats used: ideally, there should be a common yyyy/mm/dd for all dates
--
+- Amend the iCloud Getter to get earlier files if today's aren't available.
 
 # Puppeteer / Pyppeteer to automate Cronometer
 https://pypi.org/project/pyppeteer/
