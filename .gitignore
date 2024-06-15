@@ -62,3 +62,15 @@ health_data.sql
 Session.vim
 login_credentials.js
 
+.Rhistory
+fitbitScraper.R
+get_fitbit_data2.R
+sync_playwright.py
+get_fitbit_data.R
+nuke_files_from_git.sh
+.Rhistory-base
+get_cronometer_data.py
+get_cronometer_data_with_playwright.py
+fitbitScraper.R
+fitnessData.R
+process_health_data.R
