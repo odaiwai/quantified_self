@@ -85,22 +85,32 @@ def main():
                                          f'notes_{today}.csv',
                                          f'servings_{today}.csv']
                      }
+    icloud_files = icloud.drive['Health_Data'].dir()
     for local_dir, files in files_to_copy.items():
         for file in files:
+            drive_files = {}
             try:
-                drive_file = icloud.drive['Health_Data'][file]
+                drive_files[file] = icloud.drive['Health_Data'][file]
             except KeyError as kerr:
-                # TODO list all the recent files in the folder...
-                print(f'Unable to find file {file} on iCloud:\n\t{kerr}')
-                quit()
-            local_copy = f'../health_data/{local_dir}/{file}'
+                # All files are in the list: icloud.drive['Health_Data'].dir()
+                # print(f'Unable to find file {file} on iCloud:\n\t{kerr}')
+                prefix = file.split('_')[0]
+                for icloud_file in icloud_files:
+                    icloud_prefix = icloud_file.split('_')[0]
+                    if icloud_prefix == prefix:
+                        drive_files[icloud_file] = icloud.drive['Health_Data'][icloud_file]
+                        # print(f'\tCopying {icloud_file} instead...')
+                # quit()
             # copy it to the local copy of the file
-            with drive_file.open(stream=True) as contents:
-                print((f'Copying file from iCloud to {local_copy}: '
-                       f'{contents.status_code}'))
-                with open(local_copy, 'wb') as outfh:
-                    copyfileobj(contents.raw, outfh)
-                    # we could also parse the text in contents.text
+            # print(drive_files.keys())
+            # breakpoint()
+            for file, drive_file in drive_files.items():
+                with drive_file.open(stream=True) as contents:
+                    print((f'Copying file from iCloud to {file}: '
+                           f'{contents.status_code}'))
+                    with open(f'../health_data/{local_dir}/{file}', 'wb') as outfh:
+                        copyfileobj(contents.raw, outfh)
+                        # we could also parse the text in contents.text
 
 
 if __name__ == '__main__':
