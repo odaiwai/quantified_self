@@ -164,6 +164,9 @@ if [[ $PARSE -gt 0 ]]; then
 		fi
 		echo "${file}"
 		# TODO: need to handle a new table being added here...
+        # TODO: need to add a UUID to services.csv, as there are multipl
+        # entries per date, and no way to distinguish or prevent multiple
+        # copies of each day.
 		{
 			echo ".import --csv ../health_data/cronometer_data/${file}_${today}.csv temp"
 			echo ".schema temp"

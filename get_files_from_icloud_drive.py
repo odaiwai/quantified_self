@@ -13,7 +13,7 @@ from shutil import copyfileobj  # https://docs.python.org/3/library/shutil.html
 
 import click  # https://click.palletsprojects.com/
 
-sys.path.insert(0, '../pyicloud/')
+# sys.path.insert(0, '../pyicloud/')
 from pyicloud import PyiCloudService  # https://pypi.org/project/pyicloud/
 
 
