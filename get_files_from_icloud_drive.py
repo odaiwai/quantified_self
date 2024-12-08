@@ -11,9 +11,10 @@ import sys
 from datetime import datetime
 from shutil import copyfileobj  # https://docs.python.org/3/library/shutil.html
 
-import click                            # https://click.palletsprojects.com/
+import click  # https://click.palletsprojects.com/
 
-from pyicloud import PyiCloudService    # https://pypi.org/project/pyicloud/
+# sys.path.insert(0, '../pyicloud/')
+from pyicloud import PyiCloudService  # https://pypi.org/project/pyicloud/
 
 
 def get_credentials():

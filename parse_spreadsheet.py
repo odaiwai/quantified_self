@@ -5,7 +5,6 @@ Parses the data stored in the spreadsheet.
 Makes tables for upload to Apple Health using an uploader.
 """
 import datetime
-
 import sqlite3  # https://docs.python.org/2/library/sqlite3.html
 
 import openpyxl  # https://openpyxl.readthedocs.io/en/stable/
