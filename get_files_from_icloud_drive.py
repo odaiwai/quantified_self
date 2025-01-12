@@ -13,7 +13,9 @@ from shutil import copyfileobj  # https://docs.python.org/3/library/shutil.html
 
 import click  # https://click.palletsprojects.com/
 
-# sys.path.insert(0, '../pyicloud/')
+if '../pyicloud/' not in sys.path:
+    #  20250112: Changed to https://github.com/timlaing/pyicloud
+    sys.path.insert(0, '../pyicloud/')
 from pyicloud import PyiCloudService  # https://pypi.org/project/pyicloud/
 
 
