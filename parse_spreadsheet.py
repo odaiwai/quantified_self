@@ -7,7 +7,10 @@ Makes tables for upload to Apple Health using an uploader.
 import datetime
 import sqlite3  # https://docs.python.org/2/library/sqlite3.html
 
+# import ipdb
+import matplotlib.pyplot as plt
 import openpyxl  # https://openpyxl.readthedocs.io/en/stable/
+import pandas as pd
 
 # Constants
 VERBOSE = 0
@@ -88,6 +91,16 @@ class DataRow():
                 self.bonemass_pct, self.systolic, self.diastolic, self.pulse,
                 self.bmr_katch, self.bmr_miffl, self.bmi, self.ponderal)
 
+    def as_dict(self) -> dict:
+        return {'timestamp': self.timestamp, 'age': self.age,
+                'height': self.height, 'weight': self.weight,
+                'bodyfat_kg': self.bodyfat_kg, 'bodyfat_pct': self.bodyfat_pct,
+                'bodywater_pct': self.bodywater_pct,
+                'bonemass_pct': self.bonemass_pct, 'systolic': self.systolic,
+                'diastolic': self.diastolic, 'pulse': self.pulse,
+                'bmr_katch': self.bmr_katch, 'bmr_miffl': self.bmr_miffl,
+                'bmi': self.bmi, 'ponderal': self.ponderal}
+
 
 def printif(*args) -> None:
     """VERBOSE Print for debugging."""
@@ -122,12 +135,15 @@ def make_tables(dbc):
 
 
 def read_body_info_sheet(dbc: sqlite3.Cursor,
-                         workbook: openpyxl.Workbook) -> None:
+                         workbook: openpyxl.Workbook) -> pd.DataFrame:
     """
     Read in the sheet and store in the database.
 
     Read in the sheet as read_only with the results of Formulas computed
     (data_only) as of last save.
+
+    This was all mostly done before I knew about pandas, which is why it's so
+    clunky.
     """
     datasheet = workbook['dave']
 
@@ -140,6 +156,7 @@ def read_body_info_sheet(dbc: sqlite3.Cursor,
     #                         ' bodyfat_kg bodyfat_pct bodywater_pct'
     #                         ' bonemass_pct systolic diastolic pulse'))
     print('Parsing Physical Data')
+    data_for_df = []
     row_count = 0
     for row_count, row in enumerate(datasheet.rows):
         printif(row_count, [n.value for n in row])
@@ -148,6 +165,7 @@ def read_body_info_sheet(dbc: sqlite3.Cursor,
             printif([row[c].value for c in range(0, 12)])
             data = (row[c].value for c in range(0, 12))
             data = DataRow(*data)
+            data_for_df.append(data.as_dict())
             printif(data)
 
             values = data.values_for_db()
@@ -162,8 +180,10 @@ def read_body_info_sheet(dbc: sqlite3.Cursor,
                          ' VALUES'
                          ' (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'),
                         values)
-
+    breakpoint()
+    data_df = pd.DataFrame(data_for_df)
     print(f'{row_count} rows added to HR')
+    return data_df
 
 
 def read_resting_heart_rate_data(dbc: sqlite3.Cursor,
@@ -215,11 +235,15 @@ def main():
         workbook = openpyxl.load_workbook(SPREADSHEET,
                                           read_only=True,
                                           data_only=True)
-        read_body_info_sheet(db, workbook)
+        data = read_body_info_sheet(db, workbook)
         read_resting_heart_rate_data(db, workbook)
         db.commit()
 
         print('Finishing Up')
+
+    # Produce some plots
+    # data.plot(x='timestamp', y=('weight', 'bodyfat_kg'), kind='scatter')
+    plt.show()
 
     return None
 
