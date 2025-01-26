@@ -156,7 +156,6 @@ def read_body_info_sheet(dbc: sqlite3.Cursor,
     #                         ' bodyfat_kg bodyfat_pct bodywater_pct'
     #                         ' bonemass_pct systolic diastolic pulse'))
     print('Parsing Physical Data')
-    data_for_df = []
     row_count = 0
     for row_count, row in enumerate(datasheet.rows):
         printif(row_count, [n.value for n in row])
@@ -165,7 +164,6 @@ def read_body_info_sheet(dbc: sqlite3.Cursor,
             printif([row[c].value for c in range(0, 12)])
             data = (row[c].value for c in range(0, 12))
             data = DataRow(*data)
-            data_for_df.append(data.as_dict())
             printif(data)
 
             values = data.values_for_db()
@@ -180,10 +178,8 @@ def read_body_info_sheet(dbc: sqlite3.Cursor,
                          ' VALUES'
                          ' (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'),
                         values)
-    breakpoint()
-    data_df = pd.DataFrame(data_for_df)
     print(f'{row_count} rows added to HR')
-    return data_df
+    return None
 
 
 def read_resting_heart_rate_data(dbc: sqlite3.Cursor,
@@ -223,6 +219,31 @@ def read_resting_heart_rate_data(dbc: sqlite3.Cursor,
     print(f'{row_count} rows added to HR')
 
 
+def make_plots(data: pd.DataFrame):
+    """Make the plots."""
+
+    fig, ax = plt.subplots(figsize=(16, 9), layout='constrained')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Weight (kg)')
+    most_recent = data.index[-1]
+    # restrict us to the last n years
+    years = 15
+    ax.set_xlim(most_recent - datetime.timedelta(days=365.25 * years),
+                                                 most_recent)
+    ax.fill_between(data.index,
+                    data['stdev_low'], data['stdev_high'],
+                    color='red', alpha=0.25, label='STDdev of weight.')
+    ax.plot(data.index, data['ave'], color='red', alpha=0.5,
+            label='Average')
+    ax.scatter(data.index, data['weight_kg'], color='blue', alpha=0.5,
+               s=data['D€ý,€ý,iff'], label='Weight')
+    # ax.scatter(data.index, data['bodyfat_kg'], color='grey', alpha=0.5,
+    #            label='Weight')
+    ax.legend(loc='upper right')
+    fig.savefig('weight_over_time.png', format='png')
+    plt.close(fig)
+    # breakpoint()
+
 def main():
     """Connect to the database and make the tables."""
     print('Making the Tables...')
@@ -235,15 +256,17 @@ def main():
         workbook = openpyxl.load_workbook(SPREADSHEET,
                                           read_only=True,
                                           data_only=True)
-        data = read_body_info_sheet(db, workbook)
+        read_body_info_sheet(db, workbook)
         read_resting_heart_rate_data(db, workbook)
         db.commit()
 
         print('Finishing Up')
 
     # Produce some plots
-    # data.plot(x='timestamp', y=('weight', 'bodyfat_kg'), kind='scatter')
-    plt.show()
+    data = pd.read_excel(SPREADSHEET, sheet_name='dave', header=9,
+                         index_col=0, usecols='A:AI', dtype=None)
+
+    make_plots(data)
 
     return None
 
