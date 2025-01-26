@@ -13,7 +13,7 @@
 - Use Statsmodels to make a linear regression of weight gain/loss vs previous n days
   calorie deficit
 - Revise the Spreadsheet processor using pandas. Make charts of Weight and other data
-  from it
+  from it - Partially Done
 
 # Puppeteer / Pyppeteer to automate Cronometer
 https://pypi.org/project/pyppeteer/
