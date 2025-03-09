@@ -164,17 +164,19 @@ if [[ $PARSE -gt 0 ]]; then
 		fi
 		echo "${file}"
 		# TODO: need to handle a new table being added here...
-        # TODO: need to add a UUID to services.csv, as there are multipl
-        # entries per date, and no way to distinguish or prevent multiple
-        # copies of each day.
+		# TODO: need to add a UUID to servings.csv, as there are multiple
+		# entries per date, and no way to distinguish or prevent multiple
+		# copies of each day.
 		{
 			echo ".import --csv ../health_data/cronometer_data/${file}_${today}.csv temp"
 			echo ".schema temp"
 			echo "CREATE TABLE 'temp2' as
-                select CAST(substr(${DAY}, 1, 4) ||
-                            substr(${DAY}, 6, 2) ||
-                            substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp', *
-                       from temp;"
+                select
+                    CAST(substr(${DAY}, 1, 4) ||
+                         substr(${DAY}, 6, 2) ||
+                         substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp',
+                    *
+                from temp;"
 			echo "INSERT OR IGNORE INTO cronometer_${file} SELECT * from temp2;"
 			echo "DROP TABLE temp;"
 			echo "DROP TABLE temp2;"
