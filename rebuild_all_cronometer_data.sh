@@ -60,13 +60,14 @@ for file in dailysummary servings notes biometrics exercises; do
 		{
 			echo ".import --csv ../health_data/cronometer_data/${file}_${today}.csv temp"
 			# echo ".schema temp"
+            # Problem - not all of the tables are Grouped, so the Group clause
+            # has to check if its one of the ones with that clause/
 			echo "CREATE TABLE 'temp2' as
                     select
                         CAST(substr(${DAY}, 1, 4) ||
                              substr(${DAY}, 6, 2) ||
                              substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp',
-                        CAST('${today}' AS TEXT) as 'Reported',"
-        
+                        CAST('${today}' AS TEXT) as 'Reported',
                         CASE
                             WHEN (SELECT 'Group' from pragma_table_info('temp2') WHERE name='Group') IS NULL THEN 
                             'Ungrouped'

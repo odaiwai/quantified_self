@@ -175,6 +175,7 @@ if [[ $PARSE -gt 0 ]]; then
                     CAST(substr(${DAY}, 1, 4) ||
                          substr(${DAY}, 6, 2) ||
                          substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp',
+                    --CAST(${today} as INTEGER) as 'Reported',
                     *
                 from temp;"
 			echo "INSERT OR IGNORE INTO cronometer_${file} SELECT * from temp2;"
