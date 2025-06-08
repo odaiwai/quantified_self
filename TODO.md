@@ -8,7 +8,7 @@
   can be made. - DONE
 - Fix the different date formats used: ideally, there should be a common yyyy/mm/dd for
   all dates - DONE
-
+- Fixed the processing of the QS Health Export Data.
 ## Spreadsheet Processer
 - Use Statsmodels to make a linear regression of weight gain/loss vs previous n days
   calorie deficit
