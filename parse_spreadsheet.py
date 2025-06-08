@@ -4,8 +4,8 @@ Parses the data stored in the spreadsheet.
 
 Makes tables for upload to Apple Health using an uploader.
 """
-import datetime
 import sqlite3  # https://docs.python.org/2/library/sqlite3.html
+from datetime import datetime, timedelta
 
 # import ipdb
 import matplotlib.pyplot as plt
@@ -20,12 +20,12 @@ SPREADSHEET = '/home/odaiwai/OneDrive/Spreadsheets/daves_weight_v4.xlsx'
 class DataRow():
     """Dataclass for the main spreadsheet table."""
 
-    def __init__(self, timestamp: datetime.datetime, person: str = '',
+    def __init__(self, timestamp: datetime, person: str = '',
                  height: float = 0, age: float = 0, weight: float = 0,
                  bodyfat_kg: float = 0, bodyfat_pct: float = 0,
                  bodywater_pct: float = 0, bonemass_pct: float = 0,
                  systolic: int = 0, diastolic: int = 0, pulse: int = 0):
-        self.timestamp: datetime.datetime = timestamp
+        self.timestamp: datetime = timestamp
         self.person: str = person
         self.height: float = height
         self.age: float = age
@@ -100,6 +100,26 @@ class DataRow():
                 'diastolic': self.diastolic, 'pulse': self.pulse,
                 'bmr_katch': self.bmr_katch, 'bmr_miffl': self.bmr_miffl,
                 'bmi': self.bmi, 'ponderal': self.ponderal}
+
+
+def adapt_datetime_iso(date_time: datetime) -> str:
+    """
+    Convert a Python datetime.datetime into a timezone-naive ISO
+    8601 date string.
+    >>> adapt_datetime_iso(datetime(2023, 4, 5, 6, 7, 8, 9))
+    '2023-04-05T06:07:08.000009'
+    """
+    return date_time.isoformat()
+
+
+def convert_timestamp(time_stamp: bytes) -> datetime:
+    """
+    Convert an ISO 8601 formatted bytestring to a datetime.datetime object.
+    >>> convert_timestamp(b'2023-04-05T06:07:08.000009')
+    datetime.datetime(2023, 4, 5, 6, 7, 8, 9)
+    """
+    return datetime.strptime(time_stamp.decode("utf-8"),
+                             "%Y-%m-%dT%H:%M:%S.%f")
 
 
 def printif(*args) -> None:
@@ -228,8 +248,8 @@ def make_plots(data: pd.DataFrame):
     most_recent = data.index[-1]
     # restrict us to the last n years
     years = 15
-    ax.set_xlim(most_recent - datetime.timedelta(days=365.25 * years),
-                                                 most_recent)
+    ax.set_xlim(most_recent - timedelta(days=365.25 * years),
+                most_recent)
     ax.fill_between(data.index,
                     data['stdev_low'], data['stdev_high'],
                     color='red', alpha=0.25, label='STDdev of weight.')
@@ -244,10 +264,13 @@ def make_plots(data: pd.DataFrame):
     plt.close(fig)
     # breakpoint()
 
+
 def main():
     """Connect to the database and make the tables."""
     print('Making the Tables...')
     with sqlite3.connect('health_data.sqlite') as db:
+        sqlite3.register_adapter(datetime, adapt_datetime_iso)
+        sqlite3.register_converter("timestamp", convert_timestamp)
         dbc = db.cursor()
         make_tables(dbc)
         db.commit()
