@@ -164,17 +164,20 @@ if [[ $PARSE -gt 0 ]]; then
 		fi
 		echo "${file}"
 		# TODO: need to handle a new table being added here...
-        # TODO: need to add a UUID to services.csv, as there are multipl
-        # entries per date, and no way to distinguish or prevent multiple
-        # copies of each day.
+		# TODO: need to add a UUID to servings.csv, as there are multiple
+		# entries per date, and no way to distinguish or prevent multiple
+		# copies of each day.
 		{
 			echo ".import --csv ../health_data/cronometer_data/${file}_${today}.csv temp"
 			echo ".schema temp"
 			echo "CREATE TABLE 'temp2' as
-                select CAST(substr(${DAY}, 1, 4) ||
-                            substr(${DAY}, 6, 2) ||
-                            substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp', *
-                       from temp;"
+                select
+                    CAST(substr(${DAY}, 1, 4) ||
+                         substr(${DAY}, 6, 2) ||
+                         substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp',
+                    --CAST(${today} as INTEGER) as 'Reported',
+                    *
+                from temp;"
 			echo "INSERT OR IGNORE INTO cronometer_${file} SELECT * from temp2;"
 			echo "DROP TABLE temp;"
 			echo "DROP TABLE temp2;"
@@ -216,10 +219,10 @@ if [[ $PARSE -gt 0 ]]; then
                                 substr([${tdate[$num]}], 1, 2) AS Integer) as 'Timestamp', *
                         from temp;"
 			echo "DROP TABLE temp;"
-			#echo "SELECT * from apple_qs_${table[$num]} LIMIT 10;"
-		}
+			# echo "SELECT Timestamp from apple_qs_${table[$num]} order by timestamp DESC limit 5;"
+		} >temp.sql
 		# log_cat temp.sql
-		$sqlite health_data.sqlite <temp.sql 2>/dev/null
+		# $sqlite health_data.sqlite <temp.sql 2>/dev/null
 	done
 	# ./parse_apple_health_data.pl
 	print_elapsed_time
@@ -286,18 +289,19 @@ print_elapsed_time
 # Dump out the standard Report
 echo "Standard Report"
 SQLCOMMAND="SELECT DISTINCT Timestamp.date as Date,
-    IFNULL(MFPN.Calories, CDS.'Energy (kcal)'),
-    IFNULL(MFPN.Carbohydrates_g, CDS.'Carbs (g)'),
-    IFNULL(MFPN.Fat_g, CDS.'Fat (g)'),
-    IFNULL(MFPN.Protein_g, CDS.'Protein (g)'),
-    IFNULL(MFPN.Cholesterol, CDS.'Cholesterol (mg)'),
-    IFNULL(MFPN.Sodium_mg, CDS.'Sodium (mg)'),
-    IFNULL(MFPN.Sugar, CDS.'Sugars (g)'),
-    IFNULL(MFPN.Fiber, CDS.'Fiber (g)'),
-    IFNULL(MFPE.Exercise_Calories, 0),
-    0,
-    IFNULL(AQH.'Active Calories (kcal)', 0),
-    IFNULL(AQH.'Resting Calories (kcal)', 0)
+    IFNULL(MFPN.Calories, CDS.'Energy (kcal)') as Calories,
+    IFNULL(MFPN.Carbohydrates_g, CDS.'Carbs (g)') as Carbs,
+    IFNULL(MFPN.Fat_g, CDS.'Fat (g)') as Fat,
+    IFNULL(MFPN.Protein_g, CDS.'Protein (g)') as Protein,
+    IFNULL(MFPN.Cholesterol, CDS.'Cholesterol (mg)') as Cholesterol,
+    IFNULL(MFPN.Sodium_mg, CDS.'Sodium (mg)') as Sodium,
+    IFNULL(MFPN.Sugar, CDS.'Sugars (g)') as Sugars  ,
+    IFNULL(MFPN.Fiber, CDS.'Fiber (g)') as Fiber,
+    IFNULL(MFPE.Exercise_Calories, 0) as Exercise_Calories,
+    0 as FB_Calories_Burned,
+    coalesce(MFPE.'Exercise_Calories', AQH.'Active Calories (kcal)', 0) as Active_Calories,
+    IFNULL(AQH.'Resting Calories (kcal)', 0) as Resting_Calories,
+    coalesce(MFPE.'Steps', AQH.'Steps (Count)', 0) as Steps
     FROM [Timestamp]
     FULL OUTER JOIN mfp_nutrition_daily as MFPN using (Timestamp)
     FULL OUTER JOIN mfp_exercise_daily as MFPE using (Timestamp)

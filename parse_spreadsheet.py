@@ -221,7 +221,7 @@ def read_resting_heart_rate_data(dbc: sqlite3.Cursor,
 
 def make_plots(data: pd.DataFrame):
     """Make the plots."""
-
+    # Can move this to a separate script...
     fig, ax = plt.subplots(figsize=(16, 9), layout='constrained')
     ax.set_xlabel('Time')
     ax.set_ylabel('Weight (kg)')
@@ -236,7 +236,7 @@ def make_plots(data: pd.DataFrame):
     ax.plot(data.index, data['ave'], color='red', alpha=0.5,
             label='Average')
     ax.scatter(data.index, data['weight_kg'], color='blue', alpha=0.5,
-               s=data['D€ý,€ý,iff'], label='Weight')
+               s=data['Diff'], label='Weight')
     # ax.scatter(data.index, data['bodyfat_kg'], color='grey', alpha=0.5,
     #            label='Weight')
     ax.legend(loc='upper right')
