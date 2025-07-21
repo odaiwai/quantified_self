@@ -222,7 +222,7 @@ if [[ $PARSE -gt 0 ]]; then
 			# echo "SELECT Timestamp from apple_qs_${table[$num]} order by timestamp DESC limit 5;"
 		} >temp.sql
 		# log_cat temp.sql
-		# $sqlite health_data.sqlite <temp.sql 2>/dev/null
+		$sqlite health_data.sqlite <temp.sql 2>/dev/null
 	done
 	# ./parse_apple_health_data.pl
 	print_elapsed_time
