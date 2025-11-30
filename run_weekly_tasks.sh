@@ -90,8 +90,8 @@ while (($# > 0)); do
 	esac
 done
 
-echo "Download Phase..."
 if [[ $DOWNLOAD -gt 0 ]]; then
+	echo "Download Phase..."
 	print_elapsed_time
 
 	# Get the updated Apple Health Export
@@ -123,11 +123,12 @@ if [[ $DOWNLOAD -gt 0 ]]; then
 
 	# Go back to the main dir
 	cd ../../analyse_health_data || exit
-
+else
+	echo "No Downloading"
 fi
 
-echo "Parsing Phase..."
 if [[ $PARSE -gt 0 ]]; then
+	echo "Parsing Phase..."
 	# Parse this years myfitnesspal report into a database
 	# Don't need to do this any more!
 	#./parse_myfitnesspaldata.pl
@@ -237,6 +238,8 @@ if [[ $PARSE -gt 0 ]]; then
 	#unzip -o ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Health_Data/export.zip -d ../health_data
 	#./xml_rules_apple_health.pl
 	print_elapsed_time
+else
+	echo "No Parsing Phase..."
 fi
 
 echo "Reporting Phase..."
@@ -276,7 +279,7 @@ print_elapsed_time
 
 # Currently, there is a problem with the Apple QS Health Data (Write an App?)
 
-echo "MyFitnessPal Data for this month: ($OS, $TIMESTAMP)"
+# echo "MyFitnessPal Data for this month: ($OS, $TIMESTAMP)"
 #$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories, fitbit_data.calories_burned from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) JOIN fitbit_data using (timestamp) where mfp_daily_summary.timestamp > $TIMESTAMP;"
 #$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) where mfp_daily_summary.timestamp > $TIMESTAMP;"
 #$sqlite health_data.sqlite -csv -header "select mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fiber, mfp_calories_burned.calories, 0, apple_xml_activity_summary.activeCalories, basalEnergyBurnedAdj from [mfp_daily_summary] JOIN mfp_calories_burned using (timestamp, date) JOIN apple_xml_activity_summary using (timestamp) JOIN apple_xml_BasalEnergyBurnedAdj using (timestamp) where mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"

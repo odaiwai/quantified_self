@@ -8,14 +8,17 @@
 """
 # import os
 import sys
+
+if '../pyicloud/' not in sys.path:
+    #  20250112: Changed to https://github.com/timlaing/pyicloud
+    sys.path.insert(0, '../pyicloud/')
+
 from datetime import datetime
 from shutil import copyfileobj  # https://docs.python.org/3/library/shutil.html
 
 import click  # https://click.palletsprojects.com/
 
-if '../pyicloud/' not in sys.path:
-    #  20250112: Changed to https://github.com/timlaing/pyicloud
-    sys.path.insert(0, '../pyicloud/')
+# This doesn't work until Fedora 43.
 from pyicloud import PyiCloudService  # https://pypi.org/project/pyicloud/
 
 
@@ -94,7 +97,7 @@ def main():
             drive_files = {}
             try:
                 drive_files[file] = icloud.drive['Health_Data'][file]
-            except KeyError as kerr:
+            except KeyError:
                 # All files are in the list: icloud.drive['Health_Data'].dir()
                 # print(f'Unable to find file {file} on iCloud:\n\t{kerr}')
                 prefix = file.split('_')[0]
