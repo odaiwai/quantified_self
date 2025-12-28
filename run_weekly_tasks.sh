@@ -322,30 +322,3 @@ $sqlite health_data.sqlite -csv -header "$SQLCOMMAND"
 $sqlite health_data.sqlite -csv -header "$SQLCOMMAND" >excel_import.csv
 
 print_elapsed_time
-## Older commands
-#$sqlite health_data.sqlite -csv -header "select timestamp, activeCalories, CAST(sum(value) AS NUMERIC) AS value from apple_activity_summary JOIN apple_BasalEnergyBurned using (timestamp) where timestamp > $TIMESTAMP and sourceName not like 'Sync Solver' group by timestamp;"
-
-#echo "Fitbit Calories_burned for this month:"
-#$sqlite fitbit_data.sqlite -csv -header "select date, calories_burned from fitbit_data where date like ' $MONTH % $YEAR';"
-#$sqlite health_data.sqlite -csv -header "select timestamp, date, calories_burned from fitbit_data where timestamp > $TIMESTAMP ;"
-
-#echo "FitBit Data for this month:"
-#$sqlite fitbit_data.sqlite -csv -header "select date, Calories_burned, Total_steps, Traveled, Floors_climbed, Sedentary, Lightly_active, Fairly_active, Very_active from [fitbit_data] where date like ' $MONTH % $YEAR';"
-#$sqlite fitbit_data.sqlite -csv -header "select date, Calories_burned, Total_steps, Traveled, Floors_climbed, Sedentary, Lightly_active, Fairly_active, Very_active from [fitbit_data] where timestamp > $TIMESTAMP;"
-# SQLCOMMAND="SELECT
-#    mfp_nutrition.date, CAST(sum(mfp_nutrition.Calories) AS NUMERIC) AS mfp_nutrition.Calories, CAST(sum(Carbohydrates) AS NUMERIC) AS Carbohydrates/1000, CAST(sum(Fat_g) AS NUMERIC) AS Fat_g,
-#   CAST(sum(mfp_nutrition.Protein_g) AS NUMERIC) AS mfp_nutrition.Protein_g, CAST(sum(mfp_nutrition.Cholesterol) AS NUMERIC) AS mfp_nutrition.Cholesterol, CAST(sum(mfp_nutrition.Sodium_mg) AS NUMERIC) AS mfp_nutrition.Sodium_mg,
-#  CAST(sum(mfp_nutrition.Sugar) AS NUMERIC) AS mfp_nutrition.Sugar, CAST(sum(mfp_nutrition.Fiber) AS NUMERIC) AS mfp_nutrition.Fiber, CAST(sum(mfp_exercise.Exercise_calories) AS NUMERIC) AS mfp_exercise.Exercise_calories,
-# 0, apple_qs_health_data.Active_Calories, apple_qs_health_data.Resting_Calories
-#     FROM [mfp_nutrition]
-#     JOIN apple_qs_health_data using (timestamp)
-#     JOIN mfp_exercise using (timestamp)
-# 	WHERE mfp_nutrition.timestamp > $TIMESTAMP group by timestamp;"
-
-# SQLCOMMAND="SELECT
-# 	mfp_daily_summary.date, mfp_daily_summary.Calories, Carbs, Fat, mfp_daily_summary.Protein,
-# 	mfp_daily_summary.Cholesterol, mfp_daily_summary.Sodium, Sugars, mfp_daily_summary.Fiber,
-# 	0, 0, apple_qs_health_data.Active_Calories, apple_qs_health_data.Resting_Calories
-# 	FROM [mfp_daily_summary]
-# 	JOIN apple_qs_health_data using (timestamp)
-# 	WHERE mfp_daily_summary.timestamp > $TIMESTAMP group by timestamp;"
