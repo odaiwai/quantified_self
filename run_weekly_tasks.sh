@@ -304,7 +304,9 @@ SQLCOMMAND="SELECT DISTINCT Timestamp.date as Date,
     0 as FB_Calories_Burned,
     coalesce(MFPE.'Exercise_Calories', AQH.'Active Calories (kcal)', 0) as Active_Calories,
     IFNULL(AQH.'Resting Calories (kcal)', 0) as Resting_Calories,
-    coalesce(MFPE.'Steps', AQH.'Steps (Count)', 0) as Steps
+    coalesce(MFPE.'Steps', AQH.'Steps (Count)', 0) as Steps,
+    IFNULL(MFPE.'Steps', 0) as Steps2,
+    IFNULL(AQH.'Steps (Count)', 0) as Steps3
     FROM [Timestamp]
     FULL OUTER JOIN mfp_nutrition_daily as MFPN using (Timestamp)
     FULL OUTER JOIN mfp_exercise_daily as MFPE using (Timestamp)
