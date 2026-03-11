@@ -8,18 +8,16 @@
 """
 # import os
 import sys
-
-if '../pyicloud/' not in sys.path:
-    #  20250112: Changed to https://github.com/timlaing/pyicloud
-    sys.path.insert(0, '../pyicloud/')
-
 from datetime import datetime
 from shutil import copyfileobj  # https://docs.python.org/3/library/shutil.html
 
 import click  # https://click.palletsprojects.com/
-
 # This doesn't work until Fedora 43.
 from pyicloud import PyiCloudService  # https://pypi.org/project/pyicloud/
+
+# if '../pyicloud/' not in sys.path:
+#     #  20250112: Changed to https://github.com/timlaing/pyicloud
+#     sys.path.insert(0, '../pyicloud/')
 
 
 def get_credentials():
@@ -39,7 +37,8 @@ def get_credentials():
 def login() -> PyiCloudService:
     """Get the credentials and login to the Apple iCloud service."""
     creds = get_credentials()
-    icloud = PyiCloudService(creds['email'], creds['password'])
+    icloud = PyiCloudService(
+        creds['email'], creds['password'])
 
     # This code mostly from https://pypi.org/project/pyicloud/
     # It has been refactored a little
