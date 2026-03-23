@@ -76,9 +76,16 @@ while (($# > 0)); do
 		shift
 		shift
 		;;
+	-td | --today)
+		today="$2"
+		echo "operating as if today is '$today'"
+		shift
+		shift
+		;;
 	-h | --help | *)
 		echo "Usage:"
-		echo "-d, --download: get MyFitnessPal data"
+		echo "-d, --download: download all data where there is a downloader."
+		echo "-td, --today:  use the specified date in yyyymmdd"
 		echo "-p, --parse: Don't parse the data, just run the query"
 		echo "-v, --verbose: be more verbose"
 		echo "-m, --months : show one more months data. -m -m = show two more"
@@ -157,6 +164,7 @@ if [[ $PARSE -gt 0 ]]; then
 	# Parse the cronometer Data once that's setup
 	# ./parse_cronometer_data.py
 	echo "---- Processing Cronometer Data ----"
+	./compare_schema.py ${today}
 	for file in dailysummary servings notes biometrics exercises; do
 		# TODO: handle fasting in the Cronometer app - premium feature
 		DAY="Day"
@@ -171,20 +179,22 @@ if [[ $PARSE -gt 0 ]]; then
 		{
 			echo ".import --csv ../health_data/cronometer_data/${file}_${today}.csv temp"
 			echo ".schema temp"
-			echo "CREATE TABLE 'temp2' as
+			echo ".read ${file}_merge.sql"
+			echo "DROP TABLE IF EXISTS cronometer_${file};"
+			echo "CREATE TABLE 'cronometer_${file}' as 
                 select
                     CAST(substr(${DAY}, 1, 4) ||
                          substr(${DAY}, 6, 2) ||
                          substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp',
                     --CAST(${today} as INTEGER) as 'Reported',
                     *
-                from temp;"
-			echo "INSERT OR IGNORE INTO cronometer_${file} SELECT * from temp2;"
+                from temp1;"
 			echo "DROP TABLE temp;"
-			echo "DROP TABLE temp2;"
+			echo "DROP TABLE temp1;"
+			# echo "DROP TABLE temp1;"
 		} >temp.sql
 		# log_cat temp.sql
-		$sqlite health_data.sqlite <temp.sql 2>/dev/null
+		$sqlite health_data.sqlite <temp.sql # ; 2>/dev/null
 	done
 	print_elapsed_time
 
