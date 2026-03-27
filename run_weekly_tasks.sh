@@ -164,38 +164,38 @@ if [[ $PARSE -gt 0 ]]; then
 	# Parse the cronometer Data once that's setup
 	# ./parse_cronometer_data.py
 	echo "---- Processing Cronometer Data ----"
-	./compare_schema.py ${today}
-	for file in dailysummary servings notes biometrics exercises; do
-		# TODO: handle fasting in the Cronometer app - premium feature
-		DAY="Day"
-		if [[ "${file}" = "dailysummary" ]]; then
-			DAY="Date"
-		fi
-		echo "${file}"
-		# TODO: need to handle a new table being added here...
-		# TODO: need to add a UUID to servings.csv, as there are multiple
-		# entries per date, and no way to distinguish or prevent multiple
-		# copies of each day.
-		{
-			echo ".import --csv ../health_data/cronometer_data/${file}_${today}.csv temp"
-			echo ".schema temp"
-			echo ".read ${file}_merge.sql"
-			echo "DROP TABLE IF EXISTS cronometer_${file};"
-			echo "CREATE TABLE 'cronometer_${file}' as 
-                select
-                    CAST(substr(${DAY}, 1, 4) ||
-                         substr(${DAY}, 6, 2) ||
-                         substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp',
-                    --CAST(${today} as INTEGER) as 'Reported',
-                    *
-                from temp1;"
-			echo "DROP TABLE temp;"
-			echo "DROP TABLE temp1;"
-			# echo "DROP TABLE temp1;"
-		} >temp.sql
-		# log_cat temp.sql
-		$sqlite health_data.sqlite <temp.sql # ; 2>/dev/null
-	done
+	./compare_schema.py "${today}"
+	# for file in dailysummary servings notes biometrics exercises; do
+	# 	# TODO: handle fasting in the Cronometer app - premium feature
+	# 	DAY="Day"
+	# 	if [[ "${file}" = "dailysummary" ]]; then
+	# 		DAY="Date"
+	# 	fi
+	# 	echo "${file}"
+	# 	# TODO: need to handle a new table being added here...
+	# 	# TODO: need to add a UUID to servings.csv, as there are multiple
+	# 	# entries per date, and no way to distinguish or prevent multiple
+	# 	# copies of each day.
+	# 	{
+	# 		echo ".import --csv ../health_data/cronometer_data/${file}_${today}.csv temp"
+	# 		echo ".schema temp"
+	# 		echo ".read ${file}_merge.sql"
+	# 		echo "DROP TABLE IF EXISTS cronometer_${file};"
+	# 		echo "CREATE TABLE 'cronometer_${file}' as
+	#             select
+	#                 CAST(substr(${DAY}, 1, 4) ||
+	#                      substr(${DAY}, 6, 2) ||
+	#                      substr(${DAY}, 9, 2) AS INTEGER) as 'Timestamp',
+	#                 --CAST(${today} as INTEGER) as 'Reported',
+	#                 *
+	#             from temp1;"
+	# 		echo "DROP TABLE temp;"
+	# 		echo "DROP TABLE temp1;"
+	# 		# echo "DROP TABLE temp1;"
+	# 	} >temp.sql
+	# 	# log_cat temp.sql
+	# 	$sqlite health_data.sqlite <temp.sql # ; 2>/dev/null
+	# done
 	print_elapsed_time
 
 	# Parse the Apple Health Data from QS
