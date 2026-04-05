@@ -106,6 +106,9 @@ if [[ $DOWNLOAD -gt 0 ]]; then
 	# This doesn't get updated - watch the pyicloud repo for updates.
 	./get_files_from_icloud_drive.py
 
+	# Get the Cronometer Data
+	./get_cronometer_data.py
+
 	# Add these files to the repository and commit
 	cd ../health_data/apple_health_export || exit
 	git add 'Health Data.csv' 'Sleep Analysis.csv'
@@ -164,7 +167,7 @@ if [[ $PARSE -gt 0 ]]; then
 	# Parse the cronometer Data once that's setup
 	# ./parse_cronometer_data.py
 	echo "---- Processing Cronometer Data ----"
-	./compare_schema.py "${today}"
+	./process_cronometer_data.py "${today}"
 	# for file in dailysummary servings notes biometrics exercises; do
 	# 	# TODO: handle fasting in the Cronometer app - premium feature
 	# 	DAY="Day"

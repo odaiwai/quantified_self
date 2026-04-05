@@ -6,7 +6,7 @@
         Ubiquity service, not iCloud drive:
         https://developer.apple.com/library/archive/technotes/tn2348/_index.html#//apple_ref/doc/uid/DTS40014955-CH1-TNTAG5
 """
-# import os
+import os
 import sys
 from datetime import datetime
 from shutil import copyfileobj  # https://docs.python.org/3/library/shutil.html
@@ -18,6 +18,9 @@ from pyicloud import PyiCloudService  # https://pypi.org/project/pyicloud/
 # if '../pyicloud/' not in sys.path:
 #     #  20250112: Changed to https://github.com/timlaing/pyicloud
 #     sys.path.insert(0, '../pyicloud/')
+
+
+OVERWRITE = False
 
 
 def get_credentials():
@@ -110,12 +113,16 @@ def main():
             # print(drive_files.keys())
             # breakpoint()
             for file, drive_file in drive_files.items():
-                with drive_file.open(stream=True) as contents:
-                    print((f'Copying file from iCloud to {file}: '
-                           f'{contents.status_code}'))
-                    with open(f'../health_data/{local_dir}/{file}', 'wb') as outfh:
-                        copyfileobj(contents.raw, outfh)
-                        # we could also parse the text in contents.text
+                dest_file = f'../health_data/{local_dir}/{file}'
+                if os.path.exists(dest_file) and not OVERWRITE:
+                    print(f'File {dest_file} exists, skipping copy')
+                else:
+                    with drive_file.open(stream=True) as contents:
+                        print((f'Copying file from iCloud to {file}: '
+                               f'{contents.status_code}'))
+                        with open(dest_file, 'wb') as outfh:
+                            copyfileobj(contents.raw, outfh)
+                            # we could also parse the text in contents.text
 
 
 if __name__ == '__main__':
