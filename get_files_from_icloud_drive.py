@@ -102,7 +102,7 @@ def main():
             except KeyError:
                 # All files are in the list: icloud.drive['Health_Data'].dir()
                 # print(f'Unable to find file {file} on iCloud:\n\t{kerr}')
-                prefix = file.split('_')[0]
+                prefix = file.split('_', maxsplit=1)[0]
                 for icloud_file in icloud_files:
                     icloud_prefix = icloud_file.split('_')[0]
                     if icloud_prefix == prefix:
@@ -114,9 +114,19 @@ def main():
             # breakpoint()
             for file, drive_file in drive_files.items():
                 dest_file = f'../health_data/{local_dir}/{file}'
+                identical = False
                 if os.path.exists(dest_file) and not OVERWRITE:
-                    print(f'File {dest_file} exists, skipping copy')
-                else:
+                    # check file sizes and dates
+                    dest_time = datetime.fromtimestamp(
+                        os.stat(dest_file).st_mtime)
+                    dest_size = os.stat(dest_file).st_size
+                    if ((dest_time <= drive_file.date_modified) and
+                            (dest_size != drive_file.size)):
+                        identical = False
+                        print(f'File {dest_file} not identical, copying')
+                    else:
+                        print(f'File {dest_file} identical, skipping copy')
+                if not identical:
                     with drive_file.open(stream=True) as contents:
                         print((f'Copying file from iCloud to {file}: '
                                f'{contents.status_code}'))
