@@ -95,6 +95,8 @@ def main():
                      }
     icloud_files = icloud.drive['Health_Data'].dir()
     for local_dir, files in files_to_copy.items():
+        local_path = f'../health_data/{local_dir}'
+        dest_files = {f.name: f for f in os.scandir(local_path)}
         for file in files:
             drive_files = {}
             try:
@@ -114,18 +116,18 @@ def main():
             # breakpoint()
             for file, drive_file in drive_files.items():
                 dest_file = f'../health_data/{local_dir}/{file}'
-                identical = False
-                if os.path.exists(dest_file) and not OVERWRITE:
+                identical = None
+                if file in dest_files and not OVERWRITE:
                     # check file sizes and dates
-                    dest_time = datetime.fromtimestamp(
-                        os.stat(dest_file).st_mtime)
-                    dest_size = os.stat(dest_file).st_size
+                    d_stat = dest_files[file].stat()
+                    dest_time = datetime.fromtimestamp(d_stat.st_mtime)
                     if ((dest_time <= drive_file.date_modified) and
-                            (dest_size != drive_file.size)):
+                            (d_stat.st_size != drive_file.size)):
                         identical = False
-                        print(f'File {dest_file} not identical, copying')
+                        print(f'File {file} iCloud != local, copying')
                     else:
-                        print(f'File {dest_file} identical, skipping copy')
+                        print(f'File {file} iCloud == local, skipping copy')
+                        identical = True
                 if not identical:
                     with drive_file.open(stream=True) as contents:
                         print((f'Copying file from iCloud to {file}: '
