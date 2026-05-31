@@ -12,13 +12,13 @@ from datetime import datetime
 from shutil import copyfileobj  # https://docs.python.org/3/library/shutil.html
 
 import click  # https://click.palletsprojects.com/
-# This doesn't work until Fedora 43.
-from pyicloud import PyiCloudService  # https://pypi.org/project/pyicloud/
+from pyicloud import PyiCloudService
 
+# # https://pypi.org/project/pyicloud/
 # if '../pyicloud/' not in sys.path:
-#     #  20250112: Changed to https://github.com/timlaing/pyicloud
 #     sys.path.insert(0, '../pyicloud/')
-
+#     from pyicloud import PyiCloudService  # isort:skip
+# #     #  20250112: Changed to https://github.com/timlaing/pyicloud
 
 OVERWRITE = False
 
@@ -46,20 +46,43 @@ def login() -> PyiCloudService:
     # This code mostly from https://pypi.org/project/pyicloud/
     # It has been refactored a little
     if icloud.requires_2fa:
-        print('Two-factor authentication required.')
-        code = input('Enter the code you received on an approved device: ')
-        result = icloud.validate_2fa_code(code)
-        print(f'Code validation result: {result}')
-        if not result:
-            print('Failed to verify security code')
-            sys.exit(1)
-        if not icloud.is_trusted_session:
-            print('Session is not trusted. Requesting trust...')
-            result = icloud.trust_session()
-            print(f'Session trust result {result}')
+        security_key_names = icloud.security_key_names
+
+        if security_key_names:
+            print('Security Keys required: '
+                  'Plug in one of: ',
+                  ', '.join(security_key_names)
+                  )
+            devices = icloud.fido2_devices
+            print('Available FIDO2 Devices:')
+            for idx, device in enumerate(devices, start=1):
+                print(f'{idx}: {device}')
+
+            choice = click.prompt(
+                'Select device by number',
+                type=click.IntRange(1, len(devices)),
+                default=1,
+            )
+            selected_device = devices[choice-1]
+            print(f'Confirm action using the device {selected_device}')
+            icloud.confirm_security_key(selected_device)
+        else:
+            print('Two-factor authentication required.')
+            icloud.request_2fa_code()
+            code = input('Enter the code you received on an approved device: ')
+            result = icloud.validate_2fa_code(code)
+            print(f'Code validation result: {result}')
             if not result:
-                print('Failed to request trust. You will likely be prompted '
-                      'for the code again in the coming weeks')
+                print('Failed to verify security code')
+                sys.exit(1)
+            if not icloud.is_trusted_session:
+                print('Session is not trusted. Requesting trust...')
+                result = icloud.trust_session()
+                print(f'Session trust result {result}')
+                if not result:
+                    print('Failed to request trust. You will likely be '
+                          'prompted '
+                          'for the code again in the coming weeks')
     elif icloud.requires_2sa:
         print('Two-step authentication required. Your trusted devices are:')
         devices = icloud.trusted_devices
