@@ -120,10 +120,14 @@ def build_database_from_csv(table: Table):
                 schemas[date] = schema
     print()
     all_df = pd.concat(tables).sort_values([table.day_date, 'reported'])
+    # This leaves us with a table with multiple entries for a day with the
+    # meal groups in those later entries - we only want the daily totals.
+    all_df['Group'].fillna(value='Total')
+    all_totals = all_df.loc[all_df['Group'] == 'Total']
 
     schema_history = pd.DataFrame.from_dict(schemas, orient='index')
     agg_func = {}
-    for col, dtype in all_df.dtypes.items():
+    for col, dtype in all_totals.dtypes.items():
         if dtype in ('float64', 'int64'):
             agg_func[col] = join_uniq_float
         elif dtype in ('object', 'bool'):
@@ -136,7 +140,7 @@ def build_database_from_csv(table: Table):
             del agg_func[field]
 
     print(f'Grouping {table.name}...')
-    final_table = all_df.groupby('uuid').agg(agg_func)
+    final_table = all_totals.groupby('uuid').agg(agg_func)
 
     if len(final_table) > 0:
         print(f'{table.name} has {len(final_table)} records. Saving.')
