@@ -112,14 +112,20 @@ def build_database_from_csv(table: Table):
                                    dt.strftime('%Y%m%d'))
                 df['uuid'] = (df['timestamp']
                               + df['daily_item'].map('{:03d}'.format))
-                tables[date] = df
+                if len(df) > 0:
+                    tables[date] = df
                 schema = {}
                 for col in df.columns:
                     dtype = df[col].dtype
                     schema[col] = dtype
                 schemas[date] = schema
     print()
-    all_df = pd.concat(tables).sort_values([table.day_date, 'reported'])
+    # breakpoint()
+    if len(tables) == 0:
+        all_df = df  # use last empty df made
+    else:
+        all_df = pd.concat(tables).sort_values([table.day_date, 'reported'])
+
     # This leaves us with a table with multiple entries for a day with the
     # meal groups in those later entries - we only want the daily totals.
     all_df['Group'].fillna(value='Total')
@@ -143,14 +149,14 @@ def build_database_from_csv(table: Table):
     final_table = all_totals.groupby('uuid').agg(agg_func)
 
     if len(final_table) > 0:
-        print(f'{table.name} has {len(final_table)} records. Saving.')
+        print(f'{table.name} has {len(final_table)} records. Saving...')
         with sqlite3.connect('health_data.sqlite') as db:
-            final_table.to_sql(f'cronometer_{table.name}', db,
-                               index=False, if_exists='replace')
+            final_table.to_sql(f'cronometer_{table.name}',
+                               db, index=False, if_exists='replace')
     else:
-        print(f'No Entries in {table.name}')
+        print(f'{table.name} has no records. Skipping...')
 
-    return
+    return None
 
 
 def get_schema_from_csv(table: Table, today: str):
