@@ -128,7 +128,7 @@ def build_database_from_csv(table: Table):
 
     # This leaves us with a table with multiple entries for a day with the
     # meal groups in those later entries - we only want the daily totals.
-    all_df['Group'].fillna(value='Total')
+    all_df['Group'].fillna(value='Total', inplace=True)
     all_totals = all_df.loc[all_df['Group'] == 'Total']
 
     schema_history = pd.DataFrame.from_dict(schemas, orient='index')
@@ -153,6 +153,9 @@ def build_database_from_csv(table: Table):
         with sqlite3.connect('health_data.sqlite') as db:
             final_table.to_sql(f'cronometer_{table.name}',
                                db, index=False, if_exists='replace')
+            # breakpoint()
+            # schema_history.to_sql(f'cronometer_schema_history_{table.name}',
+            #                       db, index=True, if_exists='replace')
     else:
         print(f'{table.name} has no records. Skipping...')
 
