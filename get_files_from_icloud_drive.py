@@ -107,57 +107,60 @@ def main():
     """Main routine."""
     icloud = login()
     today = datetime.strftime(datetime.now(), '%Y%m%d')
-    files_to_copy = {'apple_health_export': ['Health Data.csv',
-                                             'Sleep Analysis.csv'],
-                     'cronometer_data': [f'biometrics_{today}.csv',
-                                         f'dailysummary_{today}.csv',
-                                         f'exercises_{today}.csv',
-                                         f'fasts_{today}.csv',
-                                         f'notes_{today}.csv',
-                                         f'servings_{today}.csv']
-                     }
+    files_to_copy = {
+        'apple_health_export': [
+            'Health Data.csv',
+            'Sleep Analysis.csv',
+            'HealthExport_*.csv'
+        ],
+        'cronometer_data': [
+            f'biometrics_{today}.csv',
+            f'dailysummary_{today}.csv',
+            f'exercises_{today}.csv',
+            f'fasts_{today}.csv',
+            f'notes_{today}.csv',
+            f'servings_{today}.csv'
+        ]
+    }
+    # TODO: modify this to handle regexp or wildcards
     icloud_files = icloud.drive['Health_Data'].dir()
     for local_dir, files in files_to_copy.items():
         local_path = f'../health_data/{local_dir}'
         dest_files = {f.name: f for f in os.scandir(local_path)}
+        copy_files = {}
         for file in files:
-            drive_files = {}
-            try:
-                drive_files[file] = icloud.drive['Health_Data'][file]
-            except KeyError:
-                # All files are in the list: icloud.drive['Health_Data'].dir()
-                # print(f'Unable to find file {file} on iCloud:\n\t{kerr}')
+            if file in icloud_files:
+                copy_files[file] = icloud.drive['Health_Data'][file]
+                print(f'adding {file}')
+            elif '_' in file:
                 prefix = file.split('_', maxsplit=1)[0]
                 for icloud_file in icloud_files:
                     icloud_prefix = icloud_file.split('_')[0]
                     if icloud_prefix == prefix:
-                        drive_files[icloud_file] = icloud.drive['Health_Data'][icloud_file]
-                        # print(f'\tCopying {icloud_file} instead...')
-                # quit()
-            # copy it to the local copy of the file
-            # print(drive_files.keys())
-            # breakpoint()
-            for file, drive_file in drive_files.items():
-                dest_file = f'../health_data/{local_dir}/{file}'
-                identical = None
-                if file in dest_files and not OVERWRITE:
-                    # check file sizes and dates
-                    d_stat = dest_files[file].stat()
-                    dest_time = datetime.fromtimestamp(d_stat.st_mtime)
-                    if ((dest_time <= drive_file.date_modified) and
-                            (d_stat.st_size != drive_file.size)):
-                        identical = False
-                        print(f'File {file} iCloud != local, copying')
-                    else:
-                        print(f'File {file} iCloud == local, skipping copy')
-                        identical = True
-                if not identical:
-                    with drive_file.open(stream=True) as contents:
-                        print((f'Copying file from iCloud to {file}: '
-                               f'{contents.status_code}'))
-                        with open(dest_file, 'wb') as outfh:
-                            copyfileobj(contents.raw, outfh)
-                            # we could also parse the text in contents.text
+                        copy_files[icloud_file] = (icloud.drive['Health_Data']
+                                                   [icloud_file])
+                        print(f'adding {icloud_file}')
+        for file, drive_file in copy_files.items():
+            dest_file = f'../health_data/{local_dir}/{file}'
+            identical = None
+            if file in dest_files and not OVERWRITE:
+                # check file sizes and dates
+                d_stat = dest_files[file].stat()
+                dest_time = datetime.fromtimestamp(d_stat.st_mtime)
+                if ((dest_time <= drive_file.date_modified) and
+                        (d_stat.st_size != drive_file.size)):
+                    identical = False
+                    print(f'File {file} iCloud != local, copying')
+                else:
+                    print(f'File {file} iCloud == local, skipping copy')
+                    identical = True
+            if not identical:
+                with drive_file.open(stream=True) as contents:
+                    print((f'Copying file from iCloud to {file}: '
+                           f'{contents.status_code}'))
+                    with open(dest_file, 'wb') as outfh:
+                        copyfileobj(contents.raw, outfh)
+                        # we could also parse the text in contents.text
 
 
 if __name__ == '__main__':
